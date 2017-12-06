@@ -43,6 +43,7 @@ function main() {
         .perlin(5, 0.5)
         .normalize(0, 1)
         .clamp(0.5, 1)
+        .bresenham(0, -30, 128, 500, 0.2)
         .getColor(context);
     context.putImageData(image, 100, 100);
 }

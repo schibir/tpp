@@ -6,14 +6,14 @@ export default class SimpleBuffer {
         this.data.fill(0.0);
     }
     getData(x, y) {
-        return y !== undefined ? this.data[y * this.size + x | 0] : this.data[x];
+        if (x < 0 || x > this.size - 1) return 0.0;
+        if (y < 0 || y > this.size - 1) return 0.0;
+        return this.data[y * this.size + x | 0];
     }
     setData(x, y, val) {
-        if (val !== undefined) this.data[y * this.size + x | 0] = val;
-        else this.data[x] = y; // setData(index, val);
-    }
-    getSize() {
-        return this.size;
+        if (x < 0 || x > this.size - 1) return;
+        if (y < 0 || y > this.size - 1) return;
+        this.data[y * this.size + x | 0] = val;
     }
     getColor(context) {
         const imageData = context.createImageData(this.size, this.size);
@@ -99,7 +99,8 @@ export default class SimpleBuffer {
         const time = Date.now();
         for (let j = 0; j < this.size; j++) {
             for (let i = 0; i < this.size; i++) {
-                this.data[j * this.size + i | 0] = fun(this.getData(i, j), i, j);
+                const ind = j * this.size + i | 0;
+                this.data[ind] = fun(this.data[ind], i, j);
             }
         }
         console.log("For each = ", Date.now() - time);
@@ -107,10 +108,11 @@ export default class SimpleBuffer {
     }
     forBuf(buf, fun) {
         const time = Date.now();
-        console.assert(this.size === buf.getSize(), "Sizes of buffers must be equal");
+        console.assert(this.size === buf.size, "Sizes of buffers must be equal");
         for (let j = 0; j < this.size; j++) {
             for (let i = 0; i < this.size; i++) {
-                this.data[j * this.size + i | 0] = fun(this.getData(i, j), buf.getData(i, j), i, j);
+                const ind = j * this.size + i | 0;
+                this.data[ind] = fun(this.data[ind], buf.data[ind], i, j);
             }
         }
         console.log("For buffer = ", Date.now() - time);
@@ -124,91 +126,83 @@ export default class SimpleBuffer {
         console.log("Clamp = ", Date.now() - time);
         return this;
     }
-    /* this.gaussian_fast = function(radius, src_buf, dir, mask)
-    {
-        var time = Date.now();
-        Console.assert(size === src_buf.getSize(), "Sizes of buffers must be equal");
-        Console.assert(self !== src_buf, "Source buffer must does not be same with this");
-        if (mask)
-        {
-            Console.assert(size === mask.getSize(), "Sizes of buffers must be equal");
-            Console.assert(self !== mask, "Source buffer must does not be same with this");
-        }
+    gaussianFast(srcBuf, radius, dir) {
+        const time = Date.now();
+        console.assert(this.size === srcBuf.size, "Sizes of buffers must be equal");
+        console.assert(this !== srcBuf, "Source buffer must does not be same with this");
 
-        function norm(x)
-        {
+        const norm = (x) => {
             const a = 1 / (Math.sqrt(2 * Math.PI));
             const b = -x * x / 2;
             return a * Math.exp(b);
-        }
+        };
 
-        for (var j = 0; j < size; j++)
-        {
-            for (var i = 0; i < size; i++)
-            {
-                if (mask && mask.getData(i, j) < 0.5)
-                    continue;
-
-                var kol = 0.0;
-                var sum = 0.0;
-                for (var p = -radius; p <= radius; p++)
-                {
-                    var x = i + dir[0] * p;
-                    var y = j + dir[1] * p;
-                    if (y < 0) continue;
-                    if (y >= size) break;
-                    if (x < 0) continue;
-                    if (x >= size) break;
-
-                    var sx = (x - i) / radius;
-                    var sy = (y - j) / radius;
-                    var r = Math.sqrt(sx * sx + sy * sy);
-                    var koef = norm(r * 3);
-                    kol += koef;
-                    sum += koef * src_buf.getData(x, y);
+        for (let j = 0; j < this.size; j++) {
+            for (let i = 0; i < this.size; i++) {
+                let kol = 0.0;
+                let sum = 0.0;
+                for (let p = -radius; p <= radius; p++) {
+                    const x = i + dir[0] * p;
+                    const y = j + dir[1] * p;
+                    if (x >= this.size ||
+                        y >= this.size) break;
+                    if (y >= 0 && x >= 0) {
+                        const sx = (x - i) / radius;
+                        const sy = (y - j) / radius;
+                        const r = Math.sqrt(sx * sx + sy * sy);
+                        const koef = norm(r * 3);
+                        kol += koef;
+                        sum += koef * srcBuf.data[y * this.size + x | 0];
+                    }
                 }
-                var ind = i + j * size | 0;
-                data[ind] = sum / kol;
+                const ind = i + j * this.size | 0;
+                this.data[ind] = sum / kol;
             }
         }
-        Console.info("Gaussian fast = ", Date.now() - time);
+        console.log("Gaussian fast = ", Date.now() - time);
     }
-    this.getGaussian = function(radius, mask)
-    {
-        var blur_x = new Buffer(size);
-        var blur = new Buffer(size);
-        blur_x.gaussian_fast(radius, self, [1, 0], mask);
-        blur.gaussian_fast(radius, blur_x, [0, 1], mask);
-        return blur;
+    gaussian(radius) {
+        const blur = new SimpleBuffer(this.size);
+        blur.gaussianFast(this, radius, [1, 0]);
+        this.gaussianFast(blur, radius, [0, 1]);
+        return this;
     }
-    this.copy = function(src_image)
-    {
-        var time = Date.now();
-        Console.assert(size === src_image.getSize(), "Sizes of buffers must be equal");
-        Console.assert(self !== src_image, "Source buffer must does not be same with this");
+    copy(src) {
+        const time = Date.now();
+        console.assert(this.size === src.size, "Sizes of buffers must be equal");
+        console.assert(this !== src, "Source buffer must does not be same with this");
 
-        for (var i = 0;  i < size * size; i++)
-            data[i] = src_image.getData(i);
-
-        Console.info("Copy = ", Date.now() - time);
-    }
-    this.bresenham = function(x0, y0, x1, y1, val)
-    {
-        var dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1;
-        var dy = Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1;
-        var err = (dx > dy ? dx : -dy) / 2;
-
-        while (true)
-        {
-            if (x0 >= 0 && x0 < size &&
-                y0 >= 0 && y0 < size)
-            {
-                data[x0 + y0 * size] = val;
-            }
-            if (x0 === x1 && y0 === y1) break;
-            var e2 = err;
-            if (e2 > -dx) { err -= dy; x0 += sx; }
-            if (e2 < dy) { err += dx; y0 += sy; }
+        for (let i = 0; i < this.size * this.size; i++) {
+            this.data[i] = src.data[i];
         }
-    } */
+
+        console.log("Copy = ", Date.now() - time);
+    }
+    bresenham(x0, y0, x1, y1, val) {
+        const dx = Math.abs(x1 - x0);
+        const dy = Math.abs(y1 - y0);
+        const sx = x0 < x1 ? 1 : -1;
+        const sy = y0 < y1 ? 1 : -1;
+        let err = (dx > dy ? dx : -dy) / 2;
+        let x = x0;
+        let y = y0;
+
+        for (;;) {
+            if (x >= 0 && x < this.size &&
+                y >= 0 && y < this.size) {
+                this.setData(x, y, val);
+            }
+            if (x === x1 && y === y1) break;
+            const e2 = err;
+            if (e2 > -dx) {
+                err -= dy;
+                x += sx;
+            }
+            if (e2 < dy) {
+                err += dx;
+                y += sy;
+            }
+        }
+        return this;
+    }
 }
