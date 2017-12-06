@@ -54,7 +54,14 @@
     </div>
     <script type="text/javascript">
     document.getElementById("play-btn").onclick = () => {
-        window.location.href += "game";
+        var url = window.location.href;
+        // workaround for local file
+        if (url.endsWith("index.html")) {
+            url = url.replace("index.html", "game/index.html");
+        } else {
+            url += "game";
+        }
+        window.location.href = url;
     };
     </script>
 </body>
