@@ -4,6 +4,7 @@
   "description": "Clone Battle City",
   "main": "index.js",
   "scripts": {
+    "publish": "git checkout gh-pages && git merge master && git push && git checkout master",
     "start": "http-server -p 8000 -c-1"
   },
   "repository": {
