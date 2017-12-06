@@ -4,12 +4,13 @@
   "description": "Clone Battle City",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint game/src",
     "babel": "babel game/src -d game/dist",
     "browserify": "browserify game/dist/main.js -o game/dist/app.js",
     "browserify-dev": "browserify game/dist/main.js -o game/build/app.min.js",
     "min": "uglifyjs -o game/build/app.min.js game/dist/app.js",
-    "build": "npm run babel && npm run browserify && npm run min",
-    "build-dev": "npm run babel && npm run browserify-dev",
+    "build": "npm run lint && npm run babel && npm run browserify && npm run min",
+    "build-dev": "npm run lint && npm run babel && npm run browserify-dev",
     "publish": "git checkout gh-pages && git merge master && git push && git checkout master",
     "start": "http-server -p 8000 -c-1"
   },
