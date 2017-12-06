@@ -4,6 +4,12 @@
   "description": "Clone Battle City",
   "main": "index.js",
   "scripts": {
+    "babel": "babel game/src -d game/dist",
+    "browserify": "browserify game/dist/main.js -o game/dist/app.js",
+    "browserify-dev": "browserify game/dist/main.js -o game/build/app.min.js",
+    "min": "uglifyjs -o game/build/app.min.js game/dist/app.js",
+    "build": "npm run babel && npm run browserify && npm run min",
+    "build-dev": "npm run babel && npm run browserify-dev",
     "publish": "git checkout gh-pages && git merge master && git push && git checkout master",
     "start": "http-server -p 8000 -c-1"
   },
@@ -23,6 +29,15 @@
   },
   "homepage": "https://github.com/schibir/tpp#readme",
   "devDependencies": {
-    "http-server": "^0.10.0"
+    "http-server": "^0.10.0",
+    "babel-cli": "^6.26.0",
+    "babel-eslint": "^8.0.2",
+    "babel-preset-env": "^1.6.1",
+    "browserify": "^14.5.0",
+    "eslint": "^4.11.0",
+    "eslint-cli": "^1.1.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "uglify-js": "^3.1.8"
   }
 }
