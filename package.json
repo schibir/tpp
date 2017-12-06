@@ -1,0 +1,24 @@
+{
+  "name": "tpp",
+  "version": "1.0.0",
+  "description": "Clone Battle City",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schibir/tpp.git"
+  },
+  "keywords": [
+    "tanchiki",
+    "battle",
+    "city"
+  ],
+  "author": "Sergey Chibiryaev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/schibir/tpp/issues"
+  },
+  "homepage": "https://github.com/schibir/tpp#readme"
+}
