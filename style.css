@@ -11,17 +11,6 @@ body {
     margin: 20px;
 }
 
-a {
-    color: #aabbff;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #6677aa;
-    text-decoration: underline;
-    cursor: pointer;
-}
-
 .menu {
     text-align: center;
 }
