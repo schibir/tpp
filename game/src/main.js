@@ -1,11 +1,15 @@
 
-// Size of map 36x20
-function calcSizeForCanvas(width, height) {
+function calcSizeMap() {
     let mapWidth = 36;
     let mapHeight = 20;
     mapWidth += 1 + 1; // for board;
     mapHeight += 1 + 1 + 1; // for board and UI
+    return { mapWidth, mapHeight };
+}
 
+// Size of map 36x20
+function calcSizeForCanvas(width, height) {
+    const { mapWidth, mapHeight } = calcSizeMap();
     const aspect = width / height;
     const mapAspect = mapWidth / mapHeight;
 
