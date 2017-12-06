@@ -1,5 +1,5 @@
 "use strict";
 
 document.getElementById("play-btn").onclick = () => {
-    window.location = "/game";
+    window.location.href += "game";
 };
