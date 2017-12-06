@@ -1,9 +1,24 @@
 
 // Size of map 36x20
+function calcSizeForCanvas(width, height) {
+    let mapWidth = 36;
+    let mapHeight = 20;
+    mapWidth += 1 + 1; // for board;
+    mapHeight += 1 + 1 + 1; // for board and UI
+
+    const aspect = width / height;
+    const mapAspect = mapWidth / mapHeight;
+
+    if (mapAspect > aspect) {
+        return { width, height: width / mapAspect };
+    }
+    return { width: height * mapAspect, height };
+}
 
 function main() {
     const canvas = document.getElementById("canvas");
-    canvas.width = window.innerWidth - 200;
-    canvas.height = window.innerHeight - 200;
+    const { width, height } = calcSizeForCanvas(window.innerWidth - 40, window.innerHeight - 40);
+    canvas.width = width;
+    canvas.height = height;
 }
 window.addEventListener("load", main);
