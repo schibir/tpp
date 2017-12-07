@@ -32,17 +32,24 @@ export default class SimpleBuffer {
         context.putImageData(imageData, 0, 0);
         return canvas;
     }
-    getColorLerp(col0 = [0, 0, 0], col1 = [255, 255, 255]) {
+    getColorLerp(img0, img1) {
+        console.assert(img0.width === img1.width, "Require same image");
+        console.assert(img0.height === img1.height, "Require same image");
+        console.assert(img0.width === this.size, "Require same image");
+        console.assert(img0.height === this.size, "Require same image");
+
         const lerp = (a, b, t) => a * (1 - t) + b * t;
+        const data0 = img0.getContext("2d").getImageData(0, 0, this.size, this.size).data;
+        const data1 = img1.getContext("2d").getImageData(0, 0, this.size, this.size).data;
         const canvas = document.createElement("canvas");
         canvas.width = this.size;
         canvas.height = this.size;
         const context = canvas.getContext("2d");
         const imageData = context.createImageData(this.size, this.size);
         for (let i = 0; i < this.size * this.size; i++) {
-            imageData.data[4 * i + 0] = lerp(col0[0], col1[0], this.data[i]) | 0;
-            imageData.data[4 * i + 1] = lerp(col0[1], col1[1], this.data[i]) | 0;
-            imageData.data[4 * i + 2] = lerp(col0[2], col1[2], this.data[i]) | 0;
+            imageData.data[4 * i + 0] = lerp(data0[4 * i + 0], data1[4 * i + 0], this.data[i]) | 0;
+            imageData.data[4 * i + 1] = lerp(data0[4 * i + 1], data1[4 * i + 1], this.data[i]) | 0;
+            imageData.data[4 * i + 2] = lerp(data0[4 * i + 2], data1[4 * i + 2], this.data[i]) | 0;
             imageData.data[4 * i + 3] = 255;
         }
         context.putImageData(imageData, 0, 0);
@@ -165,18 +172,21 @@ export default class SimpleBuffer {
                 let kol = 0.0;
                 let sum = 0.0;
                 for (let p = -radius; p <= radius; p++) {
-                    const x = i + dir[0] * p;
-                    const y = j + dir[1] * p;
-                    if (x >= this.size ||
-                        y >= this.size) break;
-                    if (y >= 0 && x >= 0) {
-                        const sx = (x - i) / radius;
-                        const sy = (y - j) / radius;
-                        const r = Math.sqrt(sx * sx + sy * sy);
-                        const koef = norm(r * 3);
-                        kol += koef;
-                        sum += koef * srcBuf.data[y * this.size + x | 0];
-                    }
+                    let x = i + dir[0] * p;
+                    let y = j + dir[1] * p;
+
+                    const sx = (x - i) / radius;
+                    const sy = (y - j) / radius;
+                    const r = Math.sqrt(sx * sx + sy * sy);
+                    const koef = norm(r * 3);
+                    kol += koef;
+
+                    if (x < 0) x += this.size;
+                    if (y < 0) y += this.size;
+                    if (x > this.size - 1) x -= this.size;
+                    if (y > this.size - 1) y -= this.size;
+
+                    sum += koef * srcBuf.data[y * this.size + x | 0];
                 }
                 const ind = i + j * this.size | 0;
                 this.data[ind] = sum / kol;
@@ -211,10 +221,7 @@ export default class SimpleBuffer {
         let y = y0;
 
         for (;;) {
-            if (x >= 0 && x < this.size &&
-                y >= 0 && y < this.size) {
-                this.setData(x, y, val);
-            }
+            this.setData(x, y, val);
             if (x === x1 && y === y1) break;
             const e2 = err;
             if (e2 > -dx) {
@@ -294,6 +301,27 @@ export default class SimpleBuffer {
         }
 
         console.log("Brick generate", Date.now() - time);
+        return this;
+    }
+    brickMask(countWidth, countHeight) {
+        const time = Date.now();
+
+        const brickWidth = this.size / countWidth;
+        const brickHeight = this.size / countHeight;
+
+        for (let brickY = 0; brickY < countHeight; brickY++) {
+            const y = brickY * brickHeight | 0;
+            const startX = (brickY % 2 | 0) ? (-brickWidth * 0.5 | 0) : 0;
+            this.bresenham(0, y, this.size, y, 1);
+
+            for (let brickX = 0; brickX < countWidth; brickX++) {
+                let x = startX + brickX * brickWidth | 0;
+                if (x < 0) x += this.size;
+                this.bresenham(x, y, x, y + brickHeight | 0, 1);
+            }
+        }
+
+        console.log("Brick mask generate", Date.now() - time);
         return this;
     }
 }

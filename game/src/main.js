@@ -46,18 +46,35 @@ function main() {
     //     .normalize(0.75, 1)
     //     .getColor(randColor([224, 207, 159], 20));
 
-    const buffer = new SimpleBuffer(512);
-    const image = buffer
-        // .perlin(5, 0.5)
-        // // .normalize(0, 50)
-        // .forEach((val) => 1 / (val * val + 1))
-        // // .diffFree()
-        // .diff([1, 0.5])
-        // // .diff([-0.5, 1])
-        .brick(10, 20)
+    const cement = new SimpleBuffer(256);
+    const cementImg = cement
+        .perlin(5, 0.5)
+        .diff([1, 0.5])
+        .normalize(0, 1)
+        .getColor(randColor([100, 100, 100], 10));
+
+    const noise = new SimpleBuffer(256);
+    noise
+        .perlin(5, 0.5)
+        .normalize(0, 1);
+
+    const brick = new SimpleBuffer(256);
+    const brickImg = brick
+        .brick(5, 10)
+        .forBuf(noise, (a, b) => a * b)
         .normalize(0.75, 1)
         .getColor(randColor([160, 54, 35], 10));
-    context.drawImage(image, 100, 100);
-    context.drawImage(image, 100 + image.width, 100);
+
+    const brickMask = new SimpleBuffer(256);
+    brickMask
+        .brickMask(5, 10)
+        .gaussian(3)
+        .clamp(0.1, 0.3)
+        .normalize(0, 1);
+
+    const brickCementImg = brickMask.getColorLerp(brickImg, cementImg);
+
+    context.drawImage(brickCementImg, 100, 100);
+    context.drawImage(brickCementImg, 100 + brickCementImg.width, 100);
 }
 window.addEventListener("load", main);
