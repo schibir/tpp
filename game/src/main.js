@@ -39,12 +39,18 @@ function main() {
     canvas.width = width;
     canvas.height = height;
 
-    // const ground = new SimpleBuffer(512);
-    // const groundImg = ground
-    //     .perlin(5, 0.5)
-    //     .diff([1, 0.5])
-    //     .normalize(0.75, 1)
-    //     .getColor(randColor([224, 207, 159], 20));
+    const noise = new SimpleBuffer(256);
+    noise
+        .perlin(5, 0.5)
+        .normalize(0, 1);
+
+    const ground = new SimpleBuffer(256);
+    const groundImg = ground
+        .perlin(2, 0.5)
+        .diff([-0.5, 1])
+        .diff([1, 0.5])
+        .normalize(0.75, 1)
+        .getColor(randColor([224, 207, 159], 20));
 
     const cement = new SimpleBuffer(256);
     const cementImg = cement
@@ -52,11 +58,6 @@ function main() {
         .diff([1, 0.5])
         .normalize(0, 1)
         .getColor(randColor([100, 100, 100], 10));
-
-    const noise = new SimpleBuffer(256);
-    noise
-        .perlin(5, 0.5)
-        .normalize(0, 1);
 
     const brick = new SimpleBuffer(256);
     const brickImg = brick
@@ -75,6 +76,7 @@ function main() {
     const brickCementImg = brickMask.getColorLerp(brickImg, cementImg);
 
     context.drawImage(brickCementImg, 100, 100);
-    context.drawImage(brickCementImg, 100 + brickCementImg.width, 100);
+    context.drawImage(groundImg, 100 + groundImg.width, 100);
+    context.drawImage(groundImg, 100 + groundImg.width * 2, 100);
 }
 window.addEventListener("load", main);
