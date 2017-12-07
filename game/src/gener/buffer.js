@@ -1,5 +1,5 @@
 
-import { rand } from "../utils";
+import { rand, clamp } from "../utils";
 
 export default class SimpleBuffer {
     constructor(size) {
@@ -151,7 +151,7 @@ export default class SimpleBuffer {
     clamp(a, b) {
         const time = Date.now();
         for (let i = 0; i < this.size * this.size; i++) {
-            this.data[i] = Math.max(a, Math.min(b, this.data[i]));
+            this.data[i] = clamp(this.data[i], a, b);
         }
         console.log("Clamp = ", Date.now() - time);
         return this;

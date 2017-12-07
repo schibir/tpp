@@ -81,7 +81,7 @@ function main() {
         .perlin(5, 0.5)
         .forEach((a) => a * a)
         .diffFree()
-        .normalize(0.5, 1);
+        .normalize(0.6, 1);
 
     const beton = new SimpleBuffer(256);
     const betonImg = beton
