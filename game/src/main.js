@@ -76,8 +76,31 @@ function main() {
 
     const brickCementImg = brickMask.getColorLerp(brickImg, cementImg);
 
+    const betonNoise = new SimpleBuffer(256);
+    betonNoise
+        .perlin(5, 0.5)
+        .forEach((a) => a * a)
+        .diffFree()
+        .normalize(0.5, 1);
+
+    const beton = new SimpleBuffer(256);
+    const betonImg = beton
+        .brick(5, 5)
+        .normalize(0.7, 1)
+        .forBuf(betonNoise, (a, b) => a * b)
+        .getColor(randColor([160, 160, 160], 10));
+
+    const betonMask = new SimpleBuffer(256);
+    betonMask
+        .brickMask(5, 5)
+        .gaussian(3)
+        .clamp(0.1, 0.3)
+        .normalize(0, 1);
+
+    const betonCementImg = betonMask.getColorLerp(betonImg, cementImg);
+
     context.drawImage(brickCementImg, 100, 100);
-    context.drawImage(groundImg, 100 + groundImg.width, 100);
+    context.drawImage(betonCementImg, 100 + groundImg.width, 100);
     context.drawImage(groundImg, 100 + groundImg.width * 2, 100);
 }
 window.addEventListener("load", main);
