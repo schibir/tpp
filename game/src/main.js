@@ -133,12 +133,5 @@ function main() {
     context.drawImage(lavaImg, 100 + groundImg.width * 2, 100);
     context.drawImage(groundImg, 100 + groundImg.width * 3, 100);
     context.drawImage(grassImg, 100 + groundImg.width * 3, 100);
-
-    // test loadXML
-    const reader = new XMLHttpRequest();
-    reader.open("get", "guano.xml", true);
-    reader.onload = () => console.log(reader.responseText);
-    reader.onerror = () => console.log("fail");
-    reader.send();
 }
 window.addEventListener("load", main);
