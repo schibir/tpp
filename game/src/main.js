@@ -128,10 +128,27 @@ function main() {
 
     const grassImg = grass.getColorAlpha(grassMask, randColor([49, 107, 54]));
 
+    const boardMask = new SimpleBuffer(32);
+    boardMask
+        .forEach(() => 1)
+        .bresenham(0, 0, boardMask.size - 1, 0, 0)
+        .bresenham(0, boardMask.size - 1, boardMask.size - 1, boardMask.size - 1, 0)
+        .bresenham(0, 0, 0, boardMask.size - 1, 0)
+        .bresenham(boardMask.size - 1, 0, boardMask.size - 1, boardMask.size - 1, 0)
+        .gaussian(2);
+
+    const board = new SimpleBuffer(32);
+    const boardImg = board
+        .perlin(2, 0.5)
+        .normalize(0.7, 1)
+        .forBuf(boardMask, (a, b) => a * b)
+        .getColor(randColor([188, 198, 204]));
+
     context.drawImage(brickCementImg, 100, 100);
     context.drawImage(betonCementImg, 100 + groundImg.width, 100);
     context.drawImage(lavaImg, 100 + groundImg.width * 2, 100);
     context.drawImage(groundImg, 100 + groundImg.width * 3, 100);
     context.drawImage(grassImg, 100 + groundImg.width * 3, 100);
+    context.drawImage(boardImg, 0, 0, 32, 32, 200 + groundImg.width * 3, 200, 32, 32);
 }
 window.addEventListener("load", main);
