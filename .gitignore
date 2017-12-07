@@ -1,4 +1,5 @@
 node_modules
 *.log
 game/dist
-tileset.png
+tileset.*
+.DS_Store
