@@ -40,11 +40,13 @@ function main() {
 
     const buffer = new SimpleBuffer(512);
     const image = buffer
-        .perlin(5, 0.5)
+        .perlin(2, 0.5)
+        // .forEach((val) => 1 / (val * val + 1))
+        // .diff([1, 0.5])
+        .diffFree()
         .normalize(0, 1)
-        .clamp(0.5, 1)
-        .bresenham(0, -30, 128, 500, 0.2)
         .getColor();
     context.drawImage(image, 100, 100);
+    context.drawImage(image, 100 + image.width, 100);
 }
 window.addEventListener("load", main);

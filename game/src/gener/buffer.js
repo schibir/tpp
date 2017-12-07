@@ -210,4 +210,47 @@ export default class SimpleBuffer {
         }
         return this;
     }
+    differential(fun) {
+        for (let j = 0; j < this.size; j++) {
+            for (let i = 0; i < this.size; i++) {
+                let nx = i + 1;
+                let ny = j + 1;
+                if (nx > this.size - 1) nx = 0;
+                if (ny > this.size - 1) ny = 0;
+                const ind00 = j * this.size + i;
+                const ind01 = ny * this.size + i;
+                const ind10 = j * this.size + nx;
+                const col00 = this.data[ind00];
+                const col01 = this.data[ind01];
+                const col10 = this.data[ind10];
+                const dx = (col10 - col00) * 0.5;
+                const dy = (col01 - col00) * 0.5;
+                fun(ind00, dx, dy);
+            }
+        }
+    }
+    diff(dir) {
+        const time = Date.now();
+
+        const buf = new SimpleBuffer(this.size);
+        buf.copy(this);
+        buf.differential((ind, dx, dy) => {
+            this.data[ind] = dx * dir[0] + dy * dir[1];
+        });
+
+        console.log("Differential", Date.now() - time);
+        return this;
+    }
+    diffFree() {
+        const time = Date.now();
+
+        const buf = new SimpleBuffer(this.size);
+        buf.copy(this);
+        buf.differential((ind, dx, dy) => {
+            this.data[ind] = Math.sqrt(dx * dx + dy * dy);
+        });
+
+        console.log("Differential free", Date.now() - time);
+        return this;
+    }
 }
