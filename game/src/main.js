@@ -108,10 +108,18 @@ function main() {
     // grass
     const grass = new SimpleBuffer(128);
     grass
-        .perlin(5, 0.9)
-        .normalize(0.7, 1);
+        .perlin(5, 0.5)
+        .diffFree()
+        .normalize(0.7, 1.3);
 
-    const grassImg = grass.getColor(randColor([49, 107, 54]));
+    const grassMask = new SimpleBuffer(128);
+    grassMask
+        .perlin(20, 0.9)
+        .normalize(0, 1)
+        .clamp(0.2, 0.5)
+        .normalize(0, 1);
+
+    const grassImg = grass.getColorAlpha(grassMask, randColor([49, 107, 54]));
 
     context.drawImage(brickCementImg, 100, 100);
     context.drawImage(betonCementImg, 100 + groundImg.width, 100);

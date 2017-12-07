@@ -47,6 +47,22 @@ export default class SimpleBuffer {
         context.putImageData(imageData, 0, 0);
         return canvas;
     }
+    getColorAlpha(mask, col = [255, 255, 255]) {
+        console.assert(mask.size === this.size, "Require same size");
+        const canvas = document.createElement("canvas");
+        canvas.width = this.size;
+        canvas.height = this.size;
+        const context = canvas.getContext("2d");
+        const imageData = context.createImageData(this.size, this.size);
+        for (let i = 0; i < this.size * this.size; i++) {
+            imageData.data[4 * i + 0] = col[0] * this.data[i] | 0;
+            imageData.data[4 * i + 1] = col[1] * this.data[i] | 0;
+            imageData.data[4 * i + 2] = col[2] * this.data[i] | 0;
+            imageData.data[4 * i + 3] = mask.data[i] * 255 | 0;
+        }
+        context.putImageData(imageData, 0, 0);
+        return canvas;
+    }
     getColorLerp(img0, img1) {
         console.assert(img0.width === img1.width, "Require same image");
         console.assert(img0.height === img1.height, "Require same image");
