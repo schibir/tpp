@@ -1,20 +1,12 @@
 
 import SimpleBuffer from "./gener/buffer";
-import { randColor } from "./utils";
-
-function calcSizeMap() {
-    let mapWidth = 36;
-    let mapHeight = 20;
-    mapWidth += 1 + 1; // for board;
-    mapHeight += 1 + 1 + 1; // for board and UI
-    return { mapWidth, mapHeight };
-}
+import { randColor, getSizeMap } from "./utils";
 
 // Size of map 36x20
 function calcSizeForCanvas(width, height) {
-    const { mapWidth, mapHeight } = calcSizeMap();
+    const { mapWidth, mapHeight } = getSizeMap();
     const aspect = width / height;
-    const mapAspect = mapWidth / mapHeight;
+    const mapAspect = mapWidth / (mapHeight + 1); // +1 for UI
 
     if (mapAspect > aspect) {
         return { width, height: width / mapAspect };
