@@ -12,7 +12,3 @@ export function randColor(color, radius = 10) {
     for (let i = 0; i < 3; i++) ret[i] = clamp(rand(color[i], radius), 0, 255);
     return ret;
 }
-
-export function lerp(a, b, t) {
-    return a * (1 - t) + b * t;
-}

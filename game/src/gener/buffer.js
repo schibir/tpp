@@ -1,5 +1,15 @@
 
-import { rand, clamp, lerp } from "../utils";
+import { rand, clamp } from "../utils";
+
+function lerp(a, b, t) {
+    return a * (1 - t) + b * t;
+}
+
+function norm(x) {
+    const a = 1 / (Math.sqrt(2 * Math.PI));
+    const b = -x * x / 2;
+    return a * Math.exp(b);
+}
 
 export default class SimpleBuffer {
     constructor(size) {
@@ -191,12 +201,6 @@ export default class SimpleBuffer {
         console.assert(this.size === srcBuf.size, "Sizes of buffers must be equal");
         console.assert(this !== srcBuf, "Source buffer must does not be same with this");
 
-        const norm = (x) => {
-            const a = 1 / (Math.sqrt(2 * Math.PI));
-            const b = -x * x / 2;
-            return a * Math.exp(b);
-        };
-
         for (let j = 0; j < this.size; j++) {
             for (let i = 0; i < this.size; i++) {
                 let kol = 0.0;
@@ -352,6 +356,22 @@ export default class SimpleBuffer {
         }
 
         console.log("Brick mask generate", Date.now() - time);
+        return this;
+    }
+    normDist(rad) {
+        const time = Date.now();
+
+        for (let j = 0; j < this.size; j++) {
+            for (let i = 0; i < this.size; i++) {
+                const x = (i - this.size * 0.5) / (rad * this.size * 0.5);
+                const y = (j - this.size * 0.5) / (rad * this.size * 0.5);
+                const r = Math.sqrt(x * x + y * y);
+                const koef = norm(r * 3);
+                this.data[j * this.size + i] = koef;
+            }
+        }
+
+        console.log("Normal distribution = ", Date.now() - time);
         return this;
     }
 }

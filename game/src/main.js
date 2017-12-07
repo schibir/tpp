@@ -112,10 +112,17 @@ function main() {
         .diffFree()
         .normalize(0.7, 1.3);
 
+    const normDist = new SimpleBuffer(128);
+    normDist
+        .normDist(1)
+        .normalize(0, 3)
+        .clamp(0, 1);
+
     const grassMask = new SimpleBuffer(128);
     grassMask
         .perlin(20, 0.9)
         .normalize(0, 1)
+        .forBuf(normDist, (a, b) => a * b)
         .clamp(0.2, 0.5)
         .normalize(0, 1);
 
