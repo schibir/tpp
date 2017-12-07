@@ -56,6 +56,7 @@ function main() {
     const cementImg = cement
         .perlin(5, 0.5)
         .diff([1, 0.5])
+        .diff([-0.5, 1])
         .normalize(0, 1)
         .getColor(randColor([100, 100, 100], 10));
 
@@ -63,7 +64,7 @@ function main() {
     const brickImg = brick
         .brick(5, 10)
         .forBuf(noise, (a, b) => a * b)
-        .normalize(0.75, 1)
+        .normalize(0.7, 1)
         .getColor(randColor([160, 54, 35], 10));
 
     const brickMask = new SimpleBuffer(256);
