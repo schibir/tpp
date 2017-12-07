@@ -12,15 +12,18 @@ class Layer {
 }
 
 export default class Level {
-    constructor(levelName, width, height) {
+    constructor(levelName, canvas) {
         const { mapWidth, mapHeight } = getSizeMap();
-        const tileWidth = width / mapWidth | 0;
-        const tileHeight = height / mapHeight | 0;
+        const tileWidth = canvas.width / mapWidth | 0;
+        const tileHeight = canvas.height / mapHeight | 0;
         const tileSize = Math.min(tileWidth, tileHeight);
 
         this.textures = new GenTextures(tileSize);
         this.layerGround = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerBrick = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerGrass = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+
+        this.context = canvas.getContext("2d");
+        this.context.drawImage(this.layerGround.canvas, 0, 0);
     }
 }
