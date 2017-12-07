@@ -39,16 +39,24 @@ function main() {
     canvas.width = width;
     canvas.height = height;
 
+    // const ground = new SimpleBuffer(512);
+    // const groundImg = ground
+    //     .perlin(5, 0.5)
+    //     .diff([1, 0.5])
+    //     .normalize(0.75, 1)
+    //     .getColor(randColor([224, 207, 159], 20));
+
     const buffer = new SimpleBuffer(512);
     const image = buffer
-        .perlin(5, 0.5)
-        // .normalize(0, 50)
+        // .perlin(5, 0.5)
+        // // .normalize(0, 50)
         // .forEach((val) => 1 / (val * val + 1))
-        // .diffFree()
-        .diff([1, 0.5])
-        // .diff([-0.5, 1])
+        // // .diffFree()
+        // .diff([1, 0.5])
+        // // .diff([-0.5, 1])
+        .brick(10, 20)
         .normalize(0.75, 1)
-        .getColor(randColor([224, 207, 159], 20));
+        .getColor(randColor([160, 54, 35], 10));
     context.drawImage(image, 100, 100);
     context.drawImage(image, 100 + image.width, 100);
 }
