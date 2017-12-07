@@ -1,5 +1,6 @@
 
 import SimpleBuffer from "./gener/buffer";
+import { randColor } from "./utils";
 
 function calcSizeMap() {
     let mapWidth = 36;
@@ -40,12 +41,14 @@ function main() {
 
     const buffer = new SimpleBuffer(512);
     const image = buffer
-        .perlin(2, 0.5)
+        .perlin(5, 0.5)
+        // .normalize(0, 50)
         // .forEach((val) => 1 / (val * val + 1))
-        // .diff([1, 0.5])
-        .diffFree()
-        .normalize(0, 1)
-        .getColor();
+        // .diffFree()
+        .diff([1, 0.5])
+        // .diff([-0.5, 1])
+        .normalize(0.75, 1)
+        .getColor(randColor([224, 207, 159], 20));
     context.drawImage(image, 100, 100);
     context.drawImage(image, 100 + image.width, 100);
 }

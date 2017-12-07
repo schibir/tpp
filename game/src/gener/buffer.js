@@ -1,4 +1,6 @@
 
+import { rand } from "../utils";
+
 export default class SimpleBuffer {
     constructor(size) {
         this.data = new Float32Array(size * size);
@@ -15,16 +17,32 @@ export default class SimpleBuffer {
         if (y < 0 || y > this.size - 1) return;
         this.data[y * this.size + x | 0] = val;
     }
-    getColor() {
+    getColor(col = [255, 255, 255]) {
         const canvas = document.createElement("canvas");
         canvas.width = this.size;
         canvas.height = this.size;
         const context = canvas.getContext("2d");
         const imageData = context.createImageData(this.size, this.size);
         for (let i = 0; i < this.size * this.size; i++) {
-            imageData.data[4 * i + 0] = this.data[i] * 255 | 0;
-            imageData.data[4 * i + 1] = this.data[i] * 255 | 0;
-            imageData.data[4 * i + 2] = this.data[i] * 255 | 0;
+            imageData.data[4 * i + 0] = col[0] * this.data[i] | 0;
+            imageData.data[4 * i + 1] = col[1] * this.data[i] | 0;
+            imageData.data[4 * i + 2] = col[2] * this.data[i] | 0;
+            imageData.data[4 * i + 3] = 255;
+        }
+        context.putImageData(imageData, 0, 0);
+        return canvas;
+    }
+    getColorLerp(col0 = [0, 0, 0], col1 = [255, 255, 255]) {
+        const lerp = (a, b, t) => a * (1 - t) + b * t;
+        const canvas = document.createElement("canvas");
+        canvas.width = this.size;
+        canvas.height = this.size;
+        const context = canvas.getContext("2d");
+        const imageData = context.createImageData(this.size, this.size);
+        for (let i = 0; i < this.size * this.size; i++) {
+            imageData.data[4 * i + 0] = lerp(col0[0], col1[0], this.data[i]) | 0;
+            imageData.data[4 * i + 1] = lerp(col0[1], col1[1], this.data[i]) | 0;
+            imageData.data[4 * i + 2] = lerp(col0[2], col1[2], this.data[i]) | 0;
             imageData.data[4 * i + 3] = 255;
         }
         context.putImageData(imageData, 0, 0);
@@ -33,7 +51,7 @@ export default class SimpleBuffer {
     perlin(startFreq, koef) {
         const time = Date.now();
         const extrem = (freq, ampl) => {
-            const dispersion = (rad) => 2 * rad * Math.random() - rad;
+            const dispersion = (rad) => rand(0, rad);
 
             const ret = new Array(freq * freq);
             for (let i = 0; i < freq * freq; i++) {
