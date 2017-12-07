@@ -58,14 +58,14 @@ function main() {
         .diff([1, 0.5])
         .diff([-0.5, 1])
         .normalize(0, 1)
-        .getColor(randColor([100, 100, 100], 10));
+        .getColor(randColor([100, 100, 100]));
 
     const brick = new SimpleBuffer(256);
     const brickImg = brick
         .brick(5, 10)
         .forBuf(noise, (a, b) => a * b)
         .normalize(0.7, 1)
-        .getColor(randColor([160, 54, 35], 10));
+        .getColor(randColor([160, 54, 35]));
 
     const brickMask = new SimpleBuffer(256);
     brickMask
@@ -88,7 +88,7 @@ function main() {
         .brick(5, 5)
         .normalize(0.7, 1)
         .forBuf(betonNoise, (a, b) => a * b)
-        .getColor(randColor([160, 160, 160], 10));
+        .getColor(randColor([160, 160, 160]));
 
     const betonMask = new SimpleBuffer(256);
     betonMask
@@ -99,8 +99,20 @@ function main() {
 
     const betonCementImg = betonMask.getColorLerp(betonImg, cementImg);
 
+    const water = new SimpleBuffer(256);
+    const waterImg = water
+        .perlin(2, 0.5)
+        .normalize(0, 30)
+        .forEach(Math.cos)
+        // .forEach(Math.abs)
+        // .forEach(Math.sqrt)
+        // .diffFree()
+        .normalize(0.5, 1)
+        .getColor2(randColor([255, 0, 0]), randColor([255, 255, 0]));
+
     context.drawImage(brickCementImg, 100, 100);
     context.drawImage(betonCementImg, 100 + groundImg.width, 100);
-    context.drawImage(groundImg, 100 + groundImg.width * 2, 100);
+    context.drawImage(waterImg, 100 + groundImg.width * 2, 100);
+    context.drawImage(groundImg, 100 + groundImg.width * 3, 100);
 }
 window.addEventListener("load", main);

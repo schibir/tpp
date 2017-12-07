@@ -1,5 +1,5 @@
 
-import { rand, clamp } from "../utils";
+import { rand, clamp, lerp } from "../utils";
 
 export default class SimpleBuffer {
     constructor(size) {
@@ -32,13 +32,27 @@ export default class SimpleBuffer {
         context.putImageData(imageData, 0, 0);
         return canvas;
     }
+    getColor2(col0 = [0, 0, 0], col1 = [255, 255, 255]) {
+        const canvas = document.createElement("canvas");
+        canvas.width = this.size;
+        canvas.height = this.size;
+        const context = canvas.getContext("2d");
+        const imageData = context.createImageData(this.size, this.size);
+        for (let i = 0; i < this.size * this.size; i++) {
+            imageData.data[4 * i + 0] = clamp(lerp(col0[0], col1[0], this.data[i]), 0, 255) | 0;
+            imageData.data[4 * i + 1] = clamp(lerp(col0[1], col1[1], this.data[i]), 0, 255) | 0;
+            imageData.data[4 * i + 2] = clamp(lerp(col0[2], col1[2], this.data[i]), 0, 255) | 0;
+            imageData.data[4 * i + 3] = 255;
+        }
+        context.putImageData(imageData, 0, 0);
+        return canvas;
+    }
     getColorLerp(img0, img1) {
         console.assert(img0.width === img1.width, "Require same image");
         console.assert(img0.height === img1.height, "Require same image");
         console.assert(img0.width === this.size, "Require same image");
         console.assert(img0.height === this.size, "Require same image");
 
-        const lerp = (a, b, t) => a * (1 - t) + b * t;
         const data0 = img0.getContext("2d").getImageData(0, 0, this.size, this.size).data;
         const data1 = img1.getContext("2d").getImageData(0, 0, this.size, this.size).data;
         const canvas = document.createElement("canvas");
