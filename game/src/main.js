@@ -44,7 +44,7 @@ function main() {
         .normalize(0, 1)
         .clamp(0.5, 1)
         .bresenham(0, -30, 128, 500, 0.2)
-        .getColor(context);
-    context.putImageData(image, 100, 100);
+        .getColor();
+    context.drawImage(image, 100, 100);
 }
 window.addEventListener("load", main);

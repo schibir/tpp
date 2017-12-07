@@ -15,7 +15,11 @@ export default class SimpleBuffer {
         if (y < 0 || y > this.size - 1) return;
         this.data[y * this.size + x | 0] = val;
     }
-    getColor(context) {
+    getColor() {
+        const canvas = document.createElement("canvas");
+        canvas.width = this.size;
+        canvas.height = this.size;
+        const context = canvas.getContext("2d");
         const imageData = context.createImageData(this.size, this.size);
         for (let i = 0; i < this.size * this.size; i++) {
             imageData.data[4 * i + 0] = this.data[i] * 255 | 0;
@@ -23,7 +27,8 @@ export default class SimpleBuffer {
             imageData.data[4 * i + 2] = this.data[i] * 255 | 0;
             imageData.data[4 * i + 3] = 255;
         }
-        return imageData;
+        context.putImageData(imageData, 0, 0);
+        return canvas;
     }
     perlin(startFreq, koef) {
         const time = Date.now();
