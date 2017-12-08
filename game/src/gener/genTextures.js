@@ -144,7 +144,7 @@ export default class GenTextures {
             .normalize(0, 1)
             .clamp(0.2, 0.25)
             .normalize(0, 1)
-            .forBuf(eagleMask, (a, b) => a * 2 * Math.abs(b - 0.5))
+            .forBuf(eagleMask, (a, b) => a * (10 * (Math.abs(b - 0.5) - 0.5) + 1))
             .forBuf(eagle, (a, b) => a - b * 0.5)
             .getColor2([0, 0, 0], [190, 190, 190], eagleMask);
     }
