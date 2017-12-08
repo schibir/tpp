@@ -73,6 +73,7 @@ export default class GenTextures {
             .getColor2(randColor([255, 0, 0]), randColor([255, 255, 0]));
 
         this.lavaMask = new Array(8);
+        this.lavaLightMask = new Array(8);
         for (let i = 0; i < this.lavaMask.length; i++) {
             const lavaNoise = new SimpleBuffer(tileSize * 2);
             lavaNoise.perlin(5, 0.5);
@@ -85,6 +86,16 @@ export default class GenTextures {
                 .clamp(0.4, 0.6)
                 .normalize(0, 1)
                 .getColor([255, 255, 255], lavaMask);
+
+            const lavaLightMask = new SimpleBuffer(tileSize * 2);
+            this.lavaLightMask[i] = lavaLightMask
+                .normSquare(0.5, 0.5)
+                .normalize(0, 1.5)
+                .forBuf(lavaNoise, (a, b) => a + 0.25 * b)
+                .clamp(0.25, 0.75)
+                .gaussian(7)
+                .normalize(0, 1)
+                .getColor([255, 255, 255], lavaLightMask);
         }
 
         // grass

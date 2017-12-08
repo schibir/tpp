@@ -79,6 +79,9 @@ export class Level {
             this.layerGround.context.drawImage(this.textures.eagle, posX, posY);
         };
         const renderLava = () => {
+            const oldGround = this.layerGround.context.globalCompositeOperation;
+            this.layerGround.context.globalCompositeOperation = "multiply";
+
             this.map.forEach((tile, index) => {
                 if (tile & (WATER | BRIDGE)) {
                     const x = 1 + index % (mapWidth - 2) | 0;
@@ -88,10 +91,11 @@ export class Level {
                     const posY = (y - 1) * tileSize + tileSize / 2 | 0;
                     const ind = Math.random() * this.textures.lavaMask.length | 0;
                     this.layerLava.context.drawImage(this.textures.lavaMask[ind], posX, posY);
+                    this.layerGround.context.drawImage(this.textures.lavaLightMask[ind], posX, posY);
                 }
             });
 
-            const old = this.layerLava.context.globalCompositeOperation;
+            const oldLava = this.layerLava.context.globalCompositeOperation;
             this.layerLava.context.globalCompositeOperation = "source-atop";
 
             const { lava } = this.textures;
@@ -101,7 +105,8 @@ export class Level {
                 }
             }
 
-            this.layerLava.context.globalCompositeOperation = old;
+            this.layerGround.context.globalCompositeOperation = oldGround;
+            this.layerLava.context.globalCompositeOperation = oldLava;
         };
 
         const loadLevel = (callback) => {
