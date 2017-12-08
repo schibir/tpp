@@ -81,7 +81,7 @@ export default class GenTextures {
 
             const lavaMask = new SimpleBuffer(tileSize * 2);
             this.lavaMask[i] = lavaMask
-                .normSquare(0.5, 0.5)
+                .normSquare(0.4, 0.5)
                 .normalize(0, 1)
                 .forBuf(lavaNoise, (a, b) => a + 0.25 * b)
                 .clamp(0.4, 0.6)
@@ -90,7 +90,7 @@ export default class GenTextures {
 
             const lavaLightMask = new SimpleBuffer(tileSize * 2);
             this.lavaLightMask[i] = lavaLightMask
-                .normSquare(0.5, 0.5)
+                .normSquare(0.4, 0.5)
                 .normalize(0, 1.5)
                 .forBuf(lavaNoise, (a, b) => a + 0.25 * b)
                 .clamp(0.25, 0.75)
