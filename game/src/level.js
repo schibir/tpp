@@ -79,17 +79,24 @@ export class Level {
             const posY = (mapHeight - 3) * tileSize;
             this.layerGround.context.drawImage(this.textures.eagle, posX, posY);
         };
+        const calcTilePos = (index, minusHalf) => {
+            const x = 1 + index % (mapWidth - 2) | 0;
+            const y = 1 + index / (mapWidth - 2) | 0;
+            let posX = x * tileSize;
+            let posY = y * tileSize;
+            if (minusHalf) {
+                posX -= tileSize / 2 | 0;
+                posY -= tileSize / 2 | 0;
+            }
+            return { posX, posY };
+        };
         const renderLava = () => {
             const oldGround = this.layerGround.context.globalCompositeOperation;
             this.layerGround.context.globalCompositeOperation = "multiply";
 
             this.map.forEach((tile, index) => {
                 if (tile & (WATER | BRIDGE)) {
-                    const x = 1 + index % (mapWidth - 2) | 0;
-                    const y = 1 + index / (mapWidth - 2) | 0;
-
-                    const posX = (x - 1) * tileSize + tileSize / 2 | 0;
-                    const posY = (y - 1) * tileSize + tileSize / 2 | 0;
+                    const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.lavaMask.length | 0;
                     this.layerLava.context.drawImage(this.textures.lavaMask[ind], posX, posY);
                     this.layerGround.context.drawImage(this.textures.lavaLightMask[ind], posX, posY);
@@ -107,11 +114,7 @@ export class Level {
         const renderBrick = () => {
             this.map.forEach((tile, index) => {
                 if (tile & (BRICK | BETON)) {
-                    const x = 1 + index % (mapWidth - 2) | 0;
-                    const y = 1 + index / (mapWidth - 2) | 0;
-
-                    const posX = x * tileSize;
-                    const posY = y * tileSize;
+                    const { posX, posY } = calcTilePos(index, false);
                     const img = tile & BRICK ? this.textures.brick : this.textures.beton;
                     const srcX = posX % img.width | 0;
                     const srcY = posY % img.height | 0;
@@ -126,11 +129,7 @@ export class Level {
         const renderGrass = () => {
             this.map.forEach((tile, index) => {
                 if (tile === GRASS) {
-                    const x = 1 + index % (mapWidth - 2) | 0;
-                    const y = 1 + index / (mapWidth - 2) | 0;
-
-                    const posX = (x - 1) * tileSize + tileSize / 2 | 0;
-                    const posY = (y - 1) * tileSize + tileSize / 2 | 0;
+                    const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.lavaMask.length | 0;
                     this.layerGrass.context.drawImage(this.textures.grassMask[ind], posX, posY);
                 }
