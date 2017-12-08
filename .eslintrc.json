@@ -23,6 +23,10 @@
         "no-plusplus": "off",
         "no-console": "off",
         "no-bitwise": "off",
-        "no-loop-func": "off"
+        "no-loop-func": "off",
+        "no-multi-spaces": [
+            "error",
+            { "ignoreEOLComments": true }
+        ]
     }
 }

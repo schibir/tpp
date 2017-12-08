@@ -77,6 +77,22 @@ export class Level {
             const posY = (mapHeight - 3) * tileSize;
             this.layerGround.context.drawImage(this.textures.eagle, posX, posY);
         };
+        const renderLava = () => {
+            this.map.forEach((tile, index) => {
+                if (tile === WATER) {
+                    const x = 1 + index % (mapWidth - 2) | 0;
+                    const y = 1 + index / (mapWidth - 2) | 0;
+                    const posX = x * tileSize;
+                    const posY = y * tileSize;
+                    this.layerGround.context.drawImage(this.textures.lava,
+                        0, 0,                   // srcPos
+                        tileSize, tileSize,     // srcSize
+                        posX, posY,             // destPos
+                        tileSize, tileSize);    // destSize
+                }
+            });
+        };
+
         const loadLevel = (callback) => {
             console.log(`Loading ${levelName}.tmx level`);
             const reader = new XMLHttpRequest();
@@ -116,6 +132,11 @@ export class Level {
                         return console.assert(false, `Unknown tile type ${val}`);
                     }
                 });
+                const eaglePos = (mapWidth - 2) * (mapHeight - 3) - (mapWidth / 2 | 0);
+                this.map[eaglePos] = EAGLE;
+                this.map[eaglePos + 1] = EAGLE;
+                this.map[eaglePos + mapWidth - 2] = EAGLE;
+                this.map[eaglePos + mapWidth - 1] = EAGLE;
 
                 callback();
             };
@@ -127,6 +148,7 @@ export class Level {
             const renderTime = Date.now();
 
             renderGround();
+            renderLava();
             renderBoard();
             renderEagle();
 
