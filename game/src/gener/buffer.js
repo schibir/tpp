@@ -361,4 +361,27 @@ export default class SimpleBuffer {
         console.log("Normal distribution = ", Date.now() - time);
         return this;
     }
+    normSquare(minRad, rad) {
+        const time = Date.now();
+
+        for (let j = 0; j < this.size; j++) {
+            for (let i = 0; i < this.size; i++) {
+                const x = (i - this.size * 0.5) / (this.size * 0.5);
+                const y = (j - this.size * 0.5) / (this.size * 0.5);
+                let r = 0;
+                if (Math.abs(x) > minRad && Math.abs(y) > minRad) {
+                    const sx = Math.abs(x) - minRad;
+                    const sy = Math.abs(y) - minRad;
+                    r = Math.sqrt(sx * sx + sy * sy);
+                } else if (Math.abs(x) > minRad) r = Math.abs(x) - minRad;
+                else if (Math.abs(y) > minRad) r = Math.abs(y) - minRad;
+                r /= rad;
+                const koef = norm(r * 3);
+                this.data[j * this.size + i] = koef;
+            }
+        }
+
+        console.log("Normal distribution for square pattern = ", Date.now() - time);
+        return this;
+    }
 }

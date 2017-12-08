@@ -86,7 +86,8 @@ export class Level {
 
                     const posX = (x - 1) * tileSize + tileSize / 2 | 0;
                     const posY = (y - 1) * tileSize + tileSize / 2 | 0;
-                    this.layerLava.context.drawImage(this.textures.lavaMask, posX, posY);
+                    const ind = Math.random() * this.textures.lavaMask.length | 0;
+                    this.layerLava.context.drawImage(this.textures.lavaMask[ind], posX, posY);
                 }
             });
 
