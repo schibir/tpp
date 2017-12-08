@@ -66,7 +66,7 @@ export default class GenTextures {
         // lava
         const lava = new SimpleBuffer(tileSize * 8);
         this.lava = lava
-            .perlin(2, 0.5)
+            .perlin(10, 0.5)
             .normalize(0, 30)
             .forEach(Math.cos)
             .normalize(0.5, 1)

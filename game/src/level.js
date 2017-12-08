@@ -84,8 +84,10 @@ export class Level {
                     const y = 1 + index / (mapWidth - 2) | 0;
                     const posX = x * tileSize;
                     const posY = y * tileSize;
+                    const srcX = posX % this.textures.lava.width | 0;
+                    const srcY = posY % this.textures.lava.height | 0;
                     this.layerGround.context.drawImage(this.textures.lava,
-                        0, 0,                   // srcPos
+                        srcX, srcY,             // srcPos
                         tileSize, tileSize,     // srcSize
                         posX, posY,             // destPos
                         tileSize, tileSize);    // destSize
