@@ -45,7 +45,9 @@ export default class Level {
             }
         };
         const renderEagle = () => {
-            this.layerGround.context.drawImage(this.textures.eagle, 100, 100);
+            const posX = ((mapWidth / 2 | 0) - 1) * tileSize;
+            const posY = (mapHeight - 3) * tileSize;
+            this.layerGround.context.drawImage(this.textures.eagle, posX, posY);
         };
 
         const renderTime = Date.now();
