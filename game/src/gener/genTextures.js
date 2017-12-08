@@ -4,11 +4,6 @@ import { randColor } from "../utils";
 
 export default class GenTextures {
     constructor(tileSize) {
-        const noise = new SimpleBuffer(tileSize * 8);
-        noise
-            .perlin(5, 0.5)
-            .normalize(0, 1);
-
         // ground
         const ground = new SimpleBuffer(tileSize * 8);
         this.ground = ground
@@ -25,16 +20,22 @@ export default class GenTextures {
             .normalize(0, 1)
             .getColor(randColor([100, 100, 100]));
 
+        const noise = new SimpleBuffer(tileSize * 8);
+        noise
+            .perlin(5, 0.5)
+            .diff([1, 0.5])
+            .normalize(0, 1);
+
         const brick = new SimpleBuffer(tileSize * 8);
         const brickImg = brick
-            .brick(4, 8)
+            .brick(8, 16)
             .forBuf(noise, (a, b) => a * b)
             .normalize(0.7, 1)
-            .getColor(randColor([160, 54, 35]));
+            .getColor(randColor([200, 80, 60]));
 
         const brickMask = new SimpleBuffer(tileSize * 8);
         this.brick = brickMask
-            .brickMask(4, 8)
+            .brickMask(8, 16)
             .gaussian(3)
             .clamp(0.1, 0.3)
             .normalize(0, 1)

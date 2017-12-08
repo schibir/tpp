@@ -108,6 +108,25 @@ export class Level {
             this.layerGround.context.globalCompositeOperation = oldGround;
             this.layerLava.context.globalCompositeOperation = oldLava;
         };
+        const renderBrick = () => {
+            this.map.forEach((tile, index) => {
+                if (tile & (BRICK | BETON)) {
+                    const x = 1 + index % (mapWidth - 2) | 0;
+                    const y = 1 + index / (mapWidth - 2) | 0;
+
+                    const posX = x * tileSize;
+                    const posY = y * tileSize;
+                    const img = tile & BRICK ? this.textures.brick : this.textures.beton;
+                    const srcX = posX % img.width | 0;
+                    const srcY = posY % img.height | 0;
+                    this.layerBrick.context.drawImage(img,
+                        srcX, srcY,
+                        tileSize, tileSize,
+                        posX, posY,
+                        tileSize, tileSize);
+                }
+            });
+        };
 
         const loadLevel = (callback) => {
             console.log(`Loading ${levelName}.tmx level`);
@@ -167,10 +186,12 @@ export class Level {
             renderLava();
             renderBoard();
             renderEagle();
+            renderBrick();
 
             this.context = canvas.getContext("2d");
             this.context.drawImage(this.layerGround.canvas, 0, 0);
             this.context.drawImage(this.layerLava.canvas, 0, 0);
+            this.context.drawImage(this.layerBrick.canvas, 0, 0);
 
             console.log(`Render time = ${Date.now() - renderTime}`);
         });
