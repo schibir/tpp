@@ -72,6 +72,12 @@ export default class GenTextures {
             .normalize(0.5, 1)
             .getColor2(randColor([255, 0, 0]), randColor([255, 255, 0]));
 
+        const lavaMask = new SimpleBuffer(tileSize * 2);
+        this.lavaMask = lavaMask
+            .normDist(1)
+            .normalize(0, 1)
+            .getColor([255, 255, 255], lavaMask);
+
         // grass
         const grass = new SimpleBuffer(tileSize * 8);
         grass
@@ -85,7 +91,7 @@ export default class GenTextures {
             .normalize(0, 1)
             .clamp(0.2, 0.5)
             .normalize(0, 1)
-            .getColorAlpha(grassMask, randColor([49, 107, 54]));
+            .getColor(randColor([49, 107, 54], grassMask));
 
         // board
         const boardMask = new SimpleBuffer(tileSize);

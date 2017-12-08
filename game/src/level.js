@@ -49,6 +49,7 @@ export class Level {
 
         this.textures = new GenTextures(tileSize);
         this.layerGround = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+        this.layerLava = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerBrick = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerGrass = new Layer(mapWidth * tileSize, mapHeight * tileSize);
 
@@ -79,20 +80,27 @@ export class Level {
         };
         const renderLava = () => {
             this.map.forEach((tile, index) => {
-                if (tile === WATER) {
+                if (tile & (WATER | BRIDGE)) {
                     const x = 1 + index % (mapWidth - 2) | 0;
                     const y = 1 + index / (mapWidth - 2) | 0;
-                    const posX = x * tileSize;
-                    const posY = y * tileSize;
-                    const srcX = posX % this.textures.lava.width | 0;
-                    const srcY = posY % this.textures.lava.height | 0;
-                    this.layerGround.context.drawImage(this.textures.lava,
-                        srcX, srcY,             // srcPos
-                        tileSize, tileSize,     // srcSize
-                        posX, posY,             // destPos
-                        tileSize, tileSize);    // destSize
+
+                    const posX = (x - 1) * tileSize + tileSize / 2 | 0;
+                    const posY = (y - 1) * tileSize + tileSize / 2 | 0;
+                    this.layerLava.context.drawImage(this.textures.lavaMask, posX, posY);
                 }
             });
+
+            const old = this.layerLava.context.globalCompositeOperation;
+            this.layerLava.context.globalCompositeOperation = "source-atop";
+
+            const { lava } = this.textures;
+            for (let y = 0; y < this.layerLava.canvas.height; y += lava.height) {
+                for (let x = 0; x < this.layerLava.canvas.width; x += lava.width) {
+                    this.layerLava.context.drawImage(lava, x, y);
+                }
+            }
+
+            this.layerLava.context.globalCompositeOperation = old;
         };
 
         const loadLevel = (callback) => {
@@ -156,6 +164,7 @@ export class Level {
 
             this.context = canvas.getContext("2d");
             this.context.drawImage(this.layerGround.canvas, 0, 0);
+            this.context.drawImage(this.layerLava.canvas, 0, 0);
 
             console.log(`Render time = ${Date.now() - renderTime}`);
         });

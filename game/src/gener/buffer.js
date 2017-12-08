@@ -27,7 +27,8 @@ export default class SimpleBuffer {
         if (y < 0 || y > this.size - 1) return;
         this.data[y * this.size + x | 0] = val;
     }
-    getColor(col = [255, 255, 255]) {
+    getColor(col = [255, 255, 255], mask = null) {
+        console.assert(!mask || mask.size === this.size, "Require same size");
         const canvas = document.createElement("canvas");
         canvas.width = this.size;
         canvas.height = this.size;
@@ -37,7 +38,7 @@ export default class SimpleBuffer {
             imageData.data[4 * i + 0] = col[0] * this.data[i] | 0;
             imageData.data[4 * i + 1] = col[1] * this.data[i] | 0;
             imageData.data[4 * i + 2] = col[2] * this.data[i] | 0;
-            imageData.data[4 * i + 3] = 255;
+            imageData.data[4 * i + 3] = mask ? mask.data[i] * 255 | 0 : 255;
         }
         context.putImageData(imageData, 0, 0);
         return canvas;
@@ -54,22 +55,6 @@ export default class SimpleBuffer {
             imageData.data[4 * i + 1] = clamp(lerp(col0[1], col1[1], this.data[i]), 0, 255) | 0;
             imageData.data[4 * i + 2] = clamp(lerp(col0[2], col1[2], this.data[i]), 0, 255) | 0;
             imageData.data[4 * i + 3] = mask ? mask.data[i] * 255 | 0 : 255;
-        }
-        context.putImageData(imageData, 0, 0);
-        return canvas;
-    }
-    getColorAlpha(mask, col = [255, 255, 255]) {
-        console.assert(mask.size === this.size, "Require same size");
-        const canvas = document.createElement("canvas");
-        canvas.width = this.size;
-        canvas.height = this.size;
-        const context = canvas.getContext("2d");
-        const imageData = context.createImageData(this.size, this.size);
-        for (let i = 0; i < this.size * this.size; i++) {
-            imageData.data[4 * i + 0] = col[0] * this.data[i] | 0;
-            imageData.data[4 * i + 1] = col[1] * this.data[i] | 0;
-            imageData.data[4 * i + 2] = col[2] * this.data[i] | 0;
-            imageData.data[4 * i + 3] = mask.data[i] * 255 | 0;
         }
         context.putImageData(imageData, 0, 0);
         return canvas;
