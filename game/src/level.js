@@ -103,6 +103,20 @@ export class Level {
                     .map((val) => parseInt(val, 10));
                 console.assert(data.length === (mapWidth - 2) * (mapHeight - 2), "Wrong count tiles");
 
+                this.map = data.map((val) => {
+                    switch (val) {
+                    case 0: return EMPTY;
+                    case 1: return BRICK;
+                    case 2: return BETON;
+                    case 3: return WATER;
+                    case 4: return GRASS;
+                    case 5: return BRIDGEH;
+                    case 6: return BRIDGEV;
+                    default:
+                        return console.assert(false, `Unknown tile type ${val}`);
+                    }
+                });
+
                 callback();
             };
             reader.onerror = () => console.assert(false, `Couldn't load ${levelName}.tmx`);
