@@ -42,7 +42,8 @@ export default class SimpleBuffer {
         context.putImageData(imageData, 0, 0);
         return canvas;
     }
-    getColor2(col0 = [0, 0, 0], col1 = [255, 255, 255]) {
+    getColor2(col0 = [0, 0, 0], col1 = [255, 255, 255], mask = null) {
+        console.assert(!mask || mask.size === this.size, "Require same size");
         const canvas = document.createElement("canvas");
         canvas.width = this.size;
         canvas.height = this.size;
@@ -52,7 +53,7 @@ export default class SimpleBuffer {
             imageData.data[4 * i + 0] = clamp(lerp(col0[0], col1[0], this.data[i]), 0, 255) | 0;
             imageData.data[4 * i + 1] = clamp(lerp(col0[1], col1[1], this.data[i]), 0, 255) | 0;
             imageData.data[4 * i + 2] = clamp(lerp(col0[2], col1[2], this.data[i]), 0, 255) | 0;
-            imageData.data[4 * i + 3] = 255;
+            imageData.data[4 * i + 3] = mask ? mask.data[i] * 255 | 0 : 255;
         }
         context.putImageData(imageData, 0, 0);
         return canvas;
@@ -244,6 +245,7 @@ export default class SimpleBuffer {
         }
 
         console.log("Copy = ", Date.now() - time);
+        return this;
     }
     bresenham(x0, y0, x1, y1, val) {
         const dx = Math.abs(x1 - x0);

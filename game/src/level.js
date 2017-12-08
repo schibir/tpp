@@ -44,11 +44,15 @@ export default class Level {
                 }
             }
         };
+        const renderEagle = () => {
+            this.layerGround.context.drawImage(this.textures.eagle, 100, 100);
+        };
 
         const renderTime = Date.now();
 
         renderGround();
         renderBoard();
+        renderEagle();
 
         this.context = canvas.getContext("2d");
         this.context.drawImage(this.layerGround.canvas, 0, 0);

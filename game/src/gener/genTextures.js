@@ -103,5 +103,49 @@ export default class GenTextures {
             .normalize(0.7, 1)
             .forBuf(boardMask, (a, b) => a * b)
             .getColor(randColor([188, 198, 204]));
+
+        // Eagle
+        const eagle = new SimpleBuffer(tileSize * 2);
+        const center = eagle.size * 0.5 | 0;
+        const step = eagle.size * 0.1 | 0;
+        eagle
+            .bresenham(center, center + step, 2 * step, 2 * step, 1)
+            .bresenham(center, center + step, eagle.size - 2 * step, 2 * step, 1)
+            .bresenham(center, step, center, eagle.size - step, 1)
+            .bresenham(center - 2 * step, center + 2 * step, 3 * step, 3 * step, 1)
+            .bresenham(center + 2 * step, center + 2 * step, eagle.size - 3 * step, 3 * step, 1)
+            .bresenham(center - 2 * step, center + 2 * step, center, center, 1)
+            .bresenham(center + 2 * step, center + 2 * step, center, center, 1)
+            .gaussian(step)
+            .normalize(0, 1)
+            .bresenham(center, eagle.size - 2 * step, center - 2 * step, eagle.size - step, 1.5)
+            .bresenham(center, eagle.size - 2 * step, center + 2 * step, eagle.size - step, 1.5)
+            .bresenham(center, step, center + step * 2, step, 1)
+            .bresenham(step * 2, step * 2, step, step, 1.5)
+            .bresenham(eagle.size - step * 2, step * 2, eagle.size - step, step, 1.5)
+            .bresenham(3 * step, 3 * step, step, 3 * step, 1)
+            .bresenham(eagle.size - 3 * step, 3 * step, eagle.size - step, 3 * step, 1)
+            .bresenham(4 * step, 4 * step, step, 4 * step, 1)
+            .bresenham(eagle.size - 4 * step, 4 * step, eagle.size - step, 4 * step, 1)
+            .gaussian(step)
+            .normalize(0, 1);
+
+        const eagleMask = new SimpleBuffer(tileSize * 2);
+        eagleMask
+            .copy(eagle)
+            .clamp(0.1, 0.2)
+            .normalize(0, 1);
+
+        const eagleColor = new SimpleBuffer(tileSize * 2);
+        this.eagle = eagleColor
+            .forEach(() => 1)
+            .bresenham(center, step, center, step, 0)
+            .gaussian(step)
+            .normalize(0, 1)
+            .clamp(0.2, 0.25)
+            .normalize(0, 1)
+            .forBuf(eagleMask, (a, b) => a * 2 * Math.abs(b - 0.5))
+            .forBuf(eagle, (a, b) => a - b * 0.5)
+            .getColor2([0, 0, 0], [190, 190, 190], eagleMask);
     }
 }
