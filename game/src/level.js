@@ -54,22 +54,23 @@ export class Level {
         this.layerGrass = new Layer(mapWidth * tileSize, mapHeight * tileSize);
 
         const renderBoard = () => {
+            // render horizontal board
             for (let i = 0; i < mapWidth; i++) {
                 this.layerGround.context.drawImage(this.textures.board, i * tileSize, 0);
                 this.layerGround.context.drawImage(this.textures.board, i * tileSize,
                     (mapHeight - 1) * tileSize);
             }
+            // render vertical board
             for (let i = 1; i < mapHeight - 1; i++) {
                 this.layerGround.context.drawImage(this.textures.board, 0, i * tileSize);
                 this.layerGround.context.drawImage(this.textures.board, (mapWidth - 1) * tileSize,
                     i * tileSize);
             }
         };
-        const renderGround = () => {
-            const { ground } = this.textures;
-            for (let y = 0; y < this.layerGround.canvas.height; y += ground.height) {
-                for (let x = 0; x < this.layerGround.canvas.width; x += ground.width) {
-                    this.layerGround.context.drawImage(ground, x, y);
+        const renderTexture = (destLayer, texture) => {
+            for (let y = 0; y < destLayer.canvas.height; y += texture.height) {
+                for (let x = 0; x < destLayer.canvas.width; x += texture.width) {
+                    destLayer.context.drawImage(texture, x, y);
                 }
             }
         };
@@ -98,12 +99,7 @@ export class Level {
             const oldLava = this.layerLava.context.globalCompositeOperation;
             this.layerLava.context.globalCompositeOperation = "source-atop";
 
-            const { lava } = this.textures;
-            for (let y = 0; y < this.layerLava.canvas.height; y += lava.height) {
-                for (let x = 0; x < this.layerLava.canvas.width; x += lava.width) {
-                    this.layerLava.context.drawImage(lava, x, y);
-                }
-            }
+            renderTexture(this.layerLava, this.textures.lava);
 
             this.layerGround.context.globalCompositeOperation = oldGround;
             this.layerLava.context.globalCompositeOperation = oldLava;
@@ -126,6 +122,26 @@ export class Level {
                         tileSize, tileSize);
                 }
             });
+        };
+        const renderGrass = () => {
+            this.map.forEach((tile, index) => {
+                if (tile === GRASS) {
+                    const x = 1 + index % (mapWidth - 2) | 0;
+                    const y = 1 + index / (mapWidth - 2) | 0;
+
+                    const posX = (x - 1) * tileSize + tileSize / 2 | 0;
+                    const posY = (y - 1) * tileSize + tileSize / 2 | 0;
+                    const ind = Math.random() * this.textures.lavaMask.length | 0;
+                    this.layerGrass.context.drawImage(this.textures.grassMask[ind], posX, posY);
+                }
+            });
+
+            const oldGrass = this.layerGrass.context.globalCompositeOperation;
+            this.layerGrass.context.globalCompositeOperation = "source-atop";
+
+            renderTexture(this.layerGrass, this.textures.grass);
+
+            this.layerGrass.context.globalCompositeOperation = oldGrass;
         };
 
         const loadLevel = (callback) => {
@@ -182,16 +198,18 @@ export class Level {
         loadLevel(() => {
             const renderTime = Date.now();
 
-            renderGround();
+            renderTexture(this.layerGround, this.textures.ground);
             renderLava();
             renderBoard();
             renderEagle();
             renderBrick();
+            renderGrass();
 
             this.context = canvas.getContext("2d");
             this.context.drawImage(this.layerGround.canvas, 0, 0);
             this.context.drawImage(this.layerLava.canvas, 0, 0);
             this.context.drawImage(this.layerBrick.canvas, 0, 0);
+            this.context.drawImage(this.layerGrass.canvas, 0, 0);
 
             console.log(`Render time = ${Date.now() - renderTime}`);
         });

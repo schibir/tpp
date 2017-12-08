@@ -101,18 +101,29 @@ export default class GenTextures {
 
         // grass
         const grass = new SimpleBuffer(tileSize * 8);
-        grass
+        this.grass = grass
             .perlin(5, 0.5)
             .diffFree()
-            .normalize(0.7, 1.3);
+            .normalize(0.7, 1.3)
+            .getColor(randColor([49, 107, 54]));
 
-        const grassMask = new SimpleBuffer(tileSize * 8);
-        this.grass = grassMask
-            .perlin(20, 0.9)
-            .normalize(0, 1)
-            .clamp(0.2, 0.5)
-            .normalize(0, 1)
-            .getColor(randColor([49, 107, 54], grassMask));
+        this.grassMask = new Array(8);
+        for (let i = 0; i < this.grassMask.length; i++) {
+            const normDist = new SimpleBuffer(tileSize * 2);
+            normDist
+                .normDist(1.25)
+                .normalize(0, 3)
+                .clamp(0, 1);
+
+            const grassMask = new SimpleBuffer(tileSize * 2);
+            this.grassMask[i] = grassMask
+                .perlin(20, 0.9)
+                .normalize(0, 1)
+                .forBuf(normDist, (a, b) => a * b)
+                .clamp(0.2, 0.5)
+                .normalize(0, 1)
+                .getColor(randColor([255, 255, 255]), grassMask);
+        }
 
         // board
         const boardMask = new SimpleBuffer(tileSize);
