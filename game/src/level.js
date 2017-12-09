@@ -241,8 +241,8 @@ export class Level {
             this.context.drawImage(this.textures.corpusMedium, 450, 700);
             this.context.drawImage(this.textures.turretSimple, 450, 700);
 
-            this.context.drawImage(this.textures.trackVel, 550, 600);
-            this.context.drawImage(this.textures.corpusEasy, 550, 600);
+            this.context.drawImage(this.textures.trackBMP, 550, 600);
+            this.context.drawImage(this.textures.corpusBMP, 550, 600);
             this.context.drawImage(this.textures.turretSmall, 550, 600);
 
             this.context.drawImage(this.textures.trackBrone, 650, 600);

@@ -256,9 +256,9 @@ export default class GenTextures {
                 .gaussian(step);
             return buffer;
         };
-        const createCorpus = (size) => {
+        const createCorpus = (size, width = 0.6) => {
             const corpusMask = new SimpleBuffer(tileSize * 2);
-            smoothedSquare(corpusMask, 0.6, size)
+            smoothedSquare(corpusMask, width, size)
                 .clamp(0.5, 0.6)
                 .normalize(0, 1);
 
@@ -286,11 +286,12 @@ export default class GenTextures {
         };
 
         this.trackSimple = createTrack(0.8, false);
-        this.trackVel = createTrack(0.8, true);
+        this.trackBMP = createTrack(0.7, true);
         this.trackBrone = createTrack(1, false);
 
         this.corpusEasy = createCorpus(0.5);
         this.corpusMedium = createCorpus(0.75);
+        this.corpusBMP = createCorpus(0.7, 0.5);
         this.corpusHard = createCorpus(1);
 
         this.turretSimple = createTurret(0.35);
