@@ -232,6 +232,11 @@ export class Level {
             this.context.drawImage(this.layerBrick.canvas, 0, 0);
             this.context.drawImage(this.layerGrass.canvas, 0, 0);
 
+            // test render tank
+            this.context.drawImage(this.textures.trackSimple, 450, 600);
+            this.context.drawImage(this.textures.trackVel, 550, 600);
+            this.context.drawImage(this.textures.trackBrone, 650, 600);
+
             console.log(`Render time = ${Date.now() - renderTime}`);
         });
     }

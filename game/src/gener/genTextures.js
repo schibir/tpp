@@ -217,5 +217,36 @@ export default class GenTextures {
                 .normalize(0.5, 1)
                 .getColor(randColor([182, 155, 76]), bridgeMask);
         }
+
+        // Tanks
+        const createTrack = (size, isWheel) => {
+            const trackMask = new SimpleBuffer(tileSize * 2);
+            trackMask
+                .forEach((a, i, j) => {
+                    const x = (i / trackMask.size - 0.5) * 2;
+                    const y = (j / trackMask.size - 0.5) * 2;
+                    let factorX = Math.abs(x) < size ? 1 : 0;
+                    factorX *= Math.abs(x) < 0.5 ? 0 : 1;
+                    let factorY = Math.abs(y) < size ? 1 : 0;
+                    let wheel = j / trackMask.size * Math.PI * 3;
+                    wheel = Math.abs(Math.sin(wheel));
+                    wheel = wheel < 0.3 && isWheel ? 0 : 1;
+                    factorY *= wheel;
+                    return factorX * factorY;
+                });
+
+            const track = new SimpleBuffer(tileSize * 2);
+            return track
+                .forEach((a, i, j) => {
+                    const y = j / track.size * Math.PI * (isWheel ? 15 : 10);
+                    return Math.abs(Math.cos(y));
+                })
+                .normalize(0.5, 1)
+                .getColor([160, 160, 160], trackMask);
+        };
+
+        this.trackSimple = createTrack(0.8, false);
+        this.trackVel = createTrack(0.8, true);
+        this.trackBrone = createTrack(1, false);
     }
 }
