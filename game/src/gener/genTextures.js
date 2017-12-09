@@ -273,16 +273,31 @@ export default class GenTextures {
                 .normalize(0.5, 1)
                 .getColor([67, 114, 61], corpusMask);
         };
-        const createTurret = (size) => {
+        const createTurret = (size, barrelWidth, barrelLength) => {
+            const barrelMask = new SimpleBuffer(tileSize * 2);
+            smoothedSquare(barrelMask, barrelWidth, barrelLength)
+                .clamp(0.5, 0.6)
+                .normalize(0, 1)
+                .forEach((a, i, j) => (j < barrelMask.size * 0.5 ? a : 0));
+
+            const barrel = new SimpleBuffer(tileSize * 2);
+            const barrelImg = smoothedSquare(barrel, barrelWidth, barrelLength)
+                .normalize(-1, 1)
+                .getColor([200, 200, 200], barrelMask);
+
             const turretMask = new SimpleBuffer(tileSize * 2);
             smoothedSquare(turretMask, size, size)
                 .clamp(0.5, 0.6)
                 .normalize(0, 1);
 
             const turret = new SimpleBuffer(tileSize * 2);
-            return smoothedSquare(turret, size, size)
+            const turretImg = smoothedSquare(turret, size, size)
                 .normalize(0, 1)
                 .getColor([67, 114, 61], turretMask);
+
+            const ctx = barrelImg.getContext("2d");
+            ctx.drawImage(turretImg, 0, 0);
+            return barrelImg;
         };
 
         this.trackSimple = createTrack(0.8, false);
@@ -294,8 +309,9 @@ export default class GenTextures {
         this.corpusBMP = createCorpus(0.7, 0.5);
         this.corpusHard = createCorpus(1);
 
-        this.turretSimple = createTurret(0.35);
-        this.turretSmall = createTurret(0.2);
-        this.turretBig = createTurret(0.5);
+        this.turretSimple = createTurret(0.35, 0.1, 0.7);
+        this.turretSmall = createTurret(0.2, 0.1, 0.6);
+        this.turretLong = createTurret(0.35, 0.1, 0.95);
+        this.turretBig = createTurret(0.5, 0.2, 0.95);
     }
 }
