@@ -260,14 +260,17 @@ export default class GenTextures {
 
             const corpus = new SimpleBuffer(tileSize * 2);
             return corpus
+                .perlin(5, 0.5)
+                .clamp(0, 0.2)
+                .normalize(0.5, 1)
                 .forEach((a, i, j) => {
                     const y = (j / corpus.size - 0.5) * 2;
-                    if (Math.abs(y) < size - 0.25) return 1;
+                    if (Math.abs(y) < size - 0.25) return a;
                     const k = clamp((size - Math.abs(y)) / 0.25, 0, 1);
-                    return Math.sqrt(k);
+                    return a * Math.sqrt(k);
                 })
-                .normalize(0.25, 1)
-                .getColor([255, 255, 255], corpusMask);
+                .normalize(0.5, 1)
+                .getColor([67, 114, 61], corpusMask);
         };
 
         this.trackSimple = createTrack(0.8, false);
