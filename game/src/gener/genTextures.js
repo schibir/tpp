@@ -260,17 +260,41 @@ export default class GenTextures {
 
             const corpus = new SimpleBuffer(tileSize * 2);
             return corpus
-                .perlin(5, 0.5)
-                .clamp(0, 0.2)
-                .normalize(0.5, 1)
                 .forEach((a, i, j) => {
                     const y = (j / corpus.size - 0.5) * 2;
-                    if (Math.abs(y) < size - 0.25) return a;
+                    if (Math.abs(y) < size - 0.25) return 1;
                     const k = clamp((size - Math.abs(y)) / 0.25, 0, 1);
-                    return a * Math.sqrt(k);
+                    return Math.sqrt(k);
                 })
                 .normalize(0.5, 1)
                 .getColor([67, 114, 61], corpusMask);
+        };
+        const createTurret = (size) => {
+            const turretMask = new SimpleBuffer(tileSize * 2);
+            turretMask
+                .forEach((a, i, j) => {
+                    const x = (i / turretMask.size - 0.5) * 2;
+                    const y = (j / turretMask.size - 0.5) * 2;
+                    const factorX = Math.abs(x) < size ? 1 : 0;
+                    const factorY = Math.abs(y) < size ? 1 : 0;
+                    return factorX * factorY;
+                })
+                .gaussian(step)
+                .clamp(0.5, 0.6)
+                .normalize(0, 1);
+
+            const turret = new SimpleBuffer(tileSize * 2);
+            return turret
+                .forEach((a, i, j) => {
+                    const x = (i / turretMask.size - 0.5) * 2;
+                    const y = (j / turretMask.size - 0.5) * 2;
+                    const factorX = Math.abs(x) < size ? 1 : 0;
+                    const factorY = Math.abs(y) < size ? 1 : 0;
+                    return factorX * factorY;
+                })
+                .gaussian(step)
+                .normalize(0, 1)
+                .getColor([67, 114, 61], turretMask);
         };
 
         this.trackSimple = createTrack(0.8, false);
@@ -280,5 +304,9 @@ export default class GenTextures {
         this.corpusEasy = createCorpus(0.5);
         this.corpusMedium = createCorpus(0.75);
         this.corpusHard = createCorpus(1);
+
+        this.turretSimple = createTurret(0.35);
+        this.turretSmall = createTurret(0.2);
+        this.turretBig = createTurret(0.5);
     }
 }
