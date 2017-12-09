@@ -24,13 +24,13 @@ export default class GenTextures {
         noise
             .perlin(5, 0.5)
             .diff([1, 0.5])
-            .normalize(0, 1);
+            .normalize(0.7, 1.3);
 
         const brick = new SimpleBuffer(tileSize * 8);
         const brickImg = brick
             .brick(8, 16)
-            .forBuf(noise, (a, b) => a * b)
             .normalize(0.7, 1)
+            .forBuf(noise, (a, b) => a * b)
             .getColor(randColor([200, 80, 60]));
 
         const brickMask = new SimpleBuffer(tileSize * 8);
