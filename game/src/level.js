@@ -113,10 +113,21 @@ export class Level {
         };
         const renderBridge = () => {
             this.map.forEach((tile, index) => {
-                if (tile === BRIDGEV) {
+                if (tile & BRIDGE) {
                     const { posX, posY } = calcTilePos(index, true);
-                    const ind = Math.random() * this.textures.bridgeV.length | 0;
-                    this.layerLava.context.drawImage(this.textures.bridgeV[ind], posX, posY);
+                    const ind = Math.random() * this.textures.bridge.length | 0;
+                    if (tile === BRIDGEV) {
+                        this.layerLava.context.drawImage(this.textures.bridge[ind], posX, posY);
+                    } else {
+                        this.layerLava.context.save();
+
+                        this.layerLava.context.translate(posX, posY);
+                        this.layerLava.context.rotate(Math.PI * 0.5);
+                        this.layerLava.context.scale(1, -1);
+                        this.layerLava.context.drawImage(this.textures.bridge[ind], 0, 0);
+
+                        this.layerLava.context.restore();
+                    }
                 }
             });
         };
