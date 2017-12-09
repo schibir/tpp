@@ -253,6 +253,10 @@ export class Level {
             this.context.drawImage(this.textures.corpusPanzer, 650, 600);
             this.context.drawImage(this.textures.turretPanzer, 650, 600);
 
+            this.context.drawImage(this.textures.trackSimple, 750, 600);
+            this.context.drawImage(this.textures.corpusPlayer1, 750, 600);
+            this.context.drawImage(this.textures.turretPlayer1, 750, 600);
+
             console.log(`Render time = ${Date.now() - renderTime}`);
         });
     }

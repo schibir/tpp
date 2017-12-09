@@ -264,11 +264,13 @@ export default class GenTextures {
 
             const corpus = new SimpleBuffer(tileSize * 2);
             return corpus
+                .brick(10, 10)
+                .normalize(0.5, 1)
                 .forEach((a, i, j) => {
                     const y = (j / corpus.size - 0.5) * 2;
-                    if (Math.abs(y) < size - 0.25) return 1;
+                    if (Math.abs(y) < size - 0.25) return a;
                     const k = clamp((size - Math.abs(y)) / 0.25, 0, 1);
-                    return Math.sqrt(k);
+                    return a * Math.sqrt(k);
                 })
                 .normalize(0.5, 1)
                 .getColor(color, corpusMask);
@@ -306,21 +308,24 @@ export default class GenTextures {
 
         // TODO: use correct naming for all tanks
         const easyColor = [67, 114, 61];
-        const BMPColor = [102, 102, 102];
+        const BMPColor = [172, 172, 172];
         const longColor = [226, 210, 104];
         const strongColor = [74, 186, 169];
         const panzerColor = [211, 229, 224];
+        const player1Color = [168, 128, 69];
 
         this.corpusEasy = createCorpus(0.5, easyColor);
         this.corpusBMP = createCorpus(0.7, BMPColor, 0.5);
         this.corpusLong = createCorpus(0.5, longColor);
         this.corpusStrong = createCorpus(0.75, strongColor);
         this.corpusPanzer = createCorpus(1, panzerColor);
+        this.corpusPlayer1 = createCorpus(0.7, player1Color);
 
         this.turretEasy = createTurret(0.35, 0.1, 0.7, easyColor);
         this.turretBMP = createTurret(0.2, 0.1, 0.6, BMPColor);
         this.turretLong = createTurret(0.35, 0.1, 0.95, longColor);
         this.turretStrong = createTurret(0.35, 0.1, 0.7, strongColor);
         this.turretPanzer = createTurret(0.5, 0.2, 0.95, panzerColor);
+        this.turretPlayer1 = createTurret(0.35, 0.1, 0.7, player1Color);
     }
 }
