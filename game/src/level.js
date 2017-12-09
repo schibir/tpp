@@ -225,9 +225,10 @@ export class Level {
             renderBrick();
             renderGrass();
 
+            this.layerGround.context.drawImage(this.layerLava.canvas, 0, 0);
+
             this.context = canvas.getContext("2d");
             this.context.drawImage(this.layerGround.canvas, 0, 0);
-            this.context.drawImage(this.layerLava.canvas, 0, 0);
             this.context.drawImage(this.layerBrick.canvas, 0, 0);
             this.context.drawImage(this.layerGrass.canvas, 0, 0);
 
