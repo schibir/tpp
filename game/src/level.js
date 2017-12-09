@@ -234,8 +234,16 @@ export class Level {
 
             // test render tank
             this.context.drawImage(this.textures.trackSimple, 450, 600);
+            this.context.drawImage(this.textures.corpusEasy, 450, 600);
+
+            this.context.drawImage(this.textures.trackSimple, 450, 700);
+            this.context.drawImage(this.textures.corpusMedium, 450, 700);
+
             this.context.drawImage(this.textures.trackVel, 550, 600);
+            this.context.drawImage(this.textures.corpusEasy, 550, 600);
+
             this.context.drawImage(this.textures.trackBrone, 650, 600);
+            this.context.drawImage(this.textures.corpusHard, 650, 600);
 
             console.log(`Render time = ${Date.now() - renderTime}`);
         });
