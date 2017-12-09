@@ -96,7 +96,7 @@ export default class GenTextures {
                 .clamp(0.25, 0.75)
                 .gaussian(7)
                 .normalize(0, 1)
-                .getColor([0, 0, 0], lavaLightMask);
+                .getColor([127, 127, 127], lavaLightMask);
         }
 
         // grass
