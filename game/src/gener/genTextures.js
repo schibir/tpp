@@ -256,7 +256,7 @@ export default class GenTextures {
                 .gaussian(step);
             return buffer;
         };
-        const createCorpus = (size, width = 0.6) => {
+        const createCorpus = (size, color, width = 0.6) => {
             const corpusMask = new SimpleBuffer(tileSize * 2);
             smoothedSquare(corpusMask, width, size)
                 .clamp(0.5, 0.6)
@@ -271,9 +271,9 @@ export default class GenTextures {
                     return Math.sqrt(k);
                 })
                 .normalize(0.5, 1)
-                .getColor([67, 114, 61], corpusMask);
+                .getColor(color, corpusMask);
         };
-        const createTurret = (size, barrelWidth, barrelLength) => {
+        const createTurret = (size, barrelWidth, barrelLength, color) => {
             const barrelMask = new SimpleBuffer(tileSize * 2);
             smoothedSquare(barrelMask, barrelWidth, barrelLength)
                 .clamp(0.5, 0.6)
@@ -293,7 +293,7 @@ export default class GenTextures {
             const turret = new SimpleBuffer(tileSize * 2);
             const turretImg = smoothedSquare(turret, size, size)
                 .normalize(0, 1)
-                .getColor([67, 114, 61], turretMask);
+                .getColor(color, turretMask);
 
             const ctx = barrelImg.getContext("2d");
             ctx.drawImage(turretImg, 0, 0);
@@ -302,16 +302,25 @@ export default class GenTextures {
 
         this.trackSimple = createTrack(0.8, false);
         this.trackBMP = createTrack(0.7, true);
-        this.trackBrone = createTrack(1, false);
+        this.trackPanzer = createTrack(1, false);
 
-        this.corpusEasy = createCorpus(0.5);
-        this.corpusMedium = createCorpus(0.75);
-        this.corpusBMP = createCorpus(0.7, 0.5);
-        this.corpusHard = createCorpus(1);
+        // TODO: use correct naming for all tanks
+        const easyColor = [67, 114, 61];
+        const BMPColor = [102, 102, 102];
+        const longColor = [226, 210, 104];
+        const strongColor = [74, 186, 169];
+        const panzerColor = [211, 229, 224];
 
-        this.turretSimple = createTurret(0.35, 0.1, 0.7);
-        this.turretSmall = createTurret(0.2, 0.1, 0.6);
-        this.turretLong = createTurret(0.35, 0.1, 0.95);
-        this.turretBig = createTurret(0.5, 0.2, 0.95);
+        this.corpusEasy = createCorpus(0.5, easyColor);
+        this.corpusBMP = createCorpus(0.7, BMPColor, 0.5);
+        this.corpusLong = createCorpus(0.5, longColor);
+        this.corpusStrong = createCorpus(0.75, strongColor);
+        this.corpusPanzer = createCorpus(1, panzerColor);
+
+        this.turretEasy = createTurret(0.35, 0.1, 0.7, easyColor);
+        this.turretBMP = createTurret(0.2, 0.1, 0.6, BMPColor);
+        this.turretLong = createTurret(0.35, 0.1, 0.95, longColor);
+        this.turretStrong = createTurret(0.35, 0.1, 0.7, strongColor);
+        this.turretPanzer = createTurret(0.5, 0.2, 0.95, panzerColor);
     }
 }

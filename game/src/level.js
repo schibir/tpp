@@ -235,23 +235,23 @@ export class Level {
             // test render tank
             this.context.drawImage(this.textures.trackSimple, 450, 600);
             this.context.drawImage(this.textures.corpusEasy, 450, 600);
-            this.context.drawImage(this.textures.turretSimple, 450, 600);
+            this.context.drawImage(this.textures.turretEasy, 450, 600);
 
             this.context.drawImage(this.textures.trackSimple, 450, 700);
-            this.context.drawImage(this.textures.corpusMedium, 450, 700);
-            this.context.drawImage(this.textures.turretSimple, 450, 700);
+            this.context.drawImage(this.textures.corpusStrong, 450, 700);
+            this.context.drawImage(this.textures.turretStrong, 450, 700);
 
             this.context.drawImage(this.textures.trackSimple, 550, 700);
-            this.context.drawImage(this.textures.corpusEasy, 550, 700);
+            this.context.drawImage(this.textures.corpusLong, 550, 700);
             this.context.drawImage(this.textures.turretLong, 550, 700);
 
             this.context.drawImage(this.textures.trackBMP, 550, 600);
             this.context.drawImage(this.textures.corpusBMP, 550, 600);
-            this.context.drawImage(this.textures.turretSmall, 550, 600);
+            this.context.drawImage(this.textures.turretBMP, 550, 600);
 
-            this.context.drawImage(this.textures.trackBrone, 650, 600);
-            this.context.drawImage(this.textures.corpusHard, 650, 600);
-            this.context.drawImage(this.textures.turretBig, 650, 600);
+            this.context.drawImage(this.textures.trackPanzer, 650, 600);
+            this.context.drawImage(this.textures.corpusPanzer, 650, 600);
+            this.context.drawImage(this.textures.turretPanzer, 650, 600);
 
             console.log(`Render time = ${Date.now() - renderTime}`);
         });
