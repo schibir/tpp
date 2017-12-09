@@ -96,7 +96,7 @@ export default class GenTextures {
                 .clamp(0.25, 0.75)
                 .gaussian(7)
                 .normalize(0, 1)
-                .getColor([127, 127, 127], lavaLightMask);
+                .getColor([0, 0, 0], lavaLightMask);
         }
 
         // grass
@@ -168,13 +168,13 @@ export default class GenTextures {
             .gaussian(step)
             .normalize(0, 1);
 
-        const eagleMask = new SimpleBuffer(tileSize * 2);
+        const eagleMask = new SimpleBuffer(eagle.size);
         eagleMask
             .copy(eagle)
             .clamp(0.1, 0.2)
             .normalize(0, 1);
 
-        const eagleColor = new SimpleBuffer(tileSize * 2);
+        const eagleColor = new SimpleBuffer(eagle.size);
         this.eagle = eagleColor
             .forEach(() => 1)
             .bresenham(center, step, center, step, 0)
