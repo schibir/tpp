@@ -230,7 +230,7 @@ export default class GenTextures {
                     let factorY = Math.abs(y) < size ? 1 : 0;
                     let wheel = j / trackMask.size * Math.PI * 3;
                     wheel = Math.abs(Math.sin(wheel));
-                    wheel = wheel < 0.3 && isWheel ? 0 : 1;
+                    wheel = wheel < 0.5 && isWheel ? 0 : 1;
                     factorY *= wheel;
                     return factorX * factorY;
                 });
@@ -241,7 +241,7 @@ export default class GenTextures {
                     const y = j / track.size * Math.PI * (isWheel ? 15 : 10);
                     return Math.abs(Math.cos(y));
                 })
-                .normalize(0.5, 1)
+                .normalize(0.5, isWheel ? 0.6 : 1)
                 .getColor([160, 160, 160], trackMask);
         };
 
