@@ -1,6 +1,6 @@
 
 import SimpleBuffer from "./buffer";
-import { randColor } from "../utils";
+import { randColor, clamp } from "../utils";
 
 export default class GenTextures {
     constructor(tileSize) {
@@ -185,5 +185,36 @@ export default class GenTextures {
             .forBuf(eagleMask, (a, b) => a * (5 * (Math.abs(b - 0.5) - 0.5) + 1))
             .forBuf(eagle, (a, b) => a + b * 0.5)
             .getColor2([0, 0, 0], [128, 128, 128], eagleMask);
+
+        // Bridge
+        this.bridgeV = new Array(8);
+        for (let k = 0; k < this.bridgeV.length; k++) {
+            const bridgeMaskV = new SimpleBuffer(tileSize * 2);
+            bridgeMaskV
+                .perlin(5, 0.5)
+                .forEach((a, i, j) => {
+                    const x = (i / bridgeMaskV.size - 0.5) * 2;
+                    const y = (j / bridgeMaskV.size - 0.5) * 2;
+                    const factorX = Math.abs(x) < 0.4 ? 1 : 0;
+                    let factorY = clamp((2 - 2 * Math.abs(y)), 0, 1);
+                    factorY += 0.25 * a;
+                    factorY = (clamp(factorY, 0.3, 0.4) - 0.3) * 10;
+                    return factorX * factorY;
+                });
+
+            const bridgeV = new SimpleBuffer(tileSize * 2);
+            this.bridgeV[k] = bridgeV
+                .perlin(5, 0.5)
+                .forEach((a) => a * a)
+                .diffFree()
+                .normalize(0.5, 1.5)
+                .forEach((a, i) => {
+                    const x = i / bridgeV.size * Math.PI * 8;
+                    return a * Math.abs(Math.cos(x));
+                })
+                .forBuf(bridgeMaskV, (a, b) => a * b * b)
+                .normalize(0.5, 1)
+                .getColor(randColor([182, 155, 76]), bridgeMaskV);
+        }
     }
 }

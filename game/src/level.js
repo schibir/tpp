@@ -111,6 +111,15 @@ export class Level {
             this.layerGround.context.globalCompositeOperation = oldGround;
             this.layerLava.context.globalCompositeOperation = oldLava;
         };
+        const renderBridge = () => {
+            this.map.forEach((tile, index) => {
+                if (tile === BRIDGEV) {
+                    const { posX, posY } = calcTilePos(index, true);
+                    const ind = Math.random() * this.textures.bridgeV.length | 0;
+                    this.layerLava.context.drawImage(this.textures.bridgeV[ind], posX, posY);
+                }
+            });
+        };
         const renderBrick = () => {
             this.map.forEach((tile, index) => {
                 if (tile & (BRICK | BETON)) {
@@ -199,6 +208,7 @@ export class Level {
 
             renderTexture(this.layerGround, this.textures.ground);
             renderLava();
+            renderBridge();
             renderBoard();
             renderEagle();
             renderBrick();
