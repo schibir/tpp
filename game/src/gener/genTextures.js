@@ -244,17 +244,21 @@ export default class GenTextures {
                 .normalize(0.5, isWheel ? 0.6 : 1)
                 .getColor([160, 160, 160], trackMask);
         };
-        const createCorpus = (size) => {
-            const corpusMask = new SimpleBuffer(tileSize * 2);
-            corpusMask
+        const smoothedSquare = (buffer, width, height) => {
+            buffer
                 .forEach((a, i, j) => {
-                    const x = (i / corpusMask.size - 0.5) * 2;
-                    const y = (j / corpusMask.size - 0.5) * 2;
-                    const factorX = Math.abs(x) < 0.6 ? 1 : 0;
-                    const factorY = Math.abs(y) < size ? 1 : 0;
+                    const x = (i / buffer.size - 0.5) * 2;
+                    const y = (j / buffer.size - 0.5) * 2;
+                    const factorX = Math.abs(x) < width ? 1 : 0;
+                    const factorY = Math.abs(y) < height ? 1 : 0;
                     return factorX * factorY;
                 })
-                .gaussian(step)
+                .gaussian(step);
+            return buffer;
+        };
+        const createCorpus = (size) => {
+            const corpusMask = new SimpleBuffer(tileSize * 2);
+            smoothedSquare(corpusMask, 0.6, size)
                 .clamp(0.5, 0.6)
                 .normalize(0, 1);
 
@@ -271,28 +275,12 @@ export default class GenTextures {
         };
         const createTurret = (size) => {
             const turretMask = new SimpleBuffer(tileSize * 2);
-            turretMask
-                .forEach((a, i, j) => {
-                    const x = (i / turretMask.size - 0.5) * 2;
-                    const y = (j / turretMask.size - 0.5) * 2;
-                    const factorX = Math.abs(x) < size ? 1 : 0;
-                    const factorY = Math.abs(y) < size ? 1 : 0;
-                    return factorX * factorY;
-                })
-                .gaussian(step)
+            smoothedSquare(turretMask, size, size)
                 .clamp(0.5, 0.6)
                 .normalize(0, 1);
 
             const turret = new SimpleBuffer(tileSize * 2);
-            return turret
-                .forEach((a, i, j) => {
-                    const x = (i / turretMask.size - 0.5) * 2;
-                    const y = (j / turretMask.size - 0.5) * 2;
-                    const factorX = Math.abs(x) < size ? 1 : 0;
-                    const factorY = Math.abs(y) < size ? 1 : 0;
-                    return factorX * factorY;
-                })
-                .gaussian(step)
+            return smoothedSquare(turret, size, size)
                 .normalize(0, 1)
                 .getColor([67, 114, 61], turretMask);
         };
