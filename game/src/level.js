@@ -33,9 +33,9 @@ export default class Level {
 
         this.textures = new GenTextures(tileSize);
         this.layerGround = new Layer(mapWidth * tileSize, mapHeight * tileSize);
-        this.layerLava = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerBrick = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerGrass = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+        const layerLava = new Layer(mapWidth * tileSize, mapHeight * tileSize);
 
         const renderBoard = () => {
             // render horizontal board
@@ -77,18 +77,18 @@ export default class Level {
                 if (tile & (WATER | BRIDGE)) {
                     const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.lavaMask.length | 0;
-                    this.layerLava.context.drawImage(this.textures.lavaMask[ind], posX, posY);
+                    layerLava.context.drawImage(this.textures.lavaMask[ind], posX, posY);
                     this.layerGround.context.drawImage(this.textures.lavaLightMask[ind], posX, posY);
                 }
             });
 
-            const oldLava = this.layerLava.context.globalCompositeOperation;
-            this.layerLava.context.globalCompositeOperation = "source-atop";
+            const oldLava = layerLava.context.globalCompositeOperation;
+            layerLava.context.globalCompositeOperation = "source-atop";
 
-            renderTexture(this.layerLava, this.textures.lava);
+            renderTexture(layerLava, this.textures.lava);
 
             this.layerGround.context.globalCompositeOperation = oldGround;
-            this.layerLava.context.globalCompositeOperation = oldLava;
+            layerLava.context.globalCompositeOperation = oldLava;
         };
         const renderBridge = () => {
             this.map.forEach((tile, index) => {
@@ -96,16 +96,16 @@ export default class Level {
                     const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.bridge.length | 0;
                     if (tile === BRIDGEV) {
-                        this.layerLava.context.drawImage(this.textures.bridge[ind], posX, posY);
+                        layerLava.context.drawImage(this.textures.bridge[ind], posX, posY);
                     } else {
-                        this.layerLava.context.save();
+                        layerLava.context.save();
 
-                        this.layerLava.context.translate(posX, posY);
-                        this.layerLava.context.rotate(Math.PI * 0.5);
-                        this.layerLava.context.scale(1, -1);
-                        this.layerLava.context.drawImage(this.textures.bridge[ind], 0, 0);
+                        layerLava.context.translate(posX, posY);
+                        layerLava.context.rotate(Math.PI * 0.5);
+                        layerLava.context.scale(1, -1);
+                        layerLava.context.drawImage(this.textures.bridge[ind], 0, 0);
 
-                        this.layerLava.context.restore();
+                        layerLava.context.restore();
                     }
                 }
             });
@@ -198,7 +198,7 @@ export default class Level {
             renderBrick();
             renderGrass();
 
-            this.layerGround.context.drawImage(this.layerLava.canvas, 0, 0);
+            this.layerGround.context.drawImage(layerLava.canvas, 0, 0);
 
             this.context = canvas.getContext("2d");
             this.context.drawImage(this.layerGround.canvas, 0, 0);
