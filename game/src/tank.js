@@ -17,5 +17,10 @@ export class Tank extends Entity {
         super(cx, cy);
         this.type = type;
     }
+    draw(level) {
+        level.drawEntity(this, level.textures.tankTrack[this.type]);
+        level.drawEntity(this, level.textures.tankBodies[this.type]);
+        level.drawEntity(this, level.textures.tankTurret[this.type]);
+    }
 }
 

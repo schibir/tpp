@@ -306,10 +306,6 @@ export default class GenTextures {
             return barrelImg;
         };
 
-        this.trackSimple = createTrack(0.8, false);
-        this.trackBMP = createTrack(0.7, true);
-        this.trackPanzer = createTrack(1, false);
-
         /* eslint-disable key-spacing */
         const colors = {
             [TANK.TANK1]:   [200, 150, 100],
@@ -339,6 +335,20 @@ export default class GenTextures {
             [TANK.CANNON]:  createTurret(0.35, 0.1, 0.95, colors[TANK.CANNON]),
             [TANK.STRONG]:  createTurret(0.35, 0.1, 0.7, colors[TANK.STRONG]),
             [TANK.PANZER]:  createTurret(0.5, 0.2, 0.95, colors[TANK.PANZER]),
+        };
+
+        const trackSimple = createTrack(0.8, false);
+        const trackBMP = createTrack(0.7, true);
+        const trackPanzer = createTrack(1, false);
+
+        this.tankTrack = {
+            [TANK.TANK1]:   trackSimple,
+            [TANK.TANK2]:   trackSimple,
+            [TANK.SIMPLE]:  trackSimple,
+            [TANK.BMP]:     trackBMP,
+            [TANK.CANNON]:  trackSimple,
+            [TANK.STRONG]:  trackSimple,
+            [TANK.PANZER]:  trackPanzer,
         };
         /* eslint-enable key-spacing */
     }
