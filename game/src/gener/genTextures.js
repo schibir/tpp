@@ -269,8 +269,8 @@ export default class GenTextures {
                 .normalize(0, 1)
                 .forEach((a, i, j) => {
                     const y = (j / corpus.size - 0.5) * 2;
-                    if (Math.abs(y) < size - 0.25) return a;
-                    const k = clamp((size - Math.abs(y)) / 0.25, 0, 1);
+                    if (Math.abs(y) < size * 0.5) return a;
+                    const k = clamp((size - Math.abs(y)) / (size * 0.5), 0, 1);
                     return a * Math.sqrt(k);
                 })
                 .normalize(0.25, 1)
