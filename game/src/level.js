@@ -31,6 +31,7 @@ export default class Level {
         const tileSize = Math.min(tileWidth, tileHeight);
         console.log(`tileWidth = ${tileWidth}, tileHeight = ${tileHeight}`);
 
+        this.tileSize = tileSize;
         this.textures = new GenTextures(tileSize);
         this.layerGround = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerBrick = new Layer(mapWidth * tileSize, mapHeight * tileSize);
@@ -232,5 +233,26 @@ export default class Level {
 
             console.log(`Render time = ${Date.now() - renderTime}`);
         });
+    }
+    ready() {
+        return !!this.context;
+    }
+    clearEntity(entity) {
+        const x = entity.cx + 1 - entity.size * 0.5;    // for board
+        const y = entity.cy + 1 - entity.size * 0.5;    // for board
+        this.context.drawImage(this.layerGround.canvas,
+            x * this.tileSize, y * this.tileSize,                       // src pos
+            entity.size * this.tileSize, entity.size * this.tileSize,   // src size
+            x * this.tileSize, y * this.tileSize,                       // dest pos
+            entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
+    }
+    drawEntity(entity, texture) {
+        const x = entity.cx + 1 - entity.size * 0.5;    // for board
+        const y = entity.cy + 1 - entity.size * 0.5;    // for board
+        this.context.drawImage(texture,
+            0, 0,                                                       // src pos
+            entity.size * this.tileSize, entity.size * this.tileSize,   // src size
+            x * this.tileSize, y * this.tileSize,                       // dest pos
+            entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
     }
 }
