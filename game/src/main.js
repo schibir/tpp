@@ -81,5 +81,15 @@ function main() {
         animationFrame(update);
     };
     update();
+
+    // events
+    document.onkeydown = (event) => {
+        game.onkeydown(event.keyCode);
+        event.preventDefault();
+    };
+    document.onkeyup = (event) => {
+        game.onkeyup(event.keyCode);
+        event.preventDefault();
+    };
 }
 window.addEventListener("load", main);
