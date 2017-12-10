@@ -265,14 +265,15 @@ export default class GenTextures {
             const corpus = new SimpleBuffer(tileSize * 2);
             return corpus
                 .brick(10, 10)
-                .normalize(0.5, 1)
+                .diff([1, 0.5])
+                .normalize(0, 1)
                 .forEach((a, i, j) => {
                     const y = (j / corpus.size - 0.5) * 2;
                     if (Math.abs(y) < size - 0.25) return a;
                     const k = clamp((size - Math.abs(y)) / 0.25, 0, 1);
                     return a * Math.sqrt(k);
                 })
-                .normalize(0.5, 1)
+                .normalize(0.25, 1)
                 .getColor(color, corpusMask);
         };
         const createTurret = (size, barrelWidth, barrelLength, color) => {
@@ -284,7 +285,8 @@ export default class GenTextures {
 
             const barrel = new SimpleBuffer(tileSize * 2);
             const barrelImg = smoothedSquare(barrel, barrelWidth, barrelLength)
-                .normalize(-1, 1)
+                .diff([1, 0.5])
+                .normalize(0.25, 1)
                 .getColor([200, 200, 200], barrelMask);
 
             const turretMask = new SimpleBuffer(tileSize * 2);
@@ -294,7 +296,8 @@ export default class GenTextures {
 
             const turret = new SimpleBuffer(tileSize * 2);
             const turretImg = smoothedSquare(turret, size, size)
-                .normalize(0, 1)
+                .diff([1, 0.5])
+                .normalize(0.25, 1)
                 .getColor(color, turretMask);
 
             const ctx = barrelImg.getContext("2d");
@@ -307,12 +310,12 @@ export default class GenTextures {
         this.trackPanzer = createTrack(1, false);
 
         // TODO: use correct naming for all tanks
-        const easyColor = [67, 114, 61];
-        const BMPColor = [172, 172, 172];
-        const longColor = [226, 210, 104];
-        const strongColor = [74, 186, 169];
+        const easyColor = [120, 200, 120];
+        const BMPColor = [200, 200, 200];
+        const longColor = [250, 230, 134];
+        const strongColor = [100, 200, 180];
         const panzerColor = [211, 229, 224];
-        const player1Color = [168, 128, 69];
+        const player1Color = [200, 150, 100];
 
         this.corpusEasy = createCorpus(0.5, easyColor);
         this.corpusBMP = createCorpus(0.7, BMPColor, 0.5);
