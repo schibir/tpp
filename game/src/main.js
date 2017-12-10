@@ -1,6 +1,6 @@
 
 import { getSizeMap } from "./utils";
-import Level from "./level";
+import Game from "./game";
 
 // Size of map 36x20
 function calcSizeForCanvas(width, height) {
@@ -30,6 +30,6 @@ function main() {
     canvas.width = width;
     canvas.height = height;
 
-    const level = new Level("levels/test", canvas);
+    const game = new Game(-2, canvas);
 }
 window.addEventListener("load", main);
