@@ -4,16 +4,18 @@ import Level from "./level";
 import Entity from "./entity";
 import { Tank, TANK } from "./tank";
 
-const KEY_UP_1 = 38;
-const KEY_RIGHT_1 = 39;
-const KEY_DOWN_1 = 40;
-const KEY_LEFT_1 = 37;
-const KEY_SHOOT_1 = " ".charCodeAt(0);
-const KEY_UP_2 = "W".charCodeAt(0);
-const KEY_RIGHT_2 = "D".charCodeAt(0);
-const KEY_DOWN_2 = "S".charCodeAt(0);
-const KEY_LEFT_2 = "A".charCodeAt(0);
-const KEY_SHOOT_2 = " ".charCodeAt(0);  // temporary key code
+const KEY_PLAYER_ONE = {
+    38: 0,  // UP
+    39: 1,  // RIGHT
+    40: 2,  // DOWN
+    37: 3,  // LEFT
+};
+const KEY_PLAYER_TWO = {
+    ["W".charCodeAt(0)]: 0,  // UP
+    ["D".charCodeAt(0)]: 1,  // RIGHT
+    ["S".charCodeAt(0)]: 2,  // DOWN
+    ["A".charCodeAt(0)]: 3,  // LEFT
+};
 
 export default class Game {
     constructor(difficulty, canvas, mode = "level") {
@@ -58,34 +60,13 @@ export default class Game {
     }
     pause() {}
     onkeydown(key) {
-        if (key === KEY_UP_1) {
-            this.tempTank.angle = 0;
-            this.tempTank.vel = 0.05;
-        }
-        if (key === KEY_RIGHT_1) {
-            this.tempTank.angle = 1;
-            this.tempTank.vel = 0.05;
-        }
-        if (key === KEY_DOWN_1) {
-            this.tempTank.angle = 2;
-            this.tempTank.vel = 0.05;
-        }
-        if (key === KEY_LEFT_1) {
-            this.tempTank.angle = 3;
+        if (key in KEY_PLAYER_ONE) {
+            this.tempTank.angle = KEY_PLAYER_ONE[key];
             this.tempTank.vel = 0.05;
         }
     }
     onkeyup(key) {
-        if (key === KEY_UP_1) {
-            this.tempTank.vel = 0;
-        }
-        if (key === KEY_RIGHT_1) {
-            this.tempTank.vel = 0;
-        }
-        if (key === KEY_DOWN_1) {
-            this.tempTank.vel = 0;
-        }
-        if (key === KEY_LEFT_1) {
+        if (key in KEY_PLAYER_ONE) {
             this.tempTank.vel = 0;
         }
     }
