@@ -1,6 +1,6 @@
 
 import { getSizeMap } from "./utils";
-import { Level } from "./level";
+import Level from "./level";
 
 // Size of map 36x20
 function calcSizeForCanvas(width, height) {

@@ -2,15 +2,6 @@
 import { getSizeMap } from "./utils";
 import GenTextures from "./gener/genTextures";
 
-class Layer {
-    constructor(width, height) {
-        this.canvas = document.createElement("canvas");
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.context = this.canvas.getContext("2d");
-    }
-}
-
 const EMPTY = 0;
 const HALF = 1;
 const BRICK = 2;
@@ -24,22 +15,16 @@ const EAGLE = 128;
 const MOVE_MASK = HALF | BRICK | BETON | WATER | EAGLE;
 const BULLET_MASK = HALF | BRICK | BETON | EAGLE;
 
-export const TileType = {
-    EMPTY,
-    HALF,
-    BRICK,
-    BETON,
-    WATER,
-    GRASS,
-    BRIDGEH,
-    BRIDGEV,
-    BRIDGE,
-    EAGLE,
-    MOVE_MASK,
-    BULLET_MASK,
-};
+class Layer {
+    constructor(width, height) {
+        this.canvas = document.createElement("canvas");
+        this.canvas.width = width;
+        this.canvas.height = height;
+        this.context = this.canvas.getContext("2d");
+    }
+}
 
-export class Level {
+export default class Level {
     constructor(levelName, canvas) {
         const { mapWidth, mapHeight } = getSizeMap();
         const tileWidth = canvas.width / mapWidth | 0;
