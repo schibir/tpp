@@ -4,18 +4,17 @@ import Level from "./level";
 import Entity from "./entity";
 import { Tank, TANK } from "./tank";
 
-const keyToAngle1 = {
+const keyToAngle = [{
     38: 0,  // UP
     39: 1,  // RIGHT
     40: 2,  // DOWN
     37: 3,  // LEFT
-};
-const keyToAngle2 = {
+}, {
     ["W".charCodeAt(0)]: 0,  // UP
     ["D".charCodeAt(0)]: 1,  // RIGHT
     ["S".charCodeAt(0)]: 2,  // DOWN
     ["A".charCodeAt(0)]: 3,  // LEFT
-};
+}];
 const maskToAngle = {
     1: 0,
     2: 1,
@@ -37,11 +36,10 @@ export default class Game {
         this.lastTime = Date.now();
 
         // player settings
-        this.keyMask1 = 0;
-        this.keyMask2 = 0;
+        this.keyMask = [0, 0];
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
-        this.tempTank = new Tank(10, 10, TANK.TANK1);
+        this.players = [new Tank(10, 10, TANK.TANK1), new Tank(15, 10, TANK.TANK2)];
 
         this.newLevel();
     }
@@ -60,31 +58,40 @@ export default class Game {
 
         // clearing
         this.level.clearEntity(this.eagle);
-        this.tempTank.clear(this.level);
+        this.players[0].clear(this.level);
+        this.players[1].clear(this.level);
 
         // updating
-        this.tempTank.update(delta);
+        this.players[0].update(delta);
+        this.players[1].update(delta);
 
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
-        this.tempTank.draw(this.level);
+        this.players[0].draw(this.level);
+        this.players[1].draw(this.level);
     }
     pause() {}
     onkeydown(key) {
-        if (key in keyToAngle1) {
-            this.tempTank.angle = keyToAngle1[key];
-            this.tempTank.vel = 0.05;
-            this.keyMask1 |= 1 << keyToAngle1[key];
+        for (let p = 0; p < 2; p++) {
+            if (this.players[p] && key in keyToAngle[p]) {
+                this.players[p].angle = keyToAngle[p][key];
+                this.players[p].vel = 0.05;
+                this.keyMask[p] |= 1 << keyToAngle[p][key];
+            }
         }
     }
     onkeyup(key) {
-        if (key in keyToAngle1) {
-            this.keyMask1 ^= 1 << keyToAngle1[key];
-        }
-        if (this.keyMask1 in maskToAngle) {
-            this.tempTank.angle = maskToAngle[this.keyMask1];
-        } else {
-            this.tempTank.vel = 0;
+        for (let p = 0; p < 2; p++) {
+            if (this.players[p]) {
+                if (key in keyToAngle[p]) {
+                    this.keyMask[p] ^= 1 << keyToAngle[p][key];
+                }
+                if (this.keyMask[p] in maskToAngle) {
+                    this.players[p].angle = maskToAngle[this.keyMask[p]];
+                } else {
+                    this.players[p].vel = 0;
+                }
+            }
         }
     }
 }
