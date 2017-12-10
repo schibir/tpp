@@ -309,7 +309,7 @@ export default class GenTextures {
         /* eslint-disable key-spacing */
         const colors = {
             [TANK.TANK1]:   [200, 150, 100],
-            [TANK.TANK2]:   [200, 150, 100],
+            [TANK.TANK2]:   [100, 150, 200],
             [TANK.SIMPLE]:  [120, 200, 120],
             [TANK.BMP]:     [200, 200, 200],
             [TANK.CANNON]:  [250, 230, 134],
