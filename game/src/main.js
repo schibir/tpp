@@ -50,12 +50,31 @@ function main() {
     const { width, height } = calcSizeForCanvas(window.innerWidth - 40, window.innerHeight - 40);
     canvas.width = width;
     canvas.height = height;
-    const requestAnimationFrame = getRequestAnimationFrame();
+    const context = canvas.getContext("2d");
 
+    const requestAnimationFrame = getRequestAnimationFrame();
     const game = new Game(-2, canvas, "test");
+
+    // calc FPS
+    let lastTime = 0;
+    let frameCount = 0;
+    const calcFPS = () => {
+        const now = Date.now();
+        frameCount++;
+        if (now > lastTime) {
+            context.font = "20px Verdana, Geneva, Arial, Helvetica, sans-serif";
+            context.fillStyle = "white";
+            context.fillText(`FPS = ${frameCount}`, 0, canvas.height - 10);
+
+            lastTime = now + 1000;
+            frameCount = 0;
+        }
+    };
 
     const update = () => {
         game.update();
+        calcFPS();
+
         requestAnimationFrame(update);
     };
     update();
