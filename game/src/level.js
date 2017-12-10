@@ -11,9 +11,8 @@ const GRASS = 16;
 const BRIDGEH = 32;
 const BRIDGEV = 64;
 const BRIDGE = BRIDGEH | BRIDGEV;
-const EAGLE = 128;
-const MOVE_MASK = HALF | BRICK | BETON | WATER | EAGLE;
-const BULLET_MASK = HALF | BRICK | BETON | EAGLE;
+const MOVE_MASK = HALF | BRICK | BETON | WATER;
+const BULLET_MASK = HALF | BRICK | BETON;
 
 class Layer {
     constructor(width, height) {
@@ -58,11 +57,6 @@ export default class Level {
                     destLayer.context.drawImage(texture, x, y);
                 }
             }
-        };
-        const renderEagle = () => {
-            const posX = ((mapWidth / 2 | 0) - 1) * tileSize;
-            const posY = (mapHeight - 3) * tileSize;
-            this.layerGround.context.drawImage(this.textures.eagle, posX, posY);
         };
         const calcTilePos = (index, minusHalf) => {
             const x = 1 + index % (mapWidth - 2) | 0;
@@ -187,11 +181,6 @@ export default class Level {
                         return console.assert(false, `Unknown tile type ${val}`);
                     }
                 });
-                const eaglePos = (mapWidth - 2) * (mapHeight - 3) - (mapWidth / 2 | 0);
-                this.map[eaglePos] = EAGLE;
-                this.map[eaglePos + 1] = EAGLE;
-                this.map[eaglePos + mapWidth - 2] = EAGLE;
-                this.map[eaglePos + mapWidth - 1] = EAGLE;
 
                 callback();
             };
@@ -206,7 +195,6 @@ export default class Level {
             renderLava();
             renderBridge();
             renderBoard();
-            renderEagle();
             renderBrick();
             renderGrass();
 

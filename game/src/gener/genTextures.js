@@ -215,7 +215,7 @@ export default class GenTextures {
                 })
                 .forBuf(bridgeMask, (a, b) => a * b * b)
                 .normalize(0.5, 1)
-                .getColor(randColor([182, 155, 76]), bridgeMask);
+                .getColor([182, 155, 76], bridgeMask);
         }
 
         // Tanks
