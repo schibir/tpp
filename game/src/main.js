@@ -30,6 +30,6 @@ function main() {
     canvas.width = width;
     canvas.height = height;
 
-    const game = new Game(-2, canvas);
+    const game = new Game(-2, canvas, "test");
 }
 window.addEventListener("load", main);
