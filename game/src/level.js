@@ -218,12 +218,22 @@ export default class Level {
             entity.size * this.tileSize, entity.size * this.tileSize,   // src size
             x * this.tileSize, y * this.tileSize,                       // dest pos
             entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
+        this.context.drawImage(this.layerGrass.canvas,
+            x * this.tileSize, y * this.tileSize,                       // src pos
+            entity.size * this.tileSize, entity.size * this.tileSize,   // src size
+            x * this.tileSize, y * this.tileSize,                       // dest pos
+            entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
     }
     drawEntity(entity, texture) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
         this.context.drawImage(texture,
             0, 0,                                                       // src pos
+            entity.size * this.tileSize, entity.size * this.tileSize,   // src size
+            x * this.tileSize, y * this.tileSize,                       // dest pos
+            entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
+        this.context.drawImage(this.layerGrass.canvas,
+            x * this.tileSize, y * this.tileSize,                       // src pos
             entity.size * this.tileSize, entity.size * this.tileSize,   // src size
             x * this.tileSize, y * this.tileSize,                       // dest pos
             entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
