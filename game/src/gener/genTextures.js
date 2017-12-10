@@ -1,6 +1,7 @@
 
 import SimpleBuffer from "./buffer";
 import { randColor, clamp } from "../utils";
+import { TANK } from "../tank";
 
 export default class GenTextures {
     constructor(tileSize) {
@@ -309,26 +310,36 @@ export default class GenTextures {
         this.trackBMP = createTrack(0.7, true);
         this.trackPanzer = createTrack(1, false);
 
-        // TODO: use correct naming for all tanks
-        const easyColor = [120, 200, 120];
-        const BMPColor = [200, 200, 200];
-        const longColor = [250, 230, 134];
-        const strongColor = [100, 200, 180];
-        const panzerColor = [211, 229, 224];
-        const player1Color = [200, 150, 100];
+        /* eslint-disable key-spacing */
+        const colors = {
+            [TANK.TANK1]:   [200, 150, 100],
+            [TANK.TANK2]:   [200, 150, 100],
+            [TANK.SIMPLE]:  [120, 200, 120],
+            [TANK.BMP]:     [200, 200, 200],
+            [TANK.CANNON]:  [250, 230, 134],
+            [TANK.STRONG]:  [100, 200, 180],
+            [TANK.PANZER]:  [211, 229, 224],
+        };
 
-        this.corpusEasy = createCorpus(0.5, easyColor);
-        this.corpusBMP = createCorpus(0.7, BMPColor, 0.5);
-        this.corpusLong = createCorpus(0.5, longColor);
-        this.corpusStrong = createCorpus(0.75, strongColor);
-        this.corpusPanzer = createCorpus(1, panzerColor);
-        this.corpusPlayer1 = createCorpus(0.7, player1Color);
+        this.tankBodies = {
+            [TANK.TANK1]:   createCorpus(0.7, colors[TANK.TANK1]),
+            [TANK.TANK2]:   createCorpus(0.7, colors[TANK.TANK2]),
+            [TANK.SIMPLE]:  createCorpus(0.5, colors[TANK.SIMPLE]),
+            [TANK.BMP]:     createCorpus(0.7, colors[TANK.BMP], 0.5),
+            [TANK.CANNON]:  createCorpus(0.5, colors[TANK.CANNON]),
+            [TANK.STRONG]:  createCorpus(0.75, colors[TANK.STRONG]),
+            [TANK.PANZER]:  createCorpus(1, colors[TANK.PANZER]),
+        };
 
-        this.turretEasy = createTurret(0.35, 0.1, 0.7, easyColor);
-        this.turretBMP = createTurret(0.2, 0.1, 0.6, BMPColor);
-        this.turretLong = createTurret(0.35, 0.1, 0.95, longColor);
-        this.turretStrong = createTurret(0.35, 0.1, 0.7, strongColor);
-        this.turretPanzer = createTurret(0.5, 0.2, 0.95, panzerColor);
-        this.turretPlayer1 = createTurret(0.35, 0.1, 0.7, player1Color);
+        this.tankTurret = {
+            [TANK.TANK1]:   createTurret(0.35, 0.1, 0.7, colors[TANK.TANK1]),
+            [TANK.TANK2]:   createTurret(0.35, 0.1, 0.7, colors[TANK.TANK2]),
+            [TANK.SIMPLE]:  createTurret(0.35, 0.1, 0.7, colors[TANK.SIMPLE]),
+            [TANK.BMP]:     createTurret(0.2, 0.1, 0.6, colors[TANK.BMP]),
+            [TANK.CANNON]:  createTurret(0.35, 0.1, 0.95, colors[TANK.CANNON]),
+            [TANK.STRONG]:  createTurret(0.35, 0.1, 0.7, colors[TANK.STRONG]),
+            [TANK.PANZER]:  createTurret(0.5, 0.2, 0.95, colors[TANK.PANZER]),
+        };
+        /* eslint-enable key-spacing */
     }
 }
