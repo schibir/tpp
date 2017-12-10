@@ -1,10 +1,10 @@
 
-import { getSizeMap } from "./utils";
+import { getMapSize, getTileSize } from "./utils";
 import Game from "./game";
 
 // Size of map 36x20
 function calcSizeForCanvas(width, height) {
-    const { mapWidth, mapHeight } = getSizeMap();
+    const { mapWidth, mapHeight } = getMapSize();
     const aspect = width / height;
     const mapAspect = mapWidth / (mapHeight + 1); // +1 for UI
 
@@ -50,9 +50,7 @@ function main() {
     const { width, height } = calcSizeForCanvas(window.innerWidth - 40, window.innerHeight - 40);
     canvas.width = width;
     canvas.height = height;
-    const context = canvas.getContext("2d");
 
-    const requestAnimationFrame = getRequestAnimationFrame();
     const game = new Game(-2, canvas, "test");
 
     // calc FPS
@@ -62,7 +60,11 @@ function main() {
         const now = Date.now();
         frameCount++;
         if (now > lastTime) {
-            context.font = "20px Verdana, Geneva, Arial, Helvetica, sans-serif";
+            const tileSize = getTileSize(canvas.width, canvas.height);
+            const context = canvas.getContext("2d");
+            context.fillStyle = "black";
+            context.fillRect(0, canvas.height - tileSize, 100, tileSize);
+            context.font = `${tileSize * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
             context.fillStyle = "white";
             context.fillText(`FPS = ${frameCount}`, 0, canvas.height - 10);
 
@@ -71,11 +73,12 @@ function main() {
         }
     };
 
+    const animationFrame = getRequestAnimationFrame();
     const update = () => {
         game.update();
         calcFPS();
 
-        requestAnimationFrame(update);
+        animationFrame(update);
     };
     update();
 }

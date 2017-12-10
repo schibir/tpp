@@ -1,5 +1,5 @@
 
-import { getSizeMap } from "./utils";
+import { getMapSize } from "./utils";
 import Level from "./level";
 import Entity from "./entity";
 
@@ -10,7 +10,7 @@ export default class Game {
         this.canvas = canvas;
         this.mode = mode;
 
-        const { mapWidth, mapHeight } = getSizeMap();
+        const { mapWidth, mapHeight } = getMapSize();
         this.mapWidth = mapWidth - 2;       // board
         this.mapHeight = mapHeight - 2;     // board
 

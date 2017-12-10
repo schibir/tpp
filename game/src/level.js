@@ -1,5 +1,5 @@
 
-import { getSizeMap } from "./utils";
+import { getMapSize, getTileSize } from "./utils";
 import GenTextures from "./gener/genTextures";
 
 const EMPTY = 0;
@@ -25,11 +25,9 @@ class Layer {
 
 export default class Level {
     constructor(levelName, canvas) {
-        const { mapWidth, mapHeight } = getSizeMap();
-        const tileWidth = canvas.width / mapWidth | 0;
-        const tileHeight = canvas.height / mapHeight | 0;
-        const tileSize = Math.min(tileWidth, tileHeight);
-        console.log(`tileWidth = ${tileWidth}, tileHeight = ${tileHeight}`);
+        const { mapWidth, mapHeight } = getMapSize();
+        const tileSize = getTileSize(canvas.width, canvas.height);
+        console.log(`tileSize = ${tileSize}`);
 
         this.tileSize = tileSize;
         this.textures = new GenTextures(tileSize);

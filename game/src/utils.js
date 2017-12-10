@@ -13,10 +13,17 @@ export function randColor(color, radius = 10) {
     return ret;
 }
 
-export function getSizeMap() {
+export function getMapSize() {
     let mapWidth = 36;
     let mapHeight = 20;
     mapWidth += 1 + 1; // for board;
     mapHeight += 1 + 1; // for board;
     return { mapWidth, mapHeight };
+}
+
+export function getTileSize(width, height) {
+    const { mapWidth, mapHeight } = getMapSize();
+    const tileWidth = width / mapWidth | 0;
+    const tileHeight = height / mapHeight | 0;
+    return Math.min(tileWidth, tileHeight);
 }
