@@ -29,6 +29,8 @@ export default class Level {
         const tileSize = getTileSize(canvas.width, canvas.height);
         console.log(`tileSize = ${tileSize}`);
 
+        this.drawTilesPerFrame = 0;
+
         this.tileSize = tileSize;
         this.textures = new GenTextures(tileSize);
         this.layerGround = new Layer(mapWidth * tileSize, mapHeight * tileSize);
@@ -210,6 +212,15 @@ export default class Level {
     ready() {
         return !!this.context;
     }
+    update() {
+        this.context.fillStyle = "black";
+        this.context.fillRect(2 * this.tileSize, this.context.canvas.height - this.tileSize, 2 * this.tileSize, this.tileSize);
+        this.context.font = `${this.tileSize * 0.35 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
+        this.context.fillStyle = "white";
+        this.context.fillText(`Tiles = ${this.drawTilesPerFrame}`, 2 * this.tileSize, this.context.canvas.height - 10);
+
+        this.drawTilesPerFrame = 0;
+    }
     clearEntity(entity) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
@@ -223,6 +234,8 @@ export default class Level {
             entity.size * this.tileSize, entity.size * this.tileSize,   // src size
             x * this.tileSize, y * this.tileSize,                       // dest pos
             entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
+
+        this.drawTilesPerFrame += entity.size * entity.size * 2;
     }
     drawEntity(entity, texture) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
@@ -237,5 +250,7 @@ export default class Level {
             entity.size * this.tileSize, entity.size * this.tileSize,   // src size
             x * this.tileSize, y * this.tileSize,                       // dest pos
             entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
+
+        this.drawTilesPerFrame += entity.size * entity.size * 2;
     }
 }

@@ -56,6 +56,8 @@ export default class Game {
         const delta = time - this.lastTime;
         this.lastTime = time;
 
+        this.level.update();
+
         // clearing
         this.level.clearEntity(this.eagle);
         this.players[0].clear(this.level);
