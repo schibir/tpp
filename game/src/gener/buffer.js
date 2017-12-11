@@ -15,7 +15,6 @@ export default class SimpleBuffer {
     constructor(size) {
         this.data = new Float32Array(size * size);
         this.size = size;
-        this.data.fill(0.0);
     }
     getData(x, y) {
         if (x < 0 || x > this.size - 1) return 0.0;
