@@ -63,7 +63,7 @@ function main() {
             const tileSize = getTileSize(canvas.width, canvas.height);
             const context = canvas.getContext("2d");
             context.fillStyle = "black";
-            context.fillRect(0, canvas.height - tileSize, 100, tileSize);
+            context.fillRect(0, canvas.height - tileSize, 3 * tileSize, tileSize);
             context.font = `${tileSize * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
             context.fillStyle = "white";
             context.fillText(`FPS = ${frameCount}`, 0, canvas.height - 10);

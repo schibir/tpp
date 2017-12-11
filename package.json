@@ -12,7 +12,7 @@
     "build": "npm run lint && npm run babel && npm run browserify && npm run min",
     "build-dev": "npm run babel && npm run browserify-dev",
     "publish": "git checkout gh-pages && git merge master && git push && git checkout master",
-    "start": "http-server -p 8000 -c-1"
+    "start": "http-server -p 80 -c-1"
   },
   "repository": {
     "type": "git",
