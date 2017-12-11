@@ -246,36 +246,26 @@ export default class Level {
 
         this.drawTilesPerFrame = 0;
     }
+    drawTile(texture, srcx, srcy, dstx, dsty, size) {
+        this.context.drawImage(texture,
+            srcx * this.tileSize, srcy * this.tileSize,
+            size * this.tileSize, size * this.tileSize,
+            dstx * this.tileSize, dsty * this.tileSize,
+            size * this.tileSize, size * this.tileSize);
+        this.drawTilesPerFrame += size * size;
+    }
     clearEntity(entity) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
-        this.context.drawImage(this.layer.canvas,
-            x * this.tileSize, y * this.tileSize,                       // src pos
-            entity.size * this.tileSize, entity.size * this.tileSize,   // src size
-            x * this.tileSize, y * this.tileSize,                       // dest pos
-            entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
-
-        this.drawTilesPerFrame += entity.size * entity.size;
+        this.drawTile(this.layer.canvas, x, y, x, y, entity.size);
     }
     drawEntity(entity, texture) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
-        this.context.drawImage(texture,
-            0, 0,                                                       // src pos
-            entity.size * this.tileSize, entity.size * this.tileSize,   // src size
-            x * this.tileSize, y * this.tileSize,                       // dest pos
-            entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
-
-        this.drawTilesPerFrame += entity.size * entity.size;
+        this.drawTile(texture, 0, 0, x, y, entity.size);
 
         if (this.collidePoint(entity.cx, entity.cy, PREGRASS | GRASS)) {
-            this.context.drawImage(this.layerGrass.canvas,
-                x * this.tileSize, y * this.tileSize,                       // src pos
-                entity.size * this.tileSize, entity.size * this.tileSize,   // src size
-                x * this.tileSize, y * this.tileSize,                       // dest pos
-                entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
-
-            this.drawTilesPerFrame += entity.size * entity.size;
+            this.drawTile(this.layerGrass.canvas, x, y, x, y, entity.size);
         }
     }
     collidePoint(x, y, mask) {
