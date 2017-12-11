@@ -33,22 +33,24 @@ export default class Level {
 
         this.tileSize = tileSize;
         this.textures = new GenTextures(tileSize);
-        this.layerGround = new Layer(mapWidth * tileSize, mapHeight * tileSize);
-        this.layerBrick = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+        this.layer = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerGrass = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+
+        const layerGround = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+        const layerBrick = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         const layerLava = new Layer(mapWidth * tileSize, mapHeight * tileSize);
 
         const renderBoard = () => {
             // render horizontal board
             for (let i = 0; i < mapWidth; i++) {
-                this.layerGround.context.drawImage(this.textures.board, i * tileSize, 0);
-                this.layerGround.context.drawImage(this.textures.board, i * tileSize,
+                layerGround.context.drawImage(this.textures.board, i * tileSize, 0);
+                layerGround.context.drawImage(this.textures.board, i * tileSize,
                     (mapHeight - 1) * tileSize);
             }
             // render vertical board
             for (let i = 1; i < mapHeight - 1; i++) {
-                this.layerGround.context.drawImage(this.textures.board, 0, i * tileSize);
-                this.layerGround.context.drawImage(this.textures.board, (mapWidth - 1) * tileSize,
+                layerGround.context.drawImage(this.textures.board, 0, i * tileSize);
+                layerGround.context.drawImage(this.textures.board, (mapWidth - 1) * tileSize,
                     i * tileSize);
             }
         };
@@ -71,15 +73,15 @@ export default class Level {
             return { posX, posY };
         };
         const renderLava = () => {
-            const oldGround = this.layerGround.context.globalCompositeOperation;
-            this.layerGround.context.globalCompositeOperation = "multiply";
+            const oldGround = layerGround.context.globalCompositeOperation;
+            layerGround.context.globalCompositeOperation = "multiply";
 
             this.map.forEach((tile, index) => {
                 if (tile & (WATER | BRIDGE)) {
                     const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.lavaMask.length | 0;
                     layerLava.context.drawImage(this.textures.lavaMask[ind], posX, posY);
-                    this.layerGround.context.drawImage(this.textures.lavaLightMask[ind], posX, posY);
+                    layerGround.context.drawImage(this.textures.lavaLightMask[ind], posX, posY);
                 }
             });
 
@@ -88,7 +90,7 @@ export default class Level {
 
             renderTexture(layerLava, this.textures.lava);
 
-            this.layerGround.context.globalCompositeOperation = oldGround;
+            layerGround.context.globalCompositeOperation = oldGround;
             layerLava.context.globalCompositeOperation = oldLava;
         };
         const renderBridge = () => {
@@ -118,7 +120,7 @@ export default class Level {
                     const img = tile & BRICK ? this.textures.brick : this.textures.beton;
                     const srcX = posX % img.width | 0;
                     const srcY = posY % img.height | 0;
-                    this.layerBrick.context.drawImage(img,
+                    layerBrick.context.drawImage(img,
                         srcX, srcY,
                         tileSize, tileSize,
                         posX, posY,
@@ -192,19 +194,20 @@ export default class Level {
         loadLevel(() => {
             const renderTime = Date.now();
 
-            renderTexture(this.layerGround, this.textures.ground);
+            renderTexture(layerGround, this.textures.ground);
             renderLava();
             renderBridge();
             renderBoard();
             renderBrick();
             renderGrass();
 
-            this.layerGround.context.drawImage(layerLava.canvas, 0, 0);
+            this.layer.context.drawImage(layerGround.canvas, 0, 0);
+            this.layer.context.drawImage(layerLava.canvas, 0, 0);
+            this.layer.context.drawImage(layerBrick.canvas, 0, 0);
+            this.layer.context.drawImage(this.layerGrass.canvas, 0, 0);
 
             this.context = canvas.getContext("2d");
-            this.context.drawImage(this.layerGround.canvas, 0, 0);
-            this.context.drawImage(this.layerBrick.canvas, 0, 0);
-            this.context.drawImage(this.layerGrass.canvas, 0, 0);
+            this.context.drawImage(this.layer.canvas, 0, 0);
 
             console.log(`Render time = ${Date.now() - renderTime}`);
         });
@@ -224,18 +227,13 @@ export default class Level {
     clearEntity(entity) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
-        this.context.drawImage(this.layerGround.canvas,
-            x * this.tileSize, y * this.tileSize,                       // src pos
-            entity.size * this.tileSize, entity.size * this.tileSize,   // src size
-            x * this.tileSize, y * this.tileSize,                       // dest pos
-            entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
-        this.context.drawImage(this.layerGrass.canvas,
+        this.context.drawImage(this.layer.canvas,
             x * this.tileSize, y * this.tileSize,                       // src pos
             entity.size * this.tileSize, entity.size * this.tileSize,   // src size
             x * this.tileSize, y * this.tileSize,                       // dest pos
             entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
 
-        this.drawTilesPerFrame += entity.size * entity.size * 2;
+        this.drawTilesPerFrame += entity.size * entity.size;
     }
     drawEntity(entity, texture) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
