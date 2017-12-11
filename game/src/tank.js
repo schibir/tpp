@@ -26,6 +26,8 @@ export class Tank extends Entity {
         level.drawEntity(this, level.textures.tankTurret[this.type]);
     }
     update(delta) {
+        if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
+        if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
         this.move(delta);
     }
 }
