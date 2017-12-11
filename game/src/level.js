@@ -32,6 +32,8 @@ export default class Level {
         this.drawTilesPerFrame = 0;
 
         this.tileSize = tileSize;
+        this.mapWidth = mapWidth - 2;       // board
+        this.mapHeight = mapHeight - 2;     // board
         this.textures = new GenTextures(tileSize);
         this.layer = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerGrass = new Layer(mapWidth * tileSize, mapHeight * tileSize);
@@ -156,8 +158,8 @@ export default class Level {
                 console.assert(xml.children.length === 1, "Count children must bu 1");
 
                 const attrs = xml.children[0].attributes;
-                console.assert(attrs.width.textContent === `${mapWidth - 2}`);
-                console.assert(attrs.height.textContent === `${mapHeight - 2}`);
+                console.assert(attrs.width.textContent === `${this.mapWidth}`);
+                console.assert(attrs.height.textContent === `${this.mapHeight}`);
                 console.assert(xml.children[0].children.length === 2, "Should be tileset and layer");
                 console.assert(xml.children[0].children[1].children.length === 1, "Should be data");
 
@@ -169,7 +171,7 @@ export default class Level {
                     .split(/\s|,/)
                     .filter((val) => val !== "")
                     .map((val) => parseInt(val, 10));
-                console.assert(data.length === (mapWidth - 2) * (mapHeight - 2), "Wrong count tiles");
+                console.assert(data.length === this.mapWidth * this.mapHeight, "Wrong count tiles");
 
                 this.map = data.map((val) => {
                     switch (val) {
@@ -250,5 +252,30 @@ export default class Level {
             entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
 
         this.drawTilesPerFrame += entity.size * entity.size * 2;
+    }
+    collideEntity(entity, mask) {
+        const collidePoint = (x, y) => {
+            const ix = x | 0;
+            const iy = y | 0;
+            const ind = iy * this.mapWidth + ix;
+            return !!(this.map[ind] & mask);
+        };
+
+        const sina = [-1, 0, 1, 0];
+        const cosa = [0, 1, 0, -1];
+        const x = entity.cx + cosa[entity.angle] * 0.5 * entity.size;
+        const y = entity.cy + sina[entity.angle] * 0.5 * entity.size;
+        const x1 = x + cosa[entity.angle + 1 & 3] * 0.5;
+        const y1 = y + sina[entity.angle + 1 & 3] * 0.5;
+        const x2 = x - cosa[entity.angle + 1 & 3] * 0.5;
+        const y2 = y - sina[entity.angle + 1 & 3] * 0.5;
+
+        return collidePoint(x1, y1) || collidePoint(x2, y2);
+    }
+    collideTank(entity) {
+        return this.collideEntity(entity, MOVE_MASK);
+    }
+    collideBullet(entity) {
+        return this.collideEntity(entity, BULLET_MASK);
     }
 }

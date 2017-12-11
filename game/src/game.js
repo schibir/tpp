@@ -64,8 +64,8 @@ export default class Game {
         this.players[1].clear(this.level);
 
         // updating
-        this.players[0].update(delta);
-        this.players[1].update(delta);
+        this.players[0].update(this.level, delta);
+        this.players[1].update(this.level, delta);
 
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
