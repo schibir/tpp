@@ -8,8 +8,9 @@ const BRICK = 2;
 const BETON = 4;
 const WATER = 8;
 const GRASS = 16;
-const BRIDGEH = 32;
-const BRIDGEV = 64;
+const PREGRASS = 32;    // adjacent for grass
+const BRIDGEH = 64;
+const BRIDGEV = 128;
 const BRIDGE = BRIDGEH | BRIDGEV;
 const MOVE_MASK = HALF | BRICK | BETON | WATER;
 const BULLET_MASK = HALF | BRICK | BETON;
@@ -100,7 +101,7 @@ export default class Level {
                 if (tile & BRIDGE) {
                     const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.bridge.length | 0;
-                    if (tile === BRIDGEV) {
+                    if (tile & BRIDGEV) {
                         layerLava.context.drawImage(this.textures.bridge[ind], posX, posY);
                     } else {
                         layerLava.context.save();
@@ -132,7 +133,7 @@ export default class Level {
         };
         const renderGrass = () => {
             this.map.forEach((tile, index) => {
-                if (tile === GRASS) {
+                if (tile & GRASS) {
                     const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.lavaMask.length | 0;
                     this.layerGrass.context.drawImage(this.textures.grassMask[ind], posX, posY);
@@ -186,6 +187,25 @@ export default class Level {
                         return console.assert(false, `Unknown tile type ${val}`);
                     }
                 });
+
+                // calc adjacent grass
+                for (let j = 0; j < this.mapHeight; j++) {
+                    for (let i = 0; i < this.mapWidth; i++) {
+                        for (let dy = -1; dy < 2; dy++) {
+                            for (let dx = -1; dx < 2; dx++) {
+                                const x = i + dx | 0;
+                                const y = j + dy | 0;
+                                if (x >= 0 &&
+                                    x < this.mapWidth &&
+                                    y >= 0 &&
+                                    y < this.mapHeight &&
+                                    this.map[y * this.mapWidth + x] & GRASS) {
+                                    this.map[j * this.mapWidth + i] |= PREGRASS;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 callback();
             };
@@ -245,22 +265,26 @@ export default class Level {
             entity.size * this.tileSize, entity.size * this.tileSize,   // src size
             x * this.tileSize, y * this.tileSize,                       // dest pos
             entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
-        this.context.drawImage(this.layerGrass.canvas,
-            x * this.tileSize, y * this.tileSize,                       // src pos
-            entity.size * this.tileSize, entity.size * this.tileSize,   // src size
-            x * this.tileSize, y * this.tileSize,                       // dest pos
-            entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
 
-        this.drawTilesPerFrame += entity.size * entity.size * 2;
+        this.drawTilesPerFrame += entity.size * entity.size;
+
+        if (this.collidePoint(entity.cx, entity.cy, PREGRASS | GRASS)) {
+            this.context.drawImage(this.layerGrass.canvas,
+                x * this.tileSize, y * this.tileSize,                       // src pos
+                entity.size * this.tileSize, entity.size * this.tileSize,   // src size
+                x * this.tileSize, y * this.tileSize,                       // dest pos
+                entity.size * this.tileSize, entity.size * this.tileSize);  // dest size
+
+            this.drawTilesPerFrame += entity.size * entity.size;
+        }
+    }
+    collidePoint(x, y, mask) {
+        const ix = x | 0;
+        const iy = y | 0;
+        const ind = iy * this.mapWidth + ix;
+        return !!(this.map[ind] & mask);
     }
     collideEntity(entity, mask) {
-        const collidePoint = (x, y) => {
-            const ix = x | 0;
-            const iy = y | 0;
-            const ind = iy * this.mapWidth + ix;
-            return !!(this.map[ind] & mask);
-        };
-
         const sina = [-1, 0, 1, 0];
         const cosa = [0, 1, 0, -1];
         const x = entity.cx + cosa[entity.angle] * 0.5 * entity.size;
@@ -270,7 +294,7 @@ export default class Level {
         const x2 = x - cosa[entity.angle + 1 & 3] * 0.5;
         const y2 = y - sina[entity.angle + 1 & 3] * 0.5;
 
-        return collidePoint(x1, y1) || collidePoint(x2, y2);
+        return this.collidePoint(x1, y1, mask) || this.collidePoint(x2, y2, mask);
     }
     collideTank(entity) {
         return this.collideEntity(entity, MOVE_MASK);
