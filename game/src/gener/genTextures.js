@@ -305,7 +305,7 @@ export default class GenTextures {
             const barrelImg = smoothedSquare(barrel, barrelWidth, barrelLength)
                 .diff([1, 0.5])
                 .normalize(0.25, 1)
-                .getColor([200, 200, 200], barrelMask);
+                .getColor([220, 220, 220], barrelMask);
 
             const turretMask = new SimpleBuffer(tileSize * 2);
             smoothedSquare(turretMask, size, size)
@@ -353,9 +353,9 @@ export default class GenTextures {
             [TANK.TANK2]:   createTurret(0.35, 0.1, 0.7, colors[TANK.TANK2]),
             [TANK.SIMPLE]:  createTurret(0.35, 0.1, 0.7, colors[TANK.SIMPLE]),
             [TANK.BMP]:     createTurret(0.2, 0.1, 0.6, colors[TANK.BMP]),
-            [TANK.CANNON]:  createTurret(0.35, 0.1, 0.95, colors[TANK.CANNON]),
+            [TANK.CANNON]:  createTurret(0.35, 0.1, 1, colors[TANK.CANNON]),
             [TANK.STRONG]:  createTurret(0.35, 0.1, 0.7, colors[TANK.STRONG]),
-            [TANK.PANZER]:  createTurret(0.5, 0.2, 0.95, colors[TANK.PANZER]),
+            [TANK.PANZER]:  createTurret(0.5, 0.2, 1, colors[TANK.PANZER]),
         };
 
         const countAnimTrack = 8;
