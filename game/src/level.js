@@ -259,14 +259,21 @@ export default class Level {
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
         this.drawTile(this.layer.canvas, x, y, x, y, entity.size);
     }
-    drawEntity(entity, texture) {
+    drawEntityBegin(entity, texture) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
         this.drawTile(texture, 0, 0, x, y, entity.size);
-
+    }
+    drawEntityEnd(entity) {
         if (this.collidePoint(entity.cx, entity.cy, PREGRASS | GRASS)) {
+            const x = entity.cx + 1 - entity.size * 0.5;    // for board
+            const y = entity.cy + 1 - entity.size * 0.5;    // for board
             this.drawTile(this.layerGrass.canvas, x, y, x, y, entity.size);
         }
+    }
+    drawEntity(entity, texture) {
+        this.drawEntityBegin(entity, texture);
+        this.drawEntityEnd(entity);
     }
     collidePoint(x, y, mask) {
         if (mask & MOVE_MASK && (

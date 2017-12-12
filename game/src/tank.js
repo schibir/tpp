@@ -21,9 +21,10 @@ export class Tank extends Entity {
         level.clearEntity(this);
     }
     draw(level) {
-        level.drawEntity(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
-        level.drawEntity(this, level.textures.tankBodies[this.angle][this.type]);
-        level.drawEntity(this, level.textures.tankTurret[this.angle][this.type]);
+        level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
+        level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
+        level.drawEntityBegin(this, level.textures.tankTurret[this.angle][this.type]);
+        level.drawEntityEnd(this);
     }
     update(level, delta) {
         if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
