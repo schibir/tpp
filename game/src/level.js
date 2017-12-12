@@ -269,6 +269,10 @@ export default class Level {
         }
     }
     collidePoint(x, y, mask) {
+        if (mask & MOVE_MASK && (
+            x < 0 || x >= this.mapWidth ||
+            y < 0 || y >= this.mapHeight)) return true;
+
         const ix = x | 0;
         const iy = y | 0;
         const ind = iy * this.mapWidth + ix;
