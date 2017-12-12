@@ -394,5 +394,20 @@ export default class GenTextures {
                 }
             }
         }
+
+        // bullet
+        const bulletMask = new SimpleBuffer(tileSize);
+        bulletMask
+            .normDist(1)
+            .clamp(0.1, 0.2)
+            .normalize(0, 1);
+
+        const bullet = new SimpleBuffer(tileSize);
+        this.bullet = bullet
+            .normDist(1)
+            .diff([1, 0.5])
+            .normalize(0.5, 1)
+            .forBuf(bulletMask, (a, b) => a * (5 * (Math.abs(b - 0.5) - 0.5) + 1))
+            .getColor([255, 255, 255], bulletMask);
     }
 }
