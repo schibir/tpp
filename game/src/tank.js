@@ -15,12 +15,13 @@ export class Tank extends Entity {
     constructor(cx, cy, type) {
         super(cx, cy);
         this.type = type;
+        this.animTrack = 0;
     }
     clear(level) {
         level.clearEntity(this);
     }
     draw(level) {
-        level.drawEntity(this, level.textures.tankTrack[this.angle][this.type]);
+        level.drawEntity(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
         level.drawEntity(this, level.textures.tankBodies[this.angle][this.type]);
         level.drawEntity(this, level.textures.tankTurret[this.angle][this.type]);
     }
@@ -30,6 +31,8 @@ export class Tank extends Entity {
 
         this.move(delta);
         if (level.collideTank(this)) this.move(-delta);
+        else if (this.vel > 0.01) {
+            this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
+        }
     }
 }
-

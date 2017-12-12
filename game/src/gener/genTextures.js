@@ -237,7 +237,7 @@ export default class GenTextures {
         };
 
         // Tanks
-        const createTrack = (size, isWheel) => {
+        const createTrack = (size, offset, isWheel) => {
             const trackMask = new SimpleBuffer(tileSize * 2);
             trackMask
                 .forEach((a, i, j) => {
@@ -256,11 +256,11 @@ export default class GenTextures {
             const track = new SimpleBuffer(tileSize * 2);
             return track
                 .forEach((a, i, j) => {
-                    const y = j / track.size * Math.PI * (isWheel ? 15 : 10);
-                    return Math.abs(Math.cos(y));
+                    const y = j / track.size * Math.PI * 10;
+                    return Math.abs(Math.cos(y + Math.PI * offset));
                 })
-                .normalize(0.5, isWheel ? 0.6 : 1)
-                .getColor([160, 160, 160], trackMask);
+                .normalize(0.5, 1)
+                .getColor(isWheel ? [80, 80, 80] : [160, 160, 160], trackMask);
         };
         const smoothedSquare = (buffer, width, height) => {
             buffer
@@ -358,9 +358,16 @@ export default class GenTextures {
             [TANK.PANZER]:  createTurret(0.5, 0.2, 0.95, colors[TANK.PANZER]),
         };
 
-        const trackSimple = createTrack(0.8, false);
-        const trackBMP = createTrack(0.8, true);
-        const trackPanzer = createTrack(1, false);
+        const countAnimTrack = 8;
+        const trackSimple = new Array(countAnimTrack);
+        const trackBMP = new Array(countAnimTrack);
+        const trackPanzer = new Array(countAnimTrack);
+
+        for (let offset = 0; offset < countAnimTrack; offset++) {
+            trackSimple[offset] = createTrack(0.8, offset / countAnimTrack, false);
+            trackBMP[offset] = createTrack(0.8, offset / countAnimTrack, true);
+            trackPanzer[offset] = createTrack(1, offset / countAnimTrack, false);
+        }
 
         this.tankTrack[0] = {
             [TANK.TANK1]:   trackSimple,
@@ -381,7 +388,10 @@ export default class GenTextures {
             for (let prop in TANK) {
                 this.tankBodies[i][TANK[prop]] = rotateImage(this.tankBodies[0][TANK[prop]], i);
                 this.tankTurret[i][TANK[prop]] = rotateImage(this.tankTurret[0][TANK[prop]], i);
-                this.tankTrack[i][TANK[prop]] = rotateImage(this.tankTrack[0][TANK[prop]], i);
+                this.tankTrack[i][TANK[prop]] = new Array(countAnimTrack);
+                for (let offset = 0; offset < countAnimTrack; offset++) {
+                    this.tankTrack[i][TANK[prop]][offset] = rotateImage(this.tankTrack[0][TANK[prop]][offset], i);
+                }
             }
         }
     }
