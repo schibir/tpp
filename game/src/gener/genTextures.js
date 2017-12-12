@@ -359,7 +359,7 @@ export default class GenTextures {
         };
 
         const trackSimple = createTrack(0.8, false);
-        const trackBMP = createTrack(0.7, true);
+        const trackBMP = createTrack(0.8, true);
         const trackPanzer = createTrack(1, false);
 
         this.tankTrack[0] = {
