@@ -9,8 +9,8 @@ export default class GenTextures {
         const ground = new SimpleBuffer(tileSize * 8);
         this.ground = ground
             .perlin(5, 0.9)
-            .normalize(0.75, 1)
-            .getColor(randColor([224, 207, 159]));
+            .normalize(0.7, 1)
+            .getColor(randColor([150, 133, 84], 20));
 
         // brick
         const cement = new SimpleBuffer(tileSize * 8);
@@ -409,5 +409,29 @@ export default class GenTextures {
             .normalize(0.5, 1)
             .forBuf(bulletMask, (a, b) => a * (5 * (Math.abs(b - 0.5) - 0.5) + 1))
             .getColor([255, 255, 255], bulletMask);
+
+        // fire
+        const createFire = (size) => {
+            const koef = tileSize / size;
+            const plume = new SimpleBuffer(size);
+            for (let step = 0; step < size * 0.75 | 0; step++) {
+                const plumeStep = new SimpleBuffer(size);
+                plumeStep.normDist(koef * 0.75 - koef * 0.75 * step / (size * 0.75), 0, 0.5 - 2 * step / size);
+                plume.forBuf(plumeStep, (a, b) => a + b);
+            }
+            plume.normalize(0, 1);
+
+            const fire = new SimpleBuffer(size);
+            return fire
+                .normDist(koef, 0, 0.5)
+                .clamp(0.1, 0.5)
+                .normalize(0, 1)
+                .forBuf(plume, (a, b) => a + b)
+                .normalize(0, 2)
+                .getColor2([255, 0, 0], [255, 255, 127], fire);
+        };
+
+        this.fireLong = createFire(tileSize * 2);
+        this.fireSmall = createFire(tileSize);
     }
 }

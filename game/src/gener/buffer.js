@@ -344,13 +344,13 @@ export default class SimpleBuffer {
         console.log("Brick mask generate", Date.now() - time);
         return this;
     }
-    normDist(rad) {
+    normDist(rad, dx = 0, dy = 0) {
         const time = Date.now();
 
         for (let j = 0; j < this.size; j++) {
             for (let i = 0; i < this.size; i++) {
-                const x = (i - this.size * 0.5) / (rad * this.size * 0.5);
-                const y = (j - this.size * 0.5) / (rad * this.size * 0.5);
+                const x = ((i - this.size * 0.5) / (this.size * 0.5) + dx) / rad;
+                const y = ((j - this.size * 0.5) / (this.size * 0.5) + dy) / rad;
                 const r = Math.sqrt(x * x + y * y);
                 const koef = norm(r * 3);
                 this.data[j * this.size + i] = koef;
