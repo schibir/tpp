@@ -27,6 +27,7 @@
         "no-multi-spaces": [
             "error",
             { "ignoreEOLComments": true }
-        ]
+        ],
+        "max-len": "off"
     }
 }
