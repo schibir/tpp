@@ -219,6 +219,23 @@ export default class GenTextures {
                 .getColor([182, 155, 76], bridgeMask);
         }
 
+        const rotateImage = (image, angle) => {
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            canvas.width = image.width;
+            canvas.height = image.height;
+
+            context.save();
+
+            context.translate(image.width * 0.5, image.height * 0.5);
+            context.rotate(Math.PI * 0.5 * angle);
+            context.translate(-image.width * 0.5, -image.height * 0.5);
+            context.drawImage(image, 0, 0);
+
+            context.restore();
+            return canvas;
+        };
+
         // Tanks
         const createTrack = (size, isWheel) => {
             const trackMask = new SimpleBuffer(tileSize * 2);
@@ -317,7 +334,11 @@ export default class GenTextures {
             [TANK.PANZER]:  [211, 229, 224],
         };
 
-        this.tankBodies = {
+        this.tankBodies = new Array(4);
+        this.tankTurret = new Array(4);
+        this.tankTrack = new Array(4);
+
+        this.tankBodies[0] = {
             [TANK.TANK1]:   createCorpus(0.7, colors[TANK.TANK1]),
             [TANK.TANK2]:   createCorpus(0.7, colors[TANK.TANK2]),
             [TANK.SIMPLE]:  createCorpus(0.5, colors[TANK.SIMPLE]),
@@ -327,7 +348,7 @@ export default class GenTextures {
             [TANK.PANZER]:  createCorpus(1, colors[TANK.PANZER]),
         };
 
-        this.tankTurret = {
+        this.tankTurret[0] = {
             [TANK.TANK1]:   createTurret(0.35, 0.1, 0.7, colors[TANK.TANK1]),
             [TANK.TANK2]:   createTurret(0.35, 0.1, 0.7, colors[TANK.TANK2]),
             [TANK.SIMPLE]:  createTurret(0.35, 0.1, 0.7, colors[TANK.SIMPLE]),
@@ -341,7 +362,7 @@ export default class GenTextures {
         const trackBMP = createTrack(0.7, true);
         const trackPanzer = createTrack(1, false);
 
-        this.tankTrack = {
+        this.tankTrack[0] = {
             [TANK.TANK1]:   trackSimple,
             [TANK.TANK2]:   trackSimple,
             [TANK.SIMPLE]:  trackSimple,
@@ -351,5 +372,17 @@ export default class GenTextures {
             [TANK.PANZER]:  trackPanzer,
         };
         /* eslint-enable key-spacing */
+
+        for (let i = 1; i < 4; i++) {
+            this.tankBodies[i] = {};
+            this.tankTurret[i] = {};
+            this.tankTrack[i] = {};
+
+            for (let prop in TANK) {
+                this.tankBodies[i][TANK[prop]] = rotateImage(this.tankBodies[0][TANK[prop]], i);
+                this.tankTurret[i][TANK[prop]] = rotateImage(this.tankTurret[0][TANK[prop]], i);
+                this.tankTrack[i][TANK[prop]] = rotateImage(this.tankTrack[0][TANK[prop]], i);
+            }
+        }
     }
 }

@@ -9,7 +9,6 @@ export const TANK = {
     CANNON: 4,
     STRONG: 5,
     PANZER: 6,
-    RANDOM: 7,
 };
 
 export class Tank extends Entity {
@@ -21,9 +20,9 @@ export class Tank extends Entity {
         level.clearEntity(this);
     }
     draw(level) {
-        level.drawEntity(this, level.textures.tankTrack[this.type]);
-        level.drawEntity(this, level.textures.tankBodies[this.type]);
-        level.drawEntity(this, level.textures.tankTurret[this.type]);
+        level.drawEntity(this, level.textures.tankTrack[this.angle][this.type]);
+        level.drawEntity(this, level.textures.tankBodies[this.angle][this.type]);
+        level.drawEntity(this, level.textures.tankTurret[this.angle][this.type]);
     }
     update(level, delta) {
         if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
