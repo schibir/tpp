@@ -386,11 +386,11 @@ export default class GenTextures {
             this.tankTrack[i] = {};
 
             for (let type = TANK.TANK1; type <= TANK.PANZER; type++) {
-                this.tankBodies[i][TANK[type]] = rotateImage(this.tankBodies[0][TANK[type]], i);
-                this.tankTurret[i][TANK[type]] = rotateImage(this.tankTurret[0][TANK[type]], i);
-                this.tankTrack[i][TANK[type]] = new Array(countAnimTrack);
+                this.tankBodies[i][type] = rotateImage(this.tankBodies[0][type], i);
+                this.tankTurret[i][type] = rotateImage(this.tankTurret[0][type], i);
+                this.tankTrack[i][type] = new Array(countAnimTrack);
                 for (let offset = 0; offset < countAnimTrack; offset++) {
-                    this.tankTrack[i][TANK[type]][offset] = rotateImage(this.tankTrack[0][TANK[type]][offset], i);
+                    this.tankTrack[i][type][offset] = rotateImage(this.tankTrack[0][type][offset], i);
                 }
             }
         }
