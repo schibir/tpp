@@ -72,7 +72,6 @@ export default class Game {
         this.players[0].draw(this.level);
         this.players[1].draw(this.level);
     }
-    pause() {}
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {
             if (this.players[p] && key in keyToAngle[p]) {
