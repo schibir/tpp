@@ -416,8 +416,7 @@ export default class GenTextures {
             const plume = new SimpleBuffer(size);
             for (let i = 0; i < size * 0.75 | 0; i++) {
                 const plumeStep = new SimpleBuffer(size);
-                plumeStep.normDist(koef * 0.75 - koef * 0.75 * i / (size * 0.75),
-                    0, 0.5 - 2 * i / size);
+                plumeStep.normDist(koef * 0.75 - koef * 0.75 * i / (size * 0.75), 0, 0.5 - 2 * i / size);
                 plume.forBuf(plumeStep, (a, b) => a + b);
             }
             plume.normalize(0, 1);
