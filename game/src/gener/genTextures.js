@@ -27,7 +27,7 @@ export default class GenTextures {
         noise
             .perlin(5, 0.5)
             .diff([1, 0.5])
-            .normalize(0.7, 1.3);
+            .normalize(0.6, 1.4);
 
         const brick = new SimpleBuffer(tileSize * 8);
         const brickImg = brick
@@ -55,7 +55,7 @@ export default class GenTextures {
         const beton = new SimpleBuffer(tileSize * 8);
         const betonImg = beton
             .brick(4, 4)
-            .normalize(0.7, 1)
+            .normalize(0.6, 1)
             .forBuf(betonNoise, (a, b) => a * b)
             .getColor(randColor([160, 160, 160]));
 
