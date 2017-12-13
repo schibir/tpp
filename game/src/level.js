@@ -100,18 +100,11 @@ export default class Level {
             this.map.forEach((tile, index) => {
                 if (tile & BRIDGE) {
                     const { posX, posY } = calcTilePos(index, true);
-                    const ind = Math.random() * this.textures.bridge.length | 0;
+                    const ind = Math.random() * this.textures.bridgeV.length | 0;
                     if (tile & BRIDGEV) {
-                        layerLava.context.drawImage(this.textures.bridge[ind], posX, posY);
+                        layerLava.context.drawImage(this.textures.bridgeV[ind], posX, posY);
                     } else {
-                        layerLava.context.save();
-
-                        layerLava.context.translate(posX, posY);
-                        layerLava.context.rotate(Math.PI * 0.5);
-                        layerLava.context.scale(1, -1);
-                        layerLava.context.drawImage(this.textures.bridge[ind], 0, 0);
-
-                        layerLava.context.restore();
+                        layerLava.context.drawImage(this.textures.bridgeH[ind], posX, posY);
                     }
                 }
             });

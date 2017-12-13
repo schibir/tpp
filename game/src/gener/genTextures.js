@@ -189,37 +189,6 @@ export default class GenTextures {
             .forBuf(eagle, (a, b) => a + b * 0.5)
             .getColor2([0, 0, 0], [128, 128, 128], eagleMask);
 
-        // Bridge
-        this.bridge = new Array(8);
-        for (let k = 0; k < this.bridge.length; k++) {
-            const bridgeMask = new SimpleBuffer(tileSize * 2);
-            bridgeMask
-                .perlin(5, 0.5)
-                .forEach((a, i, j) => {
-                    const x = (i / bridgeMask.size - 0.5) * 2;
-                    const y = (j / bridgeMask.size - 0.5) * 2;
-                    const factorX = Math.abs(x) < 0.4 ? 1 : 0;
-                    let factorY = clamp((2 - 2 * Math.abs(y)), 0, 1);
-                    factorY += 0.25 * a;
-                    factorY = (clamp(factorY, 0.3, 0.4) - 0.3) * 10;
-                    return factorX * factorY;
-                });
-
-            const bridge = new SimpleBuffer(tileSize * 2);
-            this.bridge[k] = bridge
-                .perlin(5, 0.5)
-                .forEach((a) => a * a)
-                .diffFree()
-                .normalize(0.5, 1.5)
-                .forEach((a, i) => {
-                    const x = i / bridge.size * Math.PI * 8;
-                    return a * Math.abs(Math.cos(x));
-                })
-                .forBuf(bridgeMask, (a, b) => a * b * b)
-                .normalize(0.5, 1)
-                .getColor([182, 155, 76], bridgeMask);
-        }
-
         const rotateImage = (image, angle) => {
             const canvas = document.createElement("canvas");
             const context = canvas.getContext("2d");
@@ -236,6 +205,40 @@ export default class GenTextures {
             context.restore();
             return canvas;
         };
+
+        // Bridge
+        this.bridgeV = new Array(8);
+        for (let k = 0; k < this.bridgeV.length; k++) {
+            const bridgeMask = new SimpleBuffer(tileSize * 2);
+            bridgeMask
+                .perlin(5, 0.5)
+                .forEach((a, i, j) => {
+                    const x = (i / bridgeMask.size - 0.5) * 2;
+                    const y = (j / bridgeMask.size - 0.5) * 2;
+                    const factorX = Math.abs(x) < 0.4 ? 1 : 0;
+                    let factorY = clamp((2 - 2 * Math.abs(y)), 0, 1);
+                    factorY += 0.25 * a;
+                    factorY = (clamp(factorY, 0.3, 0.4) - 0.3) * 10;
+                    return factorX * factorY;
+                });
+
+            const bridge = new SimpleBuffer(tileSize * 2);
+            this.bridgeV[k] = bridge
+                .perlin(5, 0.5)
+                .forEach((a) => a * a)
+                .diffFree()
+                .normalize(0.5, 1.5)
+                .forEach((a, i) => {
+                    const x = i / bridge.size * Math.PI * 8;
+                    return a * Math.abs(Math.cos(x));
+                })
+                .forBuf(bridgeMask, (a, b) => a * b * b)
+                .normalize(0.5, 1)
+                .getColor([182, 155, 76], bridgeMask);
+        }
+
+        this.bridgeH = [];
+        this.bridgeV.forEach((bridge) => this.bridgeH.push(rotateImage(bridge, 1)));
 
         // Tanks
         const createTrack = (size, offset, isWheel) => {
