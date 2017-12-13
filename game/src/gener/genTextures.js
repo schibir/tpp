@@ -189,7 +189,7 @@ export default class GenTextures {
             .forBuf(eagle, (a, b) => a + b * 0.5)
             .getColor2([0, 0, 0], [128, 128, 128], eagleMask);
 
-        const rotateImage = (image, angle) => {
+        const transformImage = (image, callback) => {
             const canvas = document.createElement("canvas");
             const context = canvas.getContext("2d");
             canvas.width = image.width;
@@ -198,12 +198,18 @@ export default class GenTextures {
             context.save();
 
             context.translate(image.width * 0.5, image.height * 0.5);
-            context.rotate(Math.PI * 0.5 * angle);
+            callback(context);
             context.translate(-image.width * 0.5, -image.height * 0.5);
             context.drawImage(image, 0, 0);
 
             context.restore();
             return canvas;
+        };
+        const rotateImage = (image, angle) => {
+            return transformImage(image, (context) => context.rotate(Math.PI * 0.5 * angle));
+        };
+        const scaleImage = (image, vec) => {
+            return transformImage(image, (context) => context.scale(vec[0], vec[1]));
         };
 
         // Bridge
@@ -481,6 +487,28 @@ export default class GenTextures {
         this.shield = [];
         for (let i = 0; i < 8; i++) {
             this.shield.push(createShield());
+        }
+
+        // respawn
+        // for animation use this formula
+        // const ind = ((Date.now() - this.timeRespawn) / 50) % level.textures.respawn.length | 0;
+        const respawn = new SimpleBuffer(tileSize * 2);
+        const countAnimRespawn = 8;
+        this.respawn = new Array(countAnimRespawn);
+        this.respawn[0] = respawn
+            .forEach((a, i, j) => {
+                const x = (i / respawn.size - 0.5) * 2;
+                const y = (j / respawn.size - 0.5) * 2;
+                return 1 / (Math.abs(x) + Math.abs(y) + 1) - 0.5;
+            })
+            .clamp(0, 1)
+            .gaussian(step)
+            .normalize(0, 1)
+            .getColor([255, 512, 255], respawn);
+
+        for (let i = 1; i < countAnimRespawn; i++) {
+            const koef = 0.3 * Math.sin(i / countAnimRespawn * Math.PI * 2);
+            this.respawn[i] = scaleImage(this.respawn[0], [1 + koef, 1 - koef]);
         }
     }
 }
