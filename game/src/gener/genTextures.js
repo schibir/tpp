@@ -437,5 +437,47 @@ export default class GenTextures {
 
         this.fireLong = createFire(tileSize * 2);
         this.fireSmall = createFire(tileSize);
+
+        // shield
+        const shieldMask = new SimpleBuffer(tileSize * 3);
+        shieldMask
+            .forEach((a, i, j) => {
+                const x = (i / shieldMask.size - 0.5) * 2;
+                const y = (j / shieldMask.size - 0.5) * 2;
+                const factorX = 25 / 16 * x * x;
+                const factorY = 25 / 16 * y * y;
+                const ret = Math.max(factorX, factorY);
+                return ret < 1 ? ret : 0;
+            })
+            .gaussian(step * 2)
+            .normalize(0, 1);
+
+        const createShield = () => {
+            const offsetX = new SimpleBuffer(tileSize * 3);
+            offsetX.perlin(2, 0.5);
+            const offsetY = new SimpleBuffer(tileSize * 3);
+            offsetY.perlin(2, 0.5);
+
+            const shield = new SimpleBuffer(tileSize * 3);
+            return shield
+                .forEach((a, i, j) => {
+                    const x = (i / shieldMask.size - 0.5) * 2;
+                    const y = (j / shieldMask.size - 0.5) * 2;
+                    const factorX = 1 - 25 / 16 * x * x;
+                    const factorY = 1 - 25 / 16 * y * y;
+
+                    const dx = offsetX.getData(i, j);
+                    const dy = offsetY.getData(i, j);
+                    const tx = clamp(i + dx * step * factorY, 0, shieldMask.size) | 0;
+                    const ty = clamp(j + dy * step * factorX, 0, shieldMask.size) | 0;
+                    return shieldMask.getData(tx, ty);
+                })
+                .getColor([255, 255, 512], shield);
+        };
+
+        this.shield = [];
+        for (let i = 0; i < 8; i++) {
+            this.shield.push(createShield());
+        }
     }
 }
