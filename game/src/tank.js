@@ -9,6 +9,7 @@ export const TANK = {
     CANNON: 4,
     STRONG: 5,
     PANZER: 6,
+    RANDOM: 7,
 };
 
 export class Tank extends Entity {

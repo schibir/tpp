@@ -5,6 +5,8 @@ import { TANK } from "../tank";
 
 export default class GenTextures {
     constructor(tileSize) {
+        const step = tileSize * 0.2 | 0;
+
         // ground
         const ground = new SimpleBuffer(tileSize * 8);
         this.ground = ground
@@ -18,8 +20,8 @@ export default class GenTextures {
             .perlin(5, 0.5)
             .diff([1, 0.5])
             .diff([-0.5, 1])
-            .normalize(0, 1)
-            .getColor(randColor([100, 100, 100]));
+            .normalize(0.5, 1)
+            .getColor(randColor([200, 200, 200]));
 
         const noise = new SimpleBuffer(tileSize * 8);
         noise
@@ -37,7 +39,7 @@ export default class GenTextures {
         const brickMask = new SimpleBuffer(tileSize * 8);
         this.brick = brickMask
             .brickMask(8, 16)
-            .gaussian(3)
+            .gaussian(step * 0.5 | 0)
             .clamp(0.1, 0.3)
             .normalize(0, 1)
             .getColorLerp(brickImg, cementImg);
@@ -60,7 +62,7 @@ export default class GenTextures {
         const betonMask = new SimpleBuffer(tileSize * 8);
         this.beton = betonMask
             .brickMask(4, 4)
-            .gaussian(3)
+            .gaussian(step * 0.5 | 0)
             .clamp(0.1, 0.3)
             .normalize(0, 1)
             .getColorLerp(betonImg, cementImg);
@@ -95,9 +97,9 @@ export default class GenTextures {
                 .normalize(0, 1.5)
                 .forBuf(lavaNoise, (a, b) => a + 0.25 * b)
                 .clamp(0.25, 0.75)
-                .gaussian(7)
+                .gaussian(step * 2)
                 .normalize(0, 1)
-                .getColor([127, 127, 127], lavaLightMask);
+                .getColor([200, 200, 200], lavaLightMask);
         }
 
         // grass
@@ -146,7 +148,6 @@ export default class GenTextures {
         // Eagle
         const eagle = new SimpleBuffer(tileSize * 2);
         const center = eagle.size * 0.5 | 0;
-        const step = eagle.size * 0.1 | 0;
         eagle
             .bresenham(center, center + step, 2 * step, 2 * step, 1)
             .bresenham(center, center + step, eagle.size - 2 * step, 2 * step, 1)
@@ -385,7 +386,7 @@ export default class GenTextures {
             this.tankTurret[i] = {};
             this.tankTrack[i] = {};
 
-            for (let type = TANK.TANK1; type <= TANK.PANZER; type++) {
+            for (let type = TANK.TANK1; type < TANK.RANDOM; type++) {
                 this.tankBodies[i][type] = rotateImage(this.tankBodies[0][type], i);
                 this.tankTurret[i][type] = rotateImage(this.tankTurret[0][type], i);
                 this.tankTrack[i][type] = new Array(countAnimTrack);
