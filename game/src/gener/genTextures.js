@@ -362,8 +362,8 @@ export default class GenTextures {
         };
 
         this.tankTurret[0] = {
-            [TANK.TANK1]:   createTurret(0.7, 0.1, 0.7, colors[TANK.TANK1]),
-            [TANK.TANK2]:   createTurret(0.7, 0.1, 0.7, colors[TANK.TANK2]),
+            [TANK.TANK1]:   createTurret(0.7, 0.1, 0.7, colors[TANK.TANK2]),
+            [TANK.TANK2]:   createTurret(0.7, 0.1, 0.7, colors[TANK.TANK1]),
             [TANK.SIMPLE]:  createTurret(0.7, 0.1, 0.7, colors[TANK.SIMPLE]),
             [TANK.BMP]:     createTurret(0.4, 0.1, 0.6, colors[TANK.BMP]),
             [TANK.CANNON]:  createTurret(0.7, 0.1, 1, colors[TANK.CANNON]),
