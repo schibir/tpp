@@ -527,5 +527,41 @@ export default class GenTextures {
             const koef = 0.3 * Math.sin(i / countAnimRespawn * Math.PI * 2);
             this.respawn[i] = scaleImage(this.respawn[0], [1 + koef, 1 - koef]);
         }
+
+        // Items
+        const itemTemplateMask = new SimpleBuffer(tileSize * 2);
+        itemTemplateMask
+            .forEach((a, i, j) => {
+                const x = (i / itemTemplateMask.size - 0.5) * 2;
+                const y = (j / itemTemplateMask.size - 0.5) * 2;
+                let factorX = 0.5;
+                let factorY = 0.5;
+                if ((Math.abs(x) > 0.7 && Math.abs(x) < 0.8) ||
+                    (Math.abs(y) > 0.7 && Math.abs(y) < 0.8)) {
+                    factorX = 1;
+                    factorY = 1;
+                }
+                if (Math.abs(x) > 0.8) factorX = 0;
+                if (Math.abs(y) > 0.8) factorY = 0;
+                return Math.min(factorX, factorY);
+            })
+            .gaussian(step)
+            .clamp(0.45, 0.55)
+            .normalize(0, 1);
+
+        const itemTemplate = new SimpleBuffer(tileSize * 2);
+        const itemTemplateImg = itemTemplate
+            .forEach((a, i, j) => {
+                const x = (i / itemTemplate.size - 0.5) * 2;
+                const y = (j / itemTemplate.size - 0.5) * 2;
+                let factorX = Math.abs(x) > 0.7 && Math.abs(x) < 0.8 ? 1 : 0;
+                let factorY = Math.abs(y) > 0.7 && Math.abs(y) < 0.8 ? 1 : 0;
+                return factorX + factorY;
+            })
+            .gaussian(step)
+            .normalize(0, 2)
+            .clamp(0, 1)
+            .normalize(0, 1.5)
+            .getColor([127, 174, 249], itemTemplateMask);
     }
 }
