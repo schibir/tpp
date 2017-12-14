@@ -3,6 +3,7 @@ import { getMapSize } from "./utils";
 import Level from "./level";
 import Entity from "./entity";
 import { Tank, TANK } from "./tank";
+import { Bullet } from "./bullet";
 
 const keyToAngle = [{
     38: 0,  // UP
@@ -41,6 +42,8 @@ export default class Game {
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
         this.players = [new Tank(10, 10, TANK.TANK1), new Tank(15, 10, TANK.TANK2)];
 
+        this.bullets = [];
+
         this.newLevel();
     }
     newLevel() {
@@ -63,14 +66,20 @@ export default class Game {
         this.players[0].clear(this.level);
         this.players[1].clear(this.level);
 
+        this.bullets.forEach((bullet) => bullet.clear(this.level));
+
         // updating
         this.players[0].update(this.level, delta);
         this.players[1].update(this.level, delta);
+
+        Bullet.updateBullets(this.bullets, delta);
 
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
         this.players[0].draw(this.level);
         this.players[1].draw(this.level);
+
+        this.bullets.forEach((bullet) => bullet.draw(this.level));
     }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {
