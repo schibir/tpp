@@ -27,20 +27,7 @@ export default class SimpleBuffer {
         this.data[y * this.size + x | 0] = val;
     }
     getColor(col = [255, 255, 255], mask = null) {
-        console.assert(!mask || mask.size === this.size, "Require same size");
-        const canvas = document.createElement("canvas");
-        canvas.width = this.size;
-        canvas.height = this.size;
-        const context = canvas.getContext("2d");
-        const imageData = context.createImageData(this.size, this.size);
-        for (let i = 0; i < this.size * this.size; i++) {
-            imageData.data[4 * i + 0] = col[0] * this.data[i] | 0;
-            imageData.data[4 * i + 1] = col[1] * this.data[i] | 0;
-            imageData.data[4 * i + 2] = col[2] * this.data[i] | 0;
-            imageData.data[4 * i + 3] = mask ? mask.data[i] * 255 | 0 : 255;
-        }
-        context.putImageData(imageData, 0, 0);
-        return canvas;
+        return this.getColor2([0, 0, 0], col, mask);
     }
     getColor2(col0 = [0, 0, 0], col1 = [255, 255, 255], mask = null) {
         console.assert(!mask || mask.size === this.size, "Require same size");
@@ -58,11 +45,12 @@ export default class SimpleBuffer {
         context.putImageData(imageData, 0, 0);
         return canvas;
     }
-    getColorLerp(img0, img1) {
+    getColorLerp(img0, img1, mask = null) {
         console.assert(img0.width === img1.width, "Require same image");
         console.assert(img0.height === img1.height, "Require same image");
         console.assert(img0.width === this.size, "Require same image");
         console.assert(img0.height === this.size, "Require same image");
+        console.assert(!mask || mask.size === this.size, "Require same size");
 
         const data0 = img0.getContext("2d").getImageData(0, 0, this.size, this.size).data;
         const data1 = img1.getContext("2d").getImageData(0, 0, this.size, this.size).data;
@@ -75,7 +63,7 @@ export default class SimpleBuffer {
             imageData.data[4 * i + 0] = lerp(data0[4 * i + 0], data1[4 * i + 0], this.data[i]) | 0;
             imageData.data[4 * i + 1] = lerp(data0[4 * i + 1], data1[4 * i + 1], this.data[i]) | 0;
             imageData.data[4 * i + 2] = lerp(data0[4 * i + 2], data1[4 * i + 2], this.data[i]) | 0;
-            imageData.data[4 * i + 3] = 255;
+            imageData.data[4 * i + 3] = mask ? mask.data[i] * 255 | 0 : 255;
         }
         context.putImageData(imageData, 0, 0);
         return canvas;

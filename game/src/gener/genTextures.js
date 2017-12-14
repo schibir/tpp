@@ -44,10 +44,6 @@ export default class GenTextures {
             .normalize(0, 1)
             .getColorLerp(brickImg, cementImg);
 
-        // // half
-        // const half = new SimpleBuffer(tileSize * 8);
-        // half
-
         // beton
         const betonNoise = new SimpleBuffer(tileSize * 8);
         betonNoise
@@ -70,6 +66,17 @@ export default class GenTextures {
             .clamp(0.1, 0.3)
             .normalize(0, 1)
             .getColorLerp(betonImg, cementImg);
+
+        // half
+        const half = new SimpleBuffer(tileSize * 8);
+        half
+            .perlin(10, 0.9)
+            .forEach(Math.abs)
+            .normalize(0, 10)
+            .clamp(0, 1);
+
+        this.halfBrick = half.getColorLerp(this.brick, this.brick, half);
+        this.halfBeton = half.getColorLerp(this.beton, this.beton, half);
 
         // lava
         const lava = new SimpleBuffer(tileSize * 8);
