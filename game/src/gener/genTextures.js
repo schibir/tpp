@@ -31,18 +31,22 @@ export default class GenTextures {
 
         const brick = new SimpleBuffer(tileSize * 8);
         const brickImg = brick
-            .brick(8, 16)
+            .brick(16, 32)
             .normalize(0.7, 1)
             .forBuf(noise, (a, b) => a * b)
             .getColor(randColor([200, 80, 60]));
 
         const brickMask = new SimpleBuffer(tileSize * 8);
         this.brick = brickMask
-            .brickMask(8, 16)
-            .gaussian(step * 0.5 | 0)
+            .brickMask(16, 32)
+            .gaussian(step * 0.25 | 0)
             .clamp(0.1, 0.3)
             .normalize(0, 1)
             .getColorLerp(brickImg, cementImg);
+
+        // // half
+        // const half = new SimpleBuffer(tileSize * 8);
+        // half
 
         // beton
         const betonNoise = new SimpleBuffer(tileSize * 8);
@@ -54,14 +58,14 @@ export default class GenTextures {
 
         const beton = new SimpleBuffer(tileSize * 8);
         const betonImg = beton
-            .brick(4, 4)
+            .brick(8, 8)
             .normalize(0.6, 1)
             .forBuf(betonNoise, (a, b) => a * b)
             .getColor(randColor([160, 160, 160]));
 
         const betonMask = new SimpleBuffer(tileSize * 8);
         this.beton = betonMask
-            .brickMask(4, 4)
+            .brickMask(8, 8)
             .gaussian(step * 0.5 | 0)
             .clamp(0.1, 0.3)
             .normalize(0, 1)
