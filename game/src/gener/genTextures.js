@@ -68,15 +68,21 @@ export default class GenTextures {
             .getColorLerp(betonImg, cementImg);
 
         // half
-        const half = new SimpleBuffer(tileSize * 8);
-        half
-            .perlin(10, 0.9)
+        const black = (new SimpleBuffer(tileSize * 8)).getColor();
+
+        const halfMask = new SimpleBuffer(tileSize * 8);
+        halfMask
+            .perlin(20, 0.7)
             .forEach(Math.abs)
-            .normalize(0, 10)
+            .normalize(0, 3)
             .clamp(0, 1);
 
-        this.halfBrick = half.getColorLerp(this.brick, this.brick, half);
-        this.halfBeton = half.getColorLerp(this.beton, this.beton, half);
+        const half = (new SimpleBuffer(tileSize * 8))
+            .copy(halfMask)
+            .forEach((a) => a * a * a);
+
+        this.halfBrick = half.getColorLerp(black, this.brick, halfMask);
+        this.halfBeton = half.getColorLerp(black, this.beton, halfMask);
 
         // lava
         const lava = new SimpleBuffer(tileSize * 8);
