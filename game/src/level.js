@@ -37,10 +37,13 @@ export default class Level {
         this.mapHeight = mapHeight - 2;     // board
         this.textures = new GenTextures(tileSize);
         this.layer = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+        this.layer0 = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+        this.layer1 = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         this.layerGrass = new Layer(mapWidth * tileSize, mapHeight * tileSize);
 
         const layerGround = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         const layerBrick = new Layer(mapWidth * tileSize, mapHeight * tileSize);
+        const layerHalf = new Layer(mapWidth * tileSize, mapHeight * tileSize);
         const layerLava = new Layer(mapWidth * tileSize, mapHeight * tileSize);
 
         const renderBoard = () => {
@@ -114,9 +117,15 @@ export default class Level {
                 if (tile.type & (BRICK | BETON)) {
                     const { posX, posY } = calcTilePos(index, false);
                     const img = tile.type & BRICK ? this.textures.brick : this.textures.beton;
+                    const imgHalf = tile.type & BRICK ? this.textures.halfBrick : this.textures.halfBeton;
                     const srcX = posX % img.width | 0;
                     const srcY = posY % img.height | 0;
                     layerBrick.context.drawImage(img,
+                        srcX, srcY,
+                        tileSize, tileSize,
+                        posX, posY,
+                        tileSize, tileSize);
+                    layerHalf.context.drawImage(imgHalf,
                         srcX, srcY,
                         tileSize, tileSize,
                         posX, posY,
@@ -169,13 +178,13 @@ export default class Level {
 
                 this.map = data.map((val) => {
                     switch (val) {
-                    case 0: return { type: EMPTY };
-                    case 1: return { type: BRICK };
-                    case 2: return { type: BETON };
-                    case 3: return { type: WATER };
-                    case 4: return { type: GRASS };
-                    case 5: return { type: BRIDGEH };
-                    case 6: return { type: BRIDGEV };
+                    case 0: return { x: 0, y: 0, type: EMPTY, };
+                    case 1: return { x: 0, y: 0, type: BRICK, };
+                    case 2: return { x: 0, y: 0, type: BETON, };
+                    case 3: return { x: 0, y: 0, type: WATER, };
+                    case 4: return { x: 0, y: 0, type: GRASS, };
+                    case 5: return { x: 0, y: 0, type: BRIDGEH, };
+                    case 6: return { x: 0, y: 0, type: BRIDGEV, };
                     default:
                         return console.assert(false, `Unknown tile type ${val}`);
                     }
@@ -184,6 +193,8 @@ export default class Level {
                 // calc adjacent grass
                 for (let j = 0; j < this.mapHeight; j++) {
                     for (let i = 0; i < this.mapWidth; i++) {
+                        this.map[j * this.mapWidth + i].x = i + 1;  // +1 for board
+                        this.map[j * this.mapWidth + i].y = j + 1;  // +1 for board
                         for (let dy = -1; dy < 2; dy++) {
                             for (let dx = -1; dx < 2; dx++) {
                                 const x = i + dx | 0;
@@ -221,6 +232,15 @@ export default class Level {
             this.layer.context.drawImage(layerBrick.canvas, 0, 0);
             this.layer.context.drawImage(this.layerGrass.canvas, 0, 0);
 
+            this.layer0.context.drawImage(layerGround.canvas, 0, 0);
+            this.layer0.context.drawImage(layerLava.canvas, 0, 0);
+            this.layer0.context.drawImage(this.layerGrass.canvas, 0, 0);
+
+            this.layer1.context.drawImage(layerGround.canvas, 0, 0);
+            this.layer1.context.drawImage(layerLava.canvas, 0, 0);
+            this.layer1.context.drawImage(layerHalf.canvas, 0, 0);
+            this.layer1.context.drawImage(this.layerGrass.canvas, 0, 0);
+
             this.context = canvas.getContext("2d");
             this.context.drawImage(this.layer.canvas, 0, 0);
 
@@ -239,8 +259,8 @@ export default class Level {
 
         this.drawTilesPerFrame = 0;
     }
-    drawTile(texture, srcx, srcy, dstx, dsty, size) {
-        this.context.drawImage(texture,
+    drawTile(texture, srcx, srcy, dstx, dsty, size, destContext = this.context) {
+        destContext.drawImage(texture,
             srcx * this.tileSize, srcy * this.tileSize,
             size * this.tileSize, size * this.tileSize,
             dstx * this.tileSize, dsty * this.tileSize,
@@ -303,7 +323,15 @@ export default class Level {
         const decrementLevel = (x, y) => {
             const tile = this.getTile(x, y);
             if (tile) {
-                // if (tile === BRICK)
+                if ((tile.type & BULLET_MASK) === BRICK) {
+                    tile.type |= HALF;
+                    this.drawTile(this.layer1.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
+                    this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
+                } else if ((tile.type & BULLET_MASK) === (BRICK | HALF)) {
+                    tile.type &= ~BULLET_MASK;
+                    this.drawTile(this.layer0.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
+                    this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
+                }
             }
         };
 
