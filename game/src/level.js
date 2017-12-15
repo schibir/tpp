@@ -11,6 +11,7 @@ const GRASS = 16;
 const PREGRASS = 32;    // adjacent for grass
 const BRIDGEH = 64;
 const BRIDGEV = 128;
+const BOARD = 256;
 const BRIDGE = BRIDGEH | BRIDGEV;
 const MOVE_MASK = HALF | BRICK | BETON | WATER;
 const BULLET_MASK = HALF | BRICK | BETON;
@@ -269,14 +270,13 @@ export default class Level {
         this.drawEntityEnd(entity);
     }
     collidePoint(x, y, mask) {
-        if (mask & MOVE_MASK && (
-            x < 0 || x >= this.mapWidth ||
-            y < 0 || y >= this.mapHeight)) return true;
+        if (x < 0 || x >= this.mapWidth ||
+            y < 0 || y >= this.mapHeight) return BOARD;
 
         const ix = x | 0;
         const iy = y | 0;
         const ind = iy * this.mapWidth + ix;
-        return !!(this.map[ind] & mask);
+        return this.map[ind] & mask;
     }
     collideTank(entity) {
         const x = entity.cx + cos(entity.angle) * 0.5 * entity.size;
@@ -286,7 +286,7 @@ export default class Level {
         const x2 = x - cos(entity.angle + 1 & 3) * 0.5;
         const y2 = y - sin(entity.angle + 1 & 3) * 0.5;
 
-        return this.collidePoint(x1, y1, MOVE_MASK) || this.collidePoint(x2, y2, MOVE_MASK);
+        return this.collidePoint(x1, y1, MOVE_MASK) | this.collidePoint(x2, y2, MOVE_MASK);
     }
     collideBullet(entity) {
         const x1 = entity.cx + cos(entity.angle + 1 & 3) * 0.5;
@@ -294,6 +294,23 @@ export default class Level {
         const x2 = entity.cx - cos(entity.angle + 1 & 3) * 0.5;
         const y2 = entity.cy - sin(entity.angle + 1 & 3) * 0.5;
 
-        return this.collidePoint(x1, y1, BULLET_MASK) || this.collidePoint(x2, y2, BULLET_MASK);
+        const collide1 = this.collidePoint(x1, y1, BULLET_MASK);
+        const collide2 = this.collidePoint(x2, y2, BULLET_MASK);
+
+        const decrementLevel = (x, y) => {
+            const ix = x | 0;
+            const iy = y | 0;
+            const ind = iy * this.mapWidth + ix;
+
+        };
+
+        if (collide1 & BULLET_MASK) {
+
+        }
+        if (collide2 & BULLET_MASK) {
+
+        }
+
+        return collide1 | collide2;
     }
 }
