@@ -554,8 +554,8 @@ export default class GenTextures {
             .forEach((a, i, j) => {
                 const x = (i / itemTemplate.size - 0.5) * 2;
                 const y = (j / itemTemplate.size - 0.5) * 2;
-                let factorX = Math.abs(x) > 0.7 && Math.abs(x) < 0.8 ? 1 : 0;
-                let factorY = Math.abs(y) > 0.7 && Math.abs(y) < 0.8 ? 1 : 0;
+                const factorX = Math.abs(x) > 0.7 && Math.abs(x) < 0.8 ? 1 : 0;
+                const factorY = Math.abs(y) > 0.7 && Math.abs(y) < 0.8 ? 1 : 0;
                 return factorX + factorY;
             })
             .gaussian(step)

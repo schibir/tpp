@@ -178,13 +178,13 @@ export default class Level {
 
                 this.map = data.map((val) => {
                     switch (val) {
-                    case 0: return { x: 0, y: 0, type: EMPTY, };
-                    case 1: return { x: 0, y: 0, type: BRICK, };
-                    case 2: return { x: 0, y: 0, type: BETON, };
-                    case 3: return { x: 0, y: 0, type: WATER, };
-                    case 4: return { x: 0, y: 0, type: GRASS, };
-                    case 5: return { x: 0, y: 0, type: BRIDGEH, };
-                    case 6: return { x: 0, y: 0, type: BRIDGEV, };
+                    case 0: return { x: 0, y: 0, type: EMPTY };
+                    case 1: return { x: 0, y: 0, type: BRICK };
+                    case 2: return { x: 0, y: 0, type: BETON };
+                    case 3: return { x: 0, y: 0, type: WATER };
+                    case 4: return { x: 0, y: 0, type: GRASS };
+                    case 5: return { x: 0, y: 0, type: BRIDGEH };
+                    case 6: return { x: 0, y: 0, type: BRIDGEV };
                     default:
                         return console.assert(false, `Unknown tile type ${val}`);
                     }
