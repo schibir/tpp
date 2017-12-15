@@ -24,13 +24,17 @@ export class Bullet extends Entity {
         this.move(delta);
         return !level.collideBullet(this);
     }
+    died() {
+        this.owner.weapon.count++;
+    }
 
-    static updateBullets(bullets, delta) {
+    static updateBullets(level, bullets, delta) {
         for (let index = 0; index < bullets.length;) {
             const bullet = bullets[index];
-            if (bullet.update(delta)) {
+            if (bullet.update(level, delta)) {
                 index++;
             } else {
+                bullet.died();
                 bullets.splice(index, 1);
             }
         }

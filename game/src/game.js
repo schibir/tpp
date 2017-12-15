@@ -42,6 +42,7 @@ export default class Game {
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
         this.players = [new Tank(10, 10, TANK.TANK1), new Tank(15, 10, TANK.TANK2)];
 
+        this.tanks = [this.players[0], this.players[1]];
         this.bullets = [];
 
         this.newLevel();
@@ -63,22 +64,16 @@ export default class Game {
 
         // clearing
         this.level.clearEntity(this.eagle);
-        this.players[0].clear(this.level);
-        this.players[1].clear(this.level);
-
+        this.tanks.forEach((tank) => tank.clear(this.level));
         this.bullets.forEach((bullet) => bullet.clear(this.level));
 
         // updating
-        this.players[0].update(this.level, delta);
-        this.players[1].update(this.level, delta);
-
-        Bullet.updateBullets(this.bullets, delta);
+        Tank.updateTanks(this.level, this.tanks, this.bullets, delta);
+        Bullet.updateBullets(this.level, this.bullets, delta);
 
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
-        this.players[0].draw(this.level);
-        this.players[1].draw(this.level);
-
+        this.tanks.forEach((tank) => tank.draw(this.level));
         this.bullets.forEach((bullet) => bullet.draw(this.level));
     }
     onkeydown(key) {
@@ -88,6 +83,10 @@ export default class Game {
                 this.players[p].vel = 0.05;
                 this.keyMask[p] |= 1 << keyToAngle[p][key];
             }
+        }
+
+        if (key === ' '.charCodeAt()) {
+            this.players[0].shoot = true;
         }
     }
     onkeyup(key) {
