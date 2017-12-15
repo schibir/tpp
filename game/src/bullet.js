@@ -11,7 +11,11 @@ export const BULLET = {
 
 export class Bullet extends Entity {
     constructor(owner) {
-        super(owner.cx, owner.cy, 1, owner.angle, 0.1);
+        const sina = [-1, 0, 1, 0];
+        const cosa = [0, 1, 0, -1];
+        const dx = cosa[owner.angle];
+        const dy = sina[owner.angle];
+        super(owner.cx + dx, owner.cy + dy, 1, owner.angle, 0.1);
         this.owner = owner;
     }
     clear(level) {
