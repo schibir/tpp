@@ -278,11 +278,11 @@ export default class Level {
         const ind = iy * this.mapWidth + ix;
         return !!(this.map[ind] & mask);
     }
-    collideEntity(entity, mask) {
+    collideEntity(entity, offset, mask) {
         const sina = [-1, 0, 1, 0];
         const cosa = [0, 1, 0, -1];
-        const x = entity.cx + cosa[entity.angle] * 0.5 * entity.size;
-        const y = entity.cy + sina[entity.angle] * 0.5 * entity.size;
+        const x = entity.cx + cosa[entity.angle] * offset * entity.size;
+        const y = entity.cy + sina[entity.angle] * offset * entity.size;
         const x1 = x + cosa[entity.angle + 1 & 3] * 0.5;
         const y1 = y + sina[entity.angle + 1 & 3] * 0.5;
         const x2 = x - cosa[entity.angle + 1 & 3] * 0.5;
@@ -291,9 +291,9 @@ export default class Level {
         return this.collidePoint(x1, y1, mask) || this.collidePoint(x2, y2, mask);
     }
     collideTank(entity) {
-        return this.collideEntity(entity, MOVE_MASK);
+        return this.collideEntity(entity, 0.5, MOVE_MASK);
     }
     collideBullet(entity) {
-        return this.collideEntity(entity, BULLET_MASK);
+        return this.collideEntity(entity, 0, BULLET_MASK);
     }
 }
