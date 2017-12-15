@@ -278,20 +278,22 @@ export default class Level {
         const ind = iy * this.mapWidth + ix;
         return !!(this.map[ind] & mask);
     }
-    collideEntity(entity, offset, mask) {
-        const x = entity.cx + cos(entity.angle) * offset * entity.size;
-        const y = entity.cy + sin(entity.angle) * offset * entity.size;
+    collideTank(entity) {
+        const x = entity.cx + cos(entity.angle) * 0.5 * entity.size;
+        const y = entity.cy + sin(entity.angle) * 0.5 * entity.size;
         const x1 = x + cos(entity.angle + 1 & 3) * 0.5;
         const y1 = y + sin(entity.angle + 1 & 3) * 0.5;
         const x2 = x - cos(entity.angle + 1 & 3) * 0.5;
         const y2 = y - sin(entity.angle + 1 & 3) * 0.5;
 
-        return this.collidePoint(x1, y1, mask) || this.collidePoint(x2, y2, mask);
-    }
-    collideTank(entity) {
-        return this.collideEntity(entity, 0.5, MOVE_MASK);
+        return this.collidePoint(x1, y1, MOVE_MASK) || this.collidePoint(x2, y2, MOVE_MASK);
     }
     collideBullet(entity) {
-        return this.collideEntity(entity, 0, BULLET_MASK);
+        const x1 = entity.cx + cos(entity.angle + 1 & 3) * 0.5;
+        const y1 = entity.cy + sin(entity.angle + 1 & 3) * 0.5;
+        const x2 = entity.cx - cos(entity.angle + 1 & 3) * 0.5;
+        const y2 = entity.cy - sin(entity.angle + 1 & 3) * 0.5;
+
+        return this.collidePoint(x1, y1, BULLET_MASK) || this.collidePoint(x2, y2, BULLET_MASK);
     }
 }
