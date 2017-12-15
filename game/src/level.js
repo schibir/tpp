@@ -11,7 +11,6 @@ const GRASS = 32;
 const PREGRASS = 64;    // adjacent for grass
 const BRIDGEH = 128;
 const BRIDGEV = 256;
-const BOARD = 512;
 const BRIDGE = BRIDGEH | BRIDGEV;
 const MOVE_MASK = HALF | BRICK | BETON | WATER;
 const BULLET_MASK = HALF | BRICK | BETON;
@@ -81,7 +80,7 @@ export default class Level {
             layerGround.context.globalCompositeOperation = "multiply";
 
             this.map.forEach((tile, index) => {
-                if (tile & (WATER | BRIDGE)) {
+                if (tile.type & (WATER | BRIDGE)) {
                     const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.lavaMask.length | 0;
                     layerLava.context.drawImage(this.textures.lavaMask[ind], posX, posY);
@@ -99,10 +98,10 @@ export default class Level {
         };
         const renderBridge = () => {
             this.map.forEach((tile, index) => {
-                if (tile & BRIDGE) {
+                if (tile.type & BRIDGE) {
                     const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.bridgeV.length | 0;
-                    if (tile & BRIDGEV) {
+                    if (tile.type & BRIDGEV) {
                         layerLava.context.drawImage(this.textures.bridgeV[ind], posX, posY);
                     } else {
                         layerLava.context.drawImage(this.textures.bridgeH[ind], posX, posY);
@@ -112,9 +111,9 @@ export default class Level {
         };
         const renderBrick = () => {
             this.map.forEach((tile, index) => {
-                if (tile & (BRICK | BETON)) {
+                if (tile.type & (BRICK | BETON)) {
                     const { posX, posY } = calcTilePos(index, false);
-                    const img = tile & BRICK ? this.textures.brick : this.textures.beton;
+                    const img = tile.type & BRICK ? this.textures.brick : this.textures.beton;
                     const srcX = posX % img.width | 0;
                     const srcY = posY % img.height | 0;
                     layerBrick.context.drawImage(img,
@@ -127,7 +126,7 @@ export default class Level {
         };
         const renderGrass = () => {
             this.map.forEach((tile, index) => {
-                if (tile & GRASS) {
+                if (tile.type & GRASS) {
                     const { posX, posY } = calcTilePos(index, true);
                     const ind = Math.random() * this.textures.lavaMask.length | 0;
                     this.layerGrass.context.drawImage(this.textures.grassMask[ind], posX, posY);
@@ -170,13 +169,13 @@ export default class Level {
 
                 this.map = data.map((val) => {
                     switch (val) {
-                    case 0: return EMPTY;
-                    case 1: return BRICK;
-                    case 2: return BETON;
-                    case 3: return WATER;
-                    case 4: return GRASS;
-                    case 5: return BRIDGEH;
-                    case 6: return BRIDGEV;
+                    case 0: return { type: EMPTY };
+                    case 1: return { type: BRICK };
+                    case 2: return { type: BETON };
+                    case 3: return { type: WATER };
+                    case 4: return { type: GRASS };
+                    case 5: return { type: BRIDGEH };
+                    case 6: return { type: BRIDGEV };
                     default:
                         return console.assert(false, `Unknown tile type ${val}`);
                     }
@@ -193,8 +192,8 @@ export default class Level {
                                     x < this.mapWidth &&
                                     y >= 0 &&
                                     y < this.mapHeight &&
-                                    this.map[y * this.mapWidth + x] & GRASS) {
-                                    this.map[j * this.mapWidth + i] |= PREGRASS;
+                                    this.map[y * this.mapWidth + x].type & GRASS) {
+                                    this.map[j * this.mapWidth + i].type |= PREGRASS;
                                 }
                             }
                         }
@@ -280,7 +279,7 @@ export default class Level {
     }
     collidePoint(x, y, mask) {
         const tile = this.getTile(x, y);
-        return tile ? tile & mask : BOARD;
+        return !tile || !!(tile.type & mask);
     }
     collideTank(entity) {
         const x = entity.cx + cos(entity.angle) * 0.5 * entity.size;
@@ -290,7 +289,7 @@ export default class Level {
         const x2 = x - cos(entity.angle + 1 & 3) * 0.5;
         const y2 = y - sin(entity.angle + 1 & 3) * 0.5;
 
-        return this.collidePoint(x1, y1, MOVE_MASK) | this.collidePoint(x2, y2, MOVE_MASK);
+        return this.collidePoint(x1, y1, MOVE_MASK) || this.collidePoint(x2, y2, MOVE_MASK);
     }
     collideBullet(entity) {
         const x1 = entity.cx + cos(entity.angle + 1 & 3) * 0.5;
@@ -302,19 +301,15 @@ export default class Level {
         const collide2 = this.collidePoint(x2, y2, BULLET_MASK);
 
         const decrementLevel = (x, y) => {
-            const ix = x | 0;
-            const iy = y | 0;
-            const ind = iy * this.mapWidth + ix;
-
+            const tile = this.getTile(x, y);
+            if (tile) {
+                // if (tile === BRICK)
+            }
         };
 
-        if (collide1 & BULLET_MASK) {
+        if (collide1) decrementLevel(x1, y1);
+        if (collide2) decrementLevel(x2, y2);
 
-        }
-        if (collide2 & BULLET_MASK) {
-
-        }
-
-        return collide1 | collide2;
+        return collide1 || collide2;
     }
 }
