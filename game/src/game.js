@@ -22,6 +22,10 @@ const maskToAngle = {
     4: 2,
     8: 3,
 };
+const keyShoot = [
+    " ".charCodeAt(0),
+    "Q".charCodeAt(0),
+];
 
 export default class Game {
     constructor(difficulty, canvas, mode = "level") {
@@ -38,6 +42,7 @@ export default class Game {
 
         // player settings
         this.keyMask = [0, 0];
+        this.shootKeyPress = [false, false];
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
         this.players = [new Tank(10, 10, TANK.TANK1), new Tank(15, 10, TANK.TANK2)];
@@ -83,10 +88,10 @@ export default class Game {
                 this.players[p].vel = 0.05;
                 this.keyMask[p] |= 1 << keyToAngle[p][key];
             }
-        }
-
-        if (key === ' '.charCodeAt()) {
-            this.players[0].shoot = true;
+            if (this.players[p] && key === keyShoot[p]) {
+                this.players[p].shoot = !this.shootKeyPress[p];
+                this.shootKeyPress[p] = true;
+            }
         }
     }
     onkeyup(key) {
@@ -100,6 +105,7 @@ export default class Game {
                 } else {
                     this.players[p].vel = 0;
                 }
+                this.shootKeyPress[p] = false;
             }
         }
     }
