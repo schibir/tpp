@@ -2,16 +2,16 @@
 import { getMapSize, getTileSize, sin, cos } from "./utils";
 import GenTextures from "./gener/genTextures";
 
-const EMPTY = 0;
-const HALF = 1;
-const BRICK = 2;
-const BETON = 4;
-const WATER = 8;
-const GRASS = 16;
-const PREGRASS = 32;    // adjacent for grass
-const BRIDGEH = 64;
-const BRIDGEV = 128;
-const BOARD = 256;
+const EMPTY = 1;
+const HALF = 2;
+const BRICK = 4;
+const BETON = 8;
+const WATER = 16;
+const GRASS = 32;
+const PREGRASS = 64;    // adjacent for grass
+const BRIDGEH = 128;
+const BRIDGEV = 256;
+const BOARD = 512;
 const BRIDGE = BRIDGEH | BRIDGEV;
 const MOVE_MASK = HALF | BRICK | BETON | WATER;
 const BULLET_MASK = HALF | BRICK | BETON;
@@ -269,14 +269,18 @@ export default class Level {
         this.drawEntityBegin(entity, texture);
         this.drawEntityEnd(entity);
     }
-    collidePoint(x, y, mask) {
+    getTile(x, y) {
         if (x < 0 || x >= this.mapWidth ||
-            y < 0 || y >= this.mapHeight) return BOARD;
+            y < 0 || y >= this.mapHeight) return null;
 
         const ix = x | 0;
         const iy = y | 0;
         const ind = iy * this.mapWidth + ix;
-        return this.map[ind] & mask;
+        return this.map[ind];
+    }
+    collidePoint(x, y, mask) {
+        const tile = this.getTile(x, y);
+        return tile ? tile & mask : BOARD;
     }
     collideTank(entity) {
         const x = entity.cx + cos(entity.angle) * 0.5 * entity.size;
