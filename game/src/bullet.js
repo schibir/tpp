@@ -11,11 +11,12 @@ export const BULLET = {
 };
 
 export class Bullet extends Entity {
-    constructor(owner) {
+    constructor(owner, callback) {
         const dx = cos(owner.angle);
         const dy = sin(owner.angle);
         super(owner.cx + dx, owner.cy + dy, 1, owner.angle, 0.1);
         this.owner = owner;
+        this.callback = callback;
     }
     clear(level) {
         level.clearEntity(this);
@@ -27,9 +28,6 @@ export class Bullet extends Entity {
         this.move(delta);
         return !level.collideBullet(this);
     }
-    died() {
-        this.owner.weapon.count++;
-    }
 
     static updateBullets(level, bullets, delta) {
         for (let index = 0; index < bullets.length;) {
@@ -37,7 +35,7 @@ export class Bullet extends Entity {
             if (bullet.update(level, delta)) {
                 index++;
             } else {
-                bullet.died();
+                bullet.callback();
                 bullets.splice(index, 1);
             }
         }
