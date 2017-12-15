@@ -27,3 +27,11 @@ export function getTileSize(width, height) {
     const tileHeight = height / mapHeight | 0;
     return Math.min(tileWidth, tileHeight);
 }
+
+export function cos(angle) {
+    return [0, 1, 0, -1][angle];
+}
+
+export function sin(angle) {
+    return [-1, 0, 1, 0][angle];
+}

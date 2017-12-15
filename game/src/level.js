@@ -1,5 +1,5 @@
 
-import { getMapSize, getTileSize } from "./utils";
+import { getMapSize, getTileSize, sin, cos } from "./utils";
 import GenTextures from "./gener/genTextures";
 
 const EMPTY = 0;
@@ -279,14 +279,12 @@ export default class Level {
         return !!(this.map[ind] & mask);
     }
     collideEntity(entity, offset, mask) {
-        const sina = [-1, 0, 1, 0];
-        const cosa = [0, 1, 0, -1];
-        const x = entity.cx + cosa[entity.angle] * offset * entity.size;
-        const y = entity.cy + sina[entity.angle] * offset * entity.size;
-        const x1 = x + cosa[entity.angle + 1 & 3] * 0.5;
-        const y1 = y + sina[entity.angle + 1 & 3] * 0.5;
-        const x2 = x - cosa[entity.angle + 1 & 3] * 0.5;
-        const y2 = y - sina[entity.angle + 1 & 3] * 0.5;
+        const x = entity.cx + cos(entity.angle) * offset * entity.size;
+        const y = entity.cy + sin(entity.angle) * offset * entity.size;
+        const x1 = x + cos(entity.angle + 1 & 3) * 0.5;
+        const y1 = y + sin(entity.angle + 1 & 3) * 0.5;
+        const x2 = x - cos(entity.angle + 1 & 3) * 0.5;
+        const y2 = y - sin(entity.angle + 1 & 3) * 0.5;
 
         return this.collidePoint(x1, y1, mask) || this.collidePoint(x2, y2, mask);
     }
