@@ -2,6 +2,7 @@
 import Entity from "./entity";
 import Weapon from "./weapon";
 import { BULLET } from "./bullet";
+import { sin, cos } from "./utils";
 
 export const TANK = {
     TANK1: 0,
@@ -19,6 +20,8 @@ export class Tank extends Entity {
         super(cx, cy);
         this.type = type;
         this.animTrack = 0;
+        this.animTurret = 0;
+        this.turret = new Entity(cx, cy);
         this.weapon = new Weapon(this, BULLET.SIMPLE);
         this.shoot = false;
     }
@@ -28,7 +31,7 @@ export class Tank extends Entity {
     draw(level) {
         level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
         level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
-        level.drawEntityBegin(this, level.textures.tankTurret[this.angle][this.type]);
+        level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
         level.drawEntityEnd(this);
     }
     update(level, delta) {
@@ -40,11 +43,20 @@ export class Tank extends Entity {
         else if (this.vel > 0.01) {
             this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
         }
+
+        this.turret.cx = this.cx + cos(this.angle) * this.animTurret;
+        this.turret.cy = this.cy + sin(this.angle) * this.animTurret;
+        this.animTurret *= 0.9;
     }
     updateWeapon() {
-        const ret = this.shoot ? this.weapon.shoot() : null;
+        const bullet = this.shoot ? this.weapon.shoot() : null;
         this.shoot = false;
-        return ret;
+
+        if (bullet) {
+            this.animTurret = -0.3;
+        }
+
+        return bullet;
     }
 
     static updateTanks(level, tanks, bullets, delta) {
