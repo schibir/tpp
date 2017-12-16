@@ -311,7 +311,7 @@ export default class SimpleBuffer {
         console.log("Brick generate", Date.now() - time);
         return this;
     }
-    brickMask(countWidth, countHeight) {
+    brickMask(countWidth, countHeight, alternat = true) {
         const time = Date.now();
 
         const brickWidth = this.size / countWidth;
@@ -319,7 +319,7 @@ export default class SimpleBuffer {
 
         for (let brickY = 0; brickY < countHeight; brickY++) {
             const y = brickY * brickHeight | 0;
-            const startX = (brickY % 2 | 0) ? (-brickWidth * 0.5 | 0) : 0;
+            const startX = (brickY % 2 | 0) && alternat ? (-brickWidth * 0.5 | 0) : 0;
             this.bresenham(0, y, this.size, y, 1);
 
             for (let brickX = 0; brickX < countWidth; brickX++) {
