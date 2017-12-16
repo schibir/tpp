@@ -17,3 +17,11 @@ export const BULLET = {
     POWER: 3,
     FIRE: 4,
 };
+
+export const ITEM = {
+    LIFE: 0,
+    KNUKLE: 1,
+    STAR: 2,
+    SPEED: 3,
+    FIREBALL: 4,
+};

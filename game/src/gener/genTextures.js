@@ -557,7 +557,7 @@ export default class GenTextures {
             .normalize(0, 1);
 
         const itemTemplate = new SimpleBuffer(tileSize * 2);
-        const itemTemplateImg = itemTemplate
+        itemTemplate
             .forEach((a, i, j) => {
                 const x = (i / itemTemplate.size - 0.5) * 2;
                 const y = (j / itemTemplate.size - 0.5) * 2;
@@ -568,7 +568,11 @@ export default class GenTextures {
             .gaussian(step)
             .normalize(0, 2)
             .clamp(0, 1)
-            .normalize(0, 1.5)
-            .getColor([127, 174, 249], itemTemplateMask);
+            .normalize(0, 1.5);
+
+        const getItemTemplateImg = () => itemTemplate.getColor([127, 174, 249], itemTemplateMask);
+
+        this.itemFire = getItemTemplateImg();
+        this.itemFire.getContext("2d").drawImage(this.fireSmall, tileSize * 0.5, tileSize * 0.5);
     }
 }
