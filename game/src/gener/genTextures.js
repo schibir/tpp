@@ -1,7 +1,7 @@
 
 import SimpleBuffer from "./buffer";
 import { randColor, clamp } from "../utils";
-import { TANK } from "../global";
+import { TANK, ITEM } from "../global";
 
 export default class GenTextures {
     constructor(tileSize) {
@@ -573,8 +573,8 @@ export default class GenTextures {
         const getItemTemplateImg = () => itemTemplate.getColor([127, 174, 249], itemTemplateMask);
 
         // fireball
-        this.itemFire = getItemTemplateImg();
-        this.itemFire.getContext("2d").drawImage(this.fireSmall, tileSize * 0.5, tileSize * 0.5);
+        const itemFire = getItemTemplateImg();
+        itemFire.getContext("2d").drawImage(this.fireSmall, tileSize * 0.5, tileSize * 0.5);
 
         // speed
         const speed = new SimpleBuffer(tileSize * 2);
@@ -592,8 +592,8 @@ export default class GenTextures {
             .normalize(0, 1)
             .getColor([127, 174, 249], speed);
 
-        this.itemSpeed = getItemTemplateImg();
-        this.itemSpeed.getContext("2d").drawImage(speedImg, 0, 0);
+        const itemSpeed = getItemTemplateImg();
+        itemSpeed.getContext("2d").drawImage(speedImg, 0, 0);
 
         // knukle
         const knukleCoord = [
@@ -625,8 +625,8 @@ export default class GenTextures {
             .normalize(0, 1)
             .getColor([231, 215, 242], knukle);
 
-        this.itemKnukle = getItemTemplateImg();
-        this.itemKnukle.getContext("2d").drawImage(knukleImg, 0, 0);
+        const itemKnukle = getItemTemplateImg();
+        itemKnukle.getContext("2d").drawImage(knukleImg, 0, 0);
 
         // star
         const createStar = () => {
@@ -665,8 +665,8 @@ export default class GenTextures {
             .gaussian(step * 0.5 | 0)
             .getColor([239, 230, 155], starMask);
 
-        this.itemStar = getItemTemplateImg();
-        this.itemStar.getContext("2d").drawImage(starImg, 0, 0);
+        const itemStar = getItemTemplateImg();
+        itemStar.getContext("2d").drawImage(starImg, 0, 0);
 
         // life
         const life = new SimpleBuffer(tileSize * 2);
@@ -703,7 +703,15 @@ export default class GenTextures {
             })
             .getColor([190, 190, 190], life);
 
-        this.itemLife = getItemTemplateImg();
-        this.itemLife.getContext("2d").drawImage(lifeImg, 0, 0);
+        const itemLife = getItemTemplateImg();
+        itemLife.getContext("2d").drawImage(lifeImg, 0, 0);
+
+        this.item = {
+            [ITEM.LIFE]: itemLife,
+            [ITEM.KNUKLE]: itemKnukle,
+            [ITEM.STAR]: itemStar,
+            [ITEM.SPEED]: itemSpeed,
+            [ITEM.FIREBALL]: itemFire,
+        };
     }
 }
