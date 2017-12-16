@@ -1,21 +1,10 @@
 
 import Entity from "./entity";
 import Weapon from "./weapon";
-import { BULLET } from "./bullet";
+import { BULLET } from "./global";
 import { sin, cos } from "./utils";
 
-export const TANK = {
-    TANK1: 0,
-    TANK2: 1,
-    SIMPLE: 2,
-    BMP: 3,
-    CANNON: 4,
-    STRONG: 5,
-    PANZER: 6,
-    RANDOM: 7,
-};
-
-export class Tank extends Entity {
+export default class Tank extends Entity {
     constructor(cx, cy, type) {
         super(cx, cy);
         this.type = type;

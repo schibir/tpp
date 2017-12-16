@@ -2,8 +2,9 @@
 import { getMapSize } from "./utils";
 import Level from "./level";
 import Entity from "./entity";
-import { Tank, TANK } from "./tank";
-import { Bullet } from "./bullet";
+import Tank from "./tank";
+import Bullet from "./bullet";
+import { TANK } from "./global";
 
 const keyToAngle = [{
     38: 0,  // UP

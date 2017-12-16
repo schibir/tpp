@@ -1,5 +1,6 @@
 
-import { Bullet, BULLET } from "./bullet";
+import Bullet from "./bullet";
+import { BULLET } from "./global";
 
 export default class Weapon {
     constructor(owner, type) {

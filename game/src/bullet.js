@@ -2,15 +2,7 @@
 import Entity from "./entity";
 import { sin, cos } from "./utils";
 
-export const BULLET = {
-    SIMPLE: 0,
-    SINGLE: 1,
-    DOUBLE: 2,
-    POWER: 3,
-    FIRE: 4,
-};
-
-export class Bullet extends Entity {
+export default class Bullet extends Entity {
     constructor(owner, callback) {
         const dx = cos(owner.angle);
         const dy = sin(owner.angle);

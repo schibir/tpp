@@ -1,7 +1,7 @@
 
 import SimpleBuffer from "./buffer";
 import { randColor, clamp } from "../utils";
-import { TANK } from "../tank";
+import { TANK } from "../global";
 
 export default class GenTextures {
     constructor(tileSize) {
