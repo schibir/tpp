@@ -627,5 +627,45 @@ export default class GenTextures {
 
         this.itemKnukle = getItemTemplateImg();
         this.itemKnukle.getContext("2d").drawImage(knukleImg, 0, 0);
+
+        // star
+        const createStar = () => {
+            const getStar5 = (number, x, y) => {
+                const sina = Math.sin(Math.PI * 0.4 * number);
+                const cosa = Math.cos(Math.PI * 0.4 * number);
+                const X = x * cosa - y * sina;
+                const Y = y * cosa + x * sina;
+                let star5 = 0.5 + Y - Math.abs(X) / Math.tan(Math.PI * 0.1);
+                star5 *= Y <= 0 ? 1 : 0;
+                return star5;
+            };
+            return (new SimpleBuffer(tileSize * 2))
+                .forEach((a, i, j) => {
+                    const x = (i / itemTemplate.size - 0.5) * 2;
+                    const y = (j / itemTemplate.size - 0.5) * 2;
+
+                    let star5 = getStar5(0, x, y);
+                    for (let n = 1; n < 5; n++) {
+                        star5 = Math.max(star5, getStar5(n, x, y));
+                    }
+                    return star5;
+                });
+        };
+
+        const starMask = createStar()
+            .normalize(0, 20)
+            .clamp(0, 1)
+            .gaussian(step * 0.5 | 0)
+            .clamp(0.1, 0.2)
+            .normalize(0, 1);
+
+        const starImg = createStar()
+            .diff([1, 1])
+            .normalize(0, 2)
+            .gaussian(step * 0.5 | 0)
+            .getColor([239, 230, 155], starMask);
+
+        this.itemStar = getItemTemplateImg();
+        this.itemStar.getContext("2d").drawImage(starImg, 0, 0);
     }
 }
