@@ -588,11 +588,44 @@ export default class GenTextures {
                 const factorY = y >= 0 && y < 0.5 ? 1 : 0;
                 return arrow + factorX * factorY;
             })
-            .gaussian(2)
+            .gaussian(1)
             .normalize(0, 1)
-            .getColor([231, 215, 242], speed);
+            .getColor([127, 174, 249], speed);
 
         this.itemSpeed = getItemTemplateImg();
         this.itemSpeed.getContext("2d").drawImage(speedImg, 0, 0);
+
+        // knukle
+        const knukleCoord = [
+            [0.7, 0.53, 0.7, 0.33, 1],
+            [0.6, 0.55, 0.6, 0.28, 1],
+            [0.5, 0.53, 0.5, 0.23, 1],
+            [0.4, 0.355, 0.4, 0.255, 1],
+            [0.425, 0.43, 0.3, 0.43, 1],
+            [0.3, 0.43, 0.3, 0.58, 1.5],
+            [0.3, 0.63, 0.5, 0.73, 2],
+            [0.3, 0.58, 0.6, 0.68, 2],
+            [0.5, 0.73, 0.72, 0.61, 2],
+            [0.5, 0.73, 0.7, 0.65, 2],
+        ];
+
+        const knukle = new SimpleBuffer(tileSize * 2);
+        knukleCoord.forEach((coord) => {
+            const x1 = coord[0] * knukle.size | 0;
+            const y1 = coord[1] * knukle.size | 0;
+            const x2 = coord[2] * knukle.size | 0;
+            const y2 = coord[3] * knukle.size | 0;
+            const val = coord[4];
+            knukle.bresenham(x1, y1, x2, y2, val);
+        });
+
+        const knukleImg = knukle
+            .gaussian(step * 0.5 | 0)
+            .clamp(0, 0.1)
+            .normalize(0, 1)
+            .getColor([231, 215, 242], knukle);
+
+        this.itemKnukle = getItemTemplateImg();
+        this.itemKnukle.getContext("2d").drawImage(knukleImg, 0, 0);
     }
 }
