@@ -572,7 +572,27 @@ export default class GenTextures {
 
         const getItemTemplateImg = () => itemTemplate.getColor([127, 174, 249], itemTemplateMask);
 
+        // fireball
         this.itemFire = getItemTemplateImg();
         this.itemFire.getContext("2d").drawImage(this.fireSmall, tileSize * 0.5, tileSize * 0.5);
+
+        // speed
+        const speed = new SimpleBuffer(tileSize * 2);
+        const speedImg = speed
+            .forEach((a, i, j) => {
+                const x = (i / itemTemplate.size - 0.5) * 2;
+                const y = (j / itemTemplate.size - 0.5) * 2;
+                let arrow = -y + Math.sqrt(3) * Math.abs(x) < 0.5 ? 1 : 0;
+                arrow *= y < 0 ? 1 : 0;
+                const factorX = Math.abs(x) < 0.125 ? 1 : 0;
+                const factorY = y >= 0 && y < 0.5 ? 1 : 0;
+                return arrow + factorX * factorY;
+            })
+            .gaussian(2)
+            .normalize(0, 1)
+            .getColor([231, 215, 242], speed);
+
+        this.itemSpeed = getItemTemplateImg();
+        this.itemSpeed.getContext("2d").drawImage(speedImg, 0, 0);
     }
 }
