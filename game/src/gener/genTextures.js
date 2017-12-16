@@ -635,7 +635,7 @@ export default class GenTextures {
                 const cosa = Math.cos(Math.PI * 0.4 * number);
                 const X = x * cosa - y * sina;
                 const Y = y * cosa + x * sina;
-                let star5 = 0.5 + Y - Math.abs(X) / Math.tan(Math.PI * 0.1);
+                let star5 = 0.6 + Y - Math.abs(X) / Math.tan(Math.PI * 0.1);
                 star5 *= Y <= 0 ? 1 : 0;
                 return star5;
             };
@@ -667,5 +667,43 @@ export default class GenTextures {
 
         this.itemStar = getItemTemplateImg();
         this.itemStar.getContext("2d").drawImage(starImg, 0, 0);
+
+        // life
+        const life = new SimpleBuffer(tileSize * 2);
+        const lifeImg = life
+            .forEach((a, i, j) => {
+                const x = (i / life.size - 0.5) * 2;
+                const y = (j / life.size - 0.5) * 2;
+                const trackX = Math.abs(x) < 0.5 ? 1 : 0;
+                const trackY = y > 0.1 && y < 0.3 ? 1 : 0;
+                const turretX = Math.abs(x) < 0.15 ? 1 : 0;
+                const turretY = y > -0.3 && y < 0.2 ? 1 : 0;
+                return turretX * turretY + trackX * trackY;
+            })
+            .gaussian(step)
+            .clamp(0.1, 0.3)
+            .normalize(0, 1)
+            .bresenham(tileSize, tileSize - step, tileSize * 1.5 | 0, tileSize - step, 1)
+            .bresenham(tileSize, tileSize - step + 1, tileSize * 1.5 | 0, tileSize - step + 1, 1)
+            .bresenham(tileSize, tileSize - step + 2, tileSize * 1.5 | 0, tileSize - step + 2, 1)
+            .forEach((a, i, j) => {
+                const x = (i / life.size - 0.5) * 2;
+                const y = (j / life.size - 0.5) * 2;
+
+                const circle = (cx, cy) => {
+                    const dx = x - cx;
+                    const dy = y - cy;
+                    return Math.sqrt(dx * dx + dy * dy) < 0.1 ? 0 : 1;
+                };
+
+                return a *
+                    circle(-0.33, 0.2) *
+                    circle(0, 0.2) *
+                    circle(0.33, 0.2);
+            })
+            .getColor([190, 190, 190], life);
+
+        this.itemLife = getItemTemplateImg();
+        this.itemLife.getContext("2d").drawImage(lifeImg, 0, 0);
     }
 }
