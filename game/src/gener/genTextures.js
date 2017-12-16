@@ -229,12 +229,14 @@ export default class GenTextures {
             context.restore();
             return canvas;
         };
+        /* eslint-disable arrow-body-style */
         const rotateImage = (image, angle) => {
             return transformImage(image, (context) => context.rotate(Math.PI * 0.5 * angle));
         };
         const scaleImage = (image, vec) => {
             return transformImage(image, (context) => context.scale(vec[0], vec[1]));
         };
+        /* eslint-enable arrow-body-style */
 
         // Bridge
         this.bridgeV = new Array(8);

@@ -44,7 +44,6 @@ export default class Tank extends Entity {
         if (bullet) {
             this.animTurret = -0.3;
         }
-
         return bullet;
     }
 
