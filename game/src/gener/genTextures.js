@@ -672,7 +672,7 @@ export default class GenTextures {
 
         // life
         const life = new SimpleBuffer(tileSize * 2);
-        const lifeImg = life
+        life
             .forEach((a, i, j) => {
                 const x = (i / life.size - 0.5) * 2;
                 const y = (j / life.size - 0.5) * 2;
@@ -702,7 +702,14 @@ export default class GenTextures {
                     circle(-0.33, 0.2) *
                     circle(0, 0.2) *
                     circle(0.33, 0.2);
-            })
+            });
+
+        const lifeColor = new SimpleBuffer(tileSize * 2);
+        const lifeImg = lifeColor
+            .copy(life)
+            .gaussian(step)
+            .diff([1, 0.5])
+            .normalize(0.5, 1.5)
             .getColor([190, 190, 190], life);
 
         const itemLife = getItemTemplateImg();
