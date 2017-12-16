@@ -6,7 +6,7 @@ export default class Bullet extends Entity {
     constructor(owner, callback) {
         const dx = cos(owner.angle);
         const dy = sin(owner.angle);
-        super(owner.cx + dx, owner.cy + dy, 1, owner.angle, 0.1);
+        super(owner.cx + dx, owner.cy + dy, 1, owner.angle, 2.88);
         this.owner = owner;
         this.callback = callback;
     }
