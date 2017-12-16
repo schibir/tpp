@@ -97,15 +97,15 @@ export default class Game {
     }
     onkeyup(key) {
         for (let p = 0; p < 2; p++) {
-            if (this.players[p]) {
-                if (key in keyToAngle[p]) {
-                    this.keyMask[p] ^= 1 << keyToAngle[p][key];
-                }
+            if (this.players[p] && key in keyToAngle[p]) {
+                this.keyMask[p] ^= 1 << keyToAngle[p][key];
                 if (this.keyMask[p] in maskToAngle) {
                     this.players[p].angle = maskToAngle[this.keyMask[p]];
                 } else {
                     this.players[p].vel = 0;
                 }
+            }
+            if (this.players[p] && key === keyShoot[p]) {
                 this.shootKeyPress[p] = false;
             }
         }
