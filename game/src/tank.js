@@ -23,12 +23,13 @@ export default class Tank extends Entity {
         level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
         level.drawEntityEnd(this);
     }
-    update(level, delta) {
+    update(level, tanks, delta) {
         if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
         if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
 
         this.move(delta);
-        if (level.collideTank(this)) this.move(-delta);
+        if (level.collideTank(this) ||
+            this.collideTank(tanks)) this.move(-delta);
         else if (this.vel > 0.01) {
             this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
         }
@@ -46,11 +47,25 @@ export default class Tank extends Entity {
         }
         return bullet;
     }
+    collideTank(tanks) {
+        const cx = Math.round(this.cx);
+        const cy = Math.round(this.cy);
+        for (let i = 0; i < tanks.length; i++) {
+            const tank = tanks[i];
+            if (tank !== this) {
+                const tx = Math.round(tank.cx);
+                const ty = Math.round(tank.cy);
+                if (Math.abs(cx - tx) < 2 &&
+                    Math.abs(cy - ty) < 2) return tank;
+            }
+        }
+        return null;
+    }
 
     static updateTanks(level, tanks, bullets, delta) {
         for (let index = 0; index < tanks.length; index++) {
             const tank = tanks[index];
-            tank.update(level, delta);
+            tank.update(level, tanks, delta);
             const bullet = tank.updateWeapon();
             if (bullet) {
                 bullets.push(bullet);
