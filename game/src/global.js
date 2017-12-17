@@ -10,6 +10,10 @@ export const TANK = {
     RANDOM: 7,
 };
 
+export function tankRadius(type) {
+    return type < TANK.PANZER ? 0.8 : 1;
+}
+
 export const BULLET = {
     SIMPLE: 0,
     SINGLE: 1,
