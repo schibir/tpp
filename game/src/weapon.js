@@ -1,5 +1,5 @@
 
-import Bullet from "./bullet";
+import { Bullet } from "./bullet";
 import { bulletsCount } from "./global";
 
 export default class Weapon {

@@ -64,7 +64,7 @@ export default class Tank extends Entity {
         return null;
     }
     collideBullets(bullets) {
-        bullets.forEach((bullet) => {
+        bullets.bullets.forEach((bullet) => {
             if (!bullet.alive || bullet.owner === this) return;
             if (this.collide(bullet, tankRadius(this.type), 0.5)) {
                 bullet.died();
@@ -78,7 +78,7 @@ export default class Tank extends Entity {
             tank.update(level, tanks, bullets, delta);
             const bullet = tank.updateWeapon();
             if (bullet) {
-                bullets.push(bullet);
+                bullets.add(bullet);
             }
         }
     }

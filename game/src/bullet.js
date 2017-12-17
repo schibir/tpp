@@ -3,14 +3,13 @@ import Entity from "./entity";
 import { sin, cos } from "./utils";
 import { bulletVelocity, BULLET } from "./global";
 
-export default class Bullet extends Entity {
+export class Bullet extends Entity {
     constructor(owner, type, callback) {
         const dx = cos(owner.angle);
         const dy = sin(owner.angle);
         const vel = bulletVelocity(type);
         const size = (vel > 5) && (type & BULLET.FIRE) ? 2 : 1;
         super(owner.cx + dx, owner.cy + dy, size, owner.angle, vel);
-        this.owner = owner;
         this.type = type;
         this.callback = callback;
         this.alive = true;
@@ -29,33 +28,50 @@ export default class Bullet extends Entity {
         if (this.size > 1.5) texture = level.textures.fireLong[this.angle];
         level.drawEntity(this, texture);
     }
-    update(level, bullets, delta) {
+    update(level, delta) {
         if (!this.alive) return;
         this.move(delta);
         if (level.collideBullet(this, (this.type & BULLET.POWER) === BULLET.POWER)) this.died();
-        this.collideBullets(bullets);
     }
-    collideBullets(bullets) {
-        if (!this.alive) return;
-        for (let i = 0; i < bullets.length; i++) {
-            if (bullets[i].alive && this.collide(bullets[i], 0.5, 0.5)) {
-                const myFire = !!(this.type & BULLET.FIRE);
-                const otherFire = !!(bullets[i].type & BULLET.FIRE);
-                if (!myFire || otherFire) this.died();
-                if (!otherFire || myFire) bullets[i].died();
-                return;
+}
+
+export class BulletManager {
+    constructor() {
+        this.bullets = [];
+    }
+    clear(level) {
+        this.bullets.forEach((bullet) => bullet.clear(level));
+    }
+    draw(level) {
+        this.bullets.forEach((bullet) => bullet.draw(level));
+    }
+    add(bullet) {
+        this.bullets.push(bullet);
+    }
+    update(level, delta) {
+        const collide = (bullet) => {
+            if (!bullet.alive) return;
+            for (let i = 0; i < this.bullets.length; i++) {
+                if (this.bullets[i].alive && bullet.collide(this.bullets[i], 0.5, 0.5)) {
+                    const myFire = !!(bullet.type & BULLET.FIRE);
+                    const otherFire = !!(this.bullets[i].type & BULLET.FIRE);
+                    if (!myFire || otherFire) bullet.died();
+                    if (!otherFire || myFire) this.bullets[i].died();
+                    return;
+                }
             }
-        }
-    }
+        };
 
-    static updateBullets(level, bullets, delta) {
-        bullets.forEach((bullet) => bullet.update(level, bullets, delta));
+        this.bullets.forEach((bullet) => {
+            bullet.update(level, delta);
+            collide(bullet);
+        });
 
-        for (let index = 0; index < bullets.length;) {
-            if (bullets[index].alive) {
+        for (let index = 0; index < this.bullets.length;) {
+            if (this.bullets[index].alive) {
                 index++;
             } else {
-                bullets.splice(index, 1);
+                this.bullets.splice(index, 1);
             }
         }
     }
