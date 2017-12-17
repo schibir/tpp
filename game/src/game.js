@@ -2,7 +2,7 @@
 import { getMapSize } from "./utils";
 import Level from "./level";
 import { Entity } from "./entity";
-import Tank from "./tank";
+import TankManager from "./tank";
 import { BulletManager } from "./bullet";
 import ParticleManager from "./particle";
 import { TANK } from "./global";
@@ -46,12 +46,14 @@ export default class Game {
         this.keyMask = [0, 0];
         this.shootKeyPress = [false, false];
 
-        this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
-        this.players = [new Tank(10, 10, TANK.TANK1), new Tank(15, 10, TANK.TANK2)];
-
-        this.tanks = [this.players[0], this.players[1]];
+        this.tanks = new TankManager();
         this.bullets = new BulletManager();
         this.particles = new ParticleManager();
+
+        this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
+        this.tanks.create(10, 10, TANK.TANK1);
+        this.tanks.create(15, 10, TANK.TANK2);
+        this.players = [this.tanks.objects[0], this.tanks.objects[1]];
 
         this.newLevel();
     }
@@ -72,18 +74,18 @@ export default class Game {
 
         // clearing
         this.level.clearEntity(this.eagle);
-        this.tanks.forEach((tank) => tank.clear(this.level));
+        this.tanks.clear(this.level);
         this.bullets.clear(this.level);
         this.particles.clear(this.level);
 
         // updating
-        Tank.updateTanks(this.level, this.tanks, this.bullets, delta);
+        this.tanks.update(this.level, this.bullets, delta);
         this.bullets.update(this.level, delta);
         this.particles.update(this.level, delta);
 
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
-        this.tanks.forEach((tank) => tank.draw(this.level));
+        this.tanks.draw(this.level);
         this.bullets.draw(this.level);
         this.particles.draw(this.level);
     }

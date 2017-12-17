@@ -1,10 +1,10 @@
 
-import { Entity } from "./entity";
+import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
-import { BULLET, tankRadius } from "./global";
+import { BULLET } from "./global";
 import { sin, cos } from "./utils";
 
-export default class Tank extends Entity {
+class Tank extends Entity {
     constructor(cx, cy, type) {
         super(cx, cy);
         this.type = type;
@@ -24,7 +24,7 @@ export default class Tank extends Entity {
         level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
         level.drawEntityEnd(this);
     }
-    update(level, tanks, bullets, delta) {
+    update(level, tanks, delta) {
         if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
         if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
 
@@ -34,8 +34,6 @@ export default class Tank extends Entity {
         else if (this.vel > 0.01) {
             this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
         }
-
-        this.collideBullets(bullets);
 
         this.turret.cx = this.cx + cos(this.angle) * this.animTurret;
         this.turret.cy = this.cy + sin(this.angle) * this.animTurret;
@@ -64,23 +62,23 @@ export default class Tank extends Entity {
         }
         return null;
     }
-    collideBullets(bullets) {
-        bullets.objects.forEach((bullet) => {
-            if (!bullet.alive || bullet.owner === this) return;
-            if (this.collide(bullet, tankRadius(this.type), 0.5)) {
-                bullet.died();
-            }
-        });
-    }
+}
 
-    static updateTanks(level, tanks, bullets, delta) {
-        for (let index = 0; index < tanks.length; index++) {
-            const tank = tanks[index];
-            tank.update(level, tanks, bullets, delta);
+export default class TankManager extends EntityManager {
+    create(cx, cy, type) {
+        this.objects.push(new Tank(cx, cy, type));
+    }
+    update(level, bullets, delta) {
+        this.objects.forEach((tank) => {
+            tank.update(level, this.objects, delta);
             const bullet = tank.updateWeapon();
             if (bullet) {
                 bullets.add(bullet);
             }
-        }
+
+            bullets.collideTank(tank);
+        });
+
+        this.splice();
     }
 }

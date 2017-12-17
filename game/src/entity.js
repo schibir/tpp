@@ -37,7 +37,9 @@ export class EntityManager {
     }
     update(level, delta) {
         this.objects.forEach((obj) => obj.update(level, delta));
-
+        this.splice();
+    }
+    splice() {
         for (let index = 0; index < this.objects.length;) {
             if (this.objects[index].alive) {
                 index++;
