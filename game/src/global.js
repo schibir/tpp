@@ -22,6 +22,10 @@ export const BULLET = {
     FIRE: 4,
 };
 
+export function bulletVelocity(type) {
+    return type & (BULLET.SINGLE | BULLET.DOUBLE) ? 7.2 : 2.88;
+}
+
 export const ITEM = {
     LIFE: 0,
     KNUKLE: 1,

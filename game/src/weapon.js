@@ -14,7 +14,7 @@ export default class Weapon {
     shoot() {
         if (this.count) {
             this.count--;
-            return new Bullet(this.owner, () => this.count++);
+            return new Bullet(this.owner, this.type, () => this.count++);
         }
         return null;
     }

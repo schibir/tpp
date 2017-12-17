@@ -1,13 +1,15 @@
 
 import Entity from "./entity";
 import { sin, cos } from "./utils";
+import { bulletVelocity } from "./global";
 
 export default class Bullet extends Entity {
-    constructor(owner, callback) {
+    constructor(owner, type, callback) {
         const dx = cos(owner.angle);
         const dy = sin(owner.angle);
-        super(owner.cx + dx, owner.cy + dy, 1, owner.angle, 2.88);
+        super(owner.cx + dx, owner.cy + dy, 1, owner.angle, bulletVelocity(type));
         this.owner = owner;
+        this.type = type;
         this.callback = callback;
         this.alive = true;
     }
