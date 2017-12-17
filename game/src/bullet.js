@@ -14,9 +14,14 @@ export class Bullet extends Entity {
         this.type = type;
         this.callback = callback;
         this.alive = true;
+        this.particleCallback = () => {};
+    }
+    setParticleCallback(callback) {
+        this.particleCallback = callback;
     }
     died() {
         if (this.alive) {
+            this.particleCallback(this);
             this.alive = false;
             this.callback();
         }
@@ -37,7 +42,17 @@ export class Bullet extends Entity {
 }
 
 export class BulletManager extends EntityManager {
+    constructor(particles) {
+        super();
+
+        this.particleCallback = (bullet) => {
+            if (bullet.type & BULLET.FIRE) {
+                particles.emit(bullet.cx, bullet.cy);
+            }
+        };
+    }
     add(bullet) {
+        bullet.setParticleCallback(this.particleCallback);
         this.objects.push(bullet);
     }
     collideTank(tank) {
@@ -56,7 +71,9 @@ export class BulletManager extends EntityManager {
                     const myFire = !!(bullet.type & BULLET.FIRE);
                     const otherFire = !!(this.objects[i].type & BULLET.FIRE);
                     if (!myFire || otherFire) bullet.died();
+                    else bullet.particleCallback(bullet);
                     if (!otherFire || myFire) this.objects[i].died();
+                    else this.objects[i].particleCallback(this.objects[i]);
                     return;
                 }
             }

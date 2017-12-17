@@ -46,9 +46,9 @@ export default class Game {
         this.keyMask = [0, 0];
         this.shootKeyPress = [false, false];
 
-        this.tanks = new TankManager();
-        this.bullets = new BulletManager();
         this.particles = new ParticleManager();
+        this.tanks = new TankManager();
+        this.bullets = new BulletManager(this.particles);
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
         this.tanks.create(10, 10, TANK.TANK1);
