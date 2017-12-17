@@ -746,5 +746,63 @@ export default class GenTextures {
             .clamp(0, 0.5)
             .normalize(0, 0.5)
             .getColor([0, 0, 0], decal);
+
+        // particles
+        function createSpark() {
+            const COUNT_FRAMES = 10;
+            const COUNT_PART = 10;
+            const SIZE = tileSize * 2;
+            const LENGTH = step / 2;
+
+            const ret = [];
+            const pos = new Array(COUNT_PART);
+            const vel = new Array(COUNT_PART);
+            const len = new Array(COUNT_PART);
+
+            for (let i = 0; i < COUNT_PART; i++) {
+                const sx = rand(0, SIZE / COUNT_FRAMES / 2);
+                const sy = rand(0, SIZE / COUNT_FRAMES / 2);
+                const px = SIZE / 2;
+                const py = SIZE / 2;
+                pos[i] = [px, py];
+                vel[i] = [sx, sy];
+                len[i] = (Math.random() + 0.5) * LENGTH;
+            }
+
+            for (let i = 0; i < COUNT_FRAMES; i++) {
+                const buf = new SimpleBuffer(SIZE);
+                for (let j = 0; j < COUNT_PART; j++) {
+                    const x = pos[j][0] | 0;
+                    const y = pos[j][1] | 0;
+                    buf.bresenham(x, y, (x - vel[j][0] * len[j]) | 0, (y - vel[j][1] * len[j]) | 0, 1);
+                    pos[j][0] += vel[j][0];
+                    pos[j][1] += vel[j][1];
+                }
+                buf
+                    .gaussian(step)
+                    .clamp(0, 0.2)
+                    .normalize(0, 2 - 2 * i / COUNT_FRAMES);
+                ret.push(buf);
+            }
+            return ret;
+        }
+
+        // particle for simple bullet
+
+        // particle for fireball
+        const sparks = createSpark();
+        this.sparksFire = [];
+        sparks.forEach((spark) => {
+            this.sparksFire.push(spark
+                .getColor2([255, 0, 0], [255, 255, 127], spark));
+        });
+
+        // particle for brick
+
+        // particle for beton
+
+        // fire and smoke
+
+        // explode
     }
 }
