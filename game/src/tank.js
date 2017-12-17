@@ -29,7 +29,7 @@ export default class Tank extends Entity {
 
         this.move(delta);
         if (level.collideTank(this) ||
-            this.collideTank(tanks)) this.move(-delta);
+            this.collideTanks(tanks)) this.move(-delta);
         else if (this.vel > 0.01) {
             this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
         }
@@ -47,7 +47,7 @@ export default class Tank extends Entity {
         }
         return bullet;
     }
-    collideTank(tanks) {
+    collideTanks(tanks) {
         const cx = Math.round(this.cx);
         const cy = Math.round(this.cy);
         for (let i = 0; i < tanks.length; i++) {
