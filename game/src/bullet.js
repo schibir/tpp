@@ -1,13 +1,15 @@
 
 import Entity from "./entity";
 import { sin, cos } from "./utils";
-import { bulletVelocity } from "./global";
+import { bulletVelocity, BULLET } from "./global";
 
 export default class Bullet extends Entity {
     constructor(owner, type, callback) {
         const dx = cos(owner.angle);
         const dy = sin(owner.angle);
-        super(owner.cx + dx, owner.cy + dy, 1, owner.angle, bulletVelocity(type));
+        const vel = bulletVelocity(type);
+        const size = (vel > 5) && (type & BULLET.FIRE) ? 2 : 1;
+        super(owner.cx + dx, owner.cy + dy, size, owner.angle, vel);
         this.owner = owner;
         this.type = type;
         this.callback = callback;
@@ -23,7 +25,9 @@ export default class Bullet extends Entity {
         level.clearEntity(this);
     }
     draw(level) {
-        level.drawEntity(this, level.textures.bullet);
+        let texture = this.type & BULLET.FIRE ? level.textures.fireSmall[this.angle] : level.textures.bullet;
+        if (this.size > 1.5) texture = level.textures.fireLong[this.angle];
+        level.drawEntity(this, texture);
     }
     update(level, bullets, delta) {
         if (!this.alive) return;

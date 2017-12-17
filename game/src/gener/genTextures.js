@@ -470,8 +470,15 @@ export default class GenTextures {
                 .getColor2([255, 0, 0], [255, 255, 127], fire);
         };
 
-        this.fireLong = createFire(tileSize * 2);
-        this.fireSmall = createFire(tileSize);
+        this.fireSmall = new Array(4);
+        this.fireLong = new Array(4);
+        this.fireLong[0] = createFire(tileSize * 2);
+        this.fireSmall[0] = createFire(tileSize);
+
+        for (let i = 1; i < 4; i++) {
+            this.fireLong[i] = rotateImage(this.fireLong[0], i);
+            this.fireSmall[i] = rotateImage(this.fireSmall[0], i);
+        }
 
         // shield
         const shieldMask = new SimpleBuffer(tileSize * 3);
@@ -576,7 +583,7 @@ export default class GenTextures {
 
         // fireball
         const itemFire = getItemTemplateImg();
-        itemFire.getContext("2d").drawImage(this.fireSmall, tileSize * 0.5, tileSize * 0.5);
+        itemFire.getContext("2d").drawImage(this.fireSmall[0], tileSize * 0.5, tileSize * 0.5);
 
         // speed
         const speed = new SimpleBuffer(tileSize * 2);

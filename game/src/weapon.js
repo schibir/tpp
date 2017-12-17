@@ -1,6 +1,6 @@
 
 import Bullet from "./bullet";
-import { BULLET } from "./global";
+import { bulletsCount } from "./global";
 
 export default class Weapon {
     constructor(owner, type) {
@@ -9,7 +9,7 @@ export default class Weapon {
     }
     setType(type) {
         this.type = type;
-        this.count = this.type === BULLET.DOUBLE || this.type === BULLET.POWER ? 2 : 1;
+        this.count = bulletsCount(type);
     }
     shoot() {
         if (this.count) {
