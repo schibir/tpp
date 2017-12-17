@@ -32,7 +32,7 @@ export default class Bullet extends Entity {
     update(level, bullets, delta) {
         if (!this.alive) return;
         this.move(delta);
-        if (level.collideBullet(this)) this.died();
+        if (level.collideBullet(this, (this.type & BULLET.POWER) === BULLET.POWER)) this.died();
         this.collideBullets(bullets);
     }
     collideBullets(bullets) {

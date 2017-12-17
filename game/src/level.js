@@ -311,7 +311,7 @@ export default class Level {
 
         return this.collidePoint(x1, y1, MOVE_MASK) || this.collidePoint(x2, y2, MOVE_MASK);
     }
-    collideBullet(entity) {
+    collideBullet(entity, power) {
         const x1 = entity.cx + cos(entity.angle + 1 & 3) * 0.5;
         const y1 = entity.cy + sin(entity.angle + 1 & 3) * 0.5;
         const x2 = entity.cx - cos(entity.angle + 1 & 3) * 0.5;
@@ -323,11 +323,17 @@ export default class Level {
         const decrementLevel = (x, y) => {
             const tile = this.getTile(x, y);
             if (tile) {
-                if ((tile.type & BULLET_MASK) === BRICK) {
+                const tileType = tile.type & BULLET_MASK;
+                const needHalf = ((tileType === BRICK) && !power) ||
+                                 ((tileType === BETON) && power);
+                const needEmpty = (tileType === (BRICK | HALF)) ||
+                                 ((tileType === (BETON | HALF)) && power) ||
+                                 ((tileType === BRICK) && power);
+                if (needHalf) {
                     tile.type |= HALF;
                     this.drawTile(this.layer1.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
-                } else if ((tile.type & BULLET_MASK) === (BRICK | HALF)) {
+                } else if (needEmpty) {
                     tile.type &= ~BULLET_MASK;
                     this.drawTile(this.layer0.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
