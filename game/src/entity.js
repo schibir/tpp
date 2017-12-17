@@ -17,4 +17,10 @@ export default class Entity {
         this.cx += dx;
         this.cy += dy;
     }
+    collide(other, mySizeKoef, otherSizeKoef) {
+        if (this === other) return false;
+        const minRadius = this.size * mySizeKoef * 0.5 + other.size * otherSizeKoef * 0.5;
+        return (Math.abs(this.cx - other.cx) <= minRadius &&
+                Math.abs(this.cy - other.cy) <= minRadius);
+    }
 }

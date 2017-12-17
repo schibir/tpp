@@ -32,14 +32,10 @@ export default class Bullet extends Entity {
     collideBullets(bullets) {
         if (!this.alive) return;
         for (let i = 0; i < bullets.length; i++) {
-            const bullet = bullets[i];
-            if (bullet !== this && bullet.alive) {
-                if (Math.abs(this.cx - bullet.cx) <= 0.5 &&
-                    Math.abs(this.cy - bullet.cy) <= 0.5) {
-                    this.died();
-                    bullet.died();
-                    return;
-                }
+            if (bullets[i].alive && this.collide(bullets[i], 0.5, 0.5)) {
+                this.died();
+                bullets[i].died();
+                return;
             }
         }
     }
