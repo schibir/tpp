@@ -37,3 +37,11 @@ export const ITEM = {
     SPEED: 3,
     FIREBALL: 4,
 };
+
+export const PART = {
+    SPARK: 0,
+    FIRE: 1,
+    BRICK: 2,
+    BETON: 3,
+    EXPLODE: 4,
+};

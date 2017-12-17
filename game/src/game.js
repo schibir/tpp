@@ -4,6 +4,7 @@ import Level from "./level";
 import Entity from "./entity";
 import Tank from "./tank";
 import Bullet from "./bullet";
+import ParticleManager from "./particle";
 import { TANK } from "./global";
 
 const keyToAngle = [{
@@ -50,6 +51,7 @@ export default class Game {
 
         this.tanks = [this.players[0], this.players[1]];
         this.bullets = [];
+        this.particles = new ParticleManager();
 
         this.newLevel();
     }
@@ -72,6 +74,7 @@ export default class Game {
         this.level.clearEntity(this.eagle);
         this.tanks.forEach((tank) => tank.clear(this.level));
         this.bullets.forEach((bullet) => bullet.clear(this.level));
+        this.particles.clear(this.level);
 
         // updating
         Tank.updateTanks(this.level, this.tanks, this.bullets, delta);
@@ -81,6 +84,7 @@ export default class Game {
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
         this.tanks.forEach((tank) => tank.draw(this.level));
         this.bullets.forEach((bullet) => bullet.draw(this.level));
+        this.particles.draw(this.level, delta);
     }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {
