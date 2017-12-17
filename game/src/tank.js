@@ -1,5 +1,5 @@
 
-import Entity from "./entity";
+import { Entity } from "./entity";
 import Weapon from "./weapon";
 import { BULLET, tankRadius } from "./global";
 import { sin, cos } from "./utils";
@@ -13,6 +13,7 @@ export default class Tank extends Entity {
         this.turret = new Entity(cx, cy);
         this.weapon = new Weapon(this, BULLET.SIMPLE);
         this.shoot = false;
+        this.alive = true;
     }
     clear(level) {
         level.clearEntity(this);
@@ -64,7 +65,7 @@ export default class Tank extends Entity {
         return null;
     }
     collideBullets(bullets) {
-        bullets.bullets.forEach((bullet) => {
+        bullets.objects.forEach((bullet) => {
             if (!bullet.alive || bullet.owner === this) return;
             if (this.collide(bullet, tankRadius(this.type), 0.5)) {
                 bullet.died();

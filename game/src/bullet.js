@@ -1,5 +1,5 @@
 
-import Entity from "./entity";
+import { Entity, EntityManager } from "./entity";
 import { sin, cos } from "./utils";
 import { bulletVelocity, BULLET } from "./global";
 
@@ -35,44 +35,25 @@ export class Bullet extends Entity {
     }
 }
 
-export class BulletManager {
-    constructor() {
-        this.bullets = [];
-    }
-    clear(level) {
-        this.bullets.forEach((bullet) => bullet.clear(level));
-    }
-    draw(level) {
-        this.bullets.forEach((bullet) => bullet.draw(level));
-    }
+export class BulletManager extends EntityManager {
     add(bullet) {
-        this.bullets.push(bullet);
+        this.objects.push(bullet);
     }
     update(level, delta) {
         const collide = (bullet) => {
             if (!bullet.alive) return;
-            for (let i = 0; i < this.bullets.length; i++) {
-                if (this.bullets[i].alive && bullet.collide(this.bullets[i], 0.5, 0.5)) {
+            for (let i = 0; i < this.objects.length; i++) {
+                if (this.objects[i].alive && bullet.collide(this.objects[i], 0.5, 0.5)) {
                     const myFire = !!(bullet.type & BULLET.FIRE);
-                    const otherFire = !!(this.bullets[i].type & BULLET.FIRE);
+                    const otherFire = !!(this.objects[i].type & BULLET.FIRE);
                     if (!myFire || otherFire) bullet.died();
-                    if (!otherFire || myFire) this.bullets[i].died();
+                    if (!otherFire || myFire) this.objects[i].died();
                     return;
                 }
             }
         };
 
-        this.bullets.forEach((bullet) => {
-            bullet.update(level, delta);
-            collide(bullet);
-        });
-
-        for (let index = 0; index < this.bullets.length;) {
-            if (this.bullets[index].alive) {
-                index++;
-            } else {
-                this.bullets.splice(index, 1);
-            }
-        }
+        this.objects.forEach((bullet) => collide(bullet));
+        super.update(level, delta);
     }
 }

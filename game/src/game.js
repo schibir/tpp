@@ -1,7 +1,7 @@
 
 import { getMapSize } from "./utils";
 import Level from "./level";
-import Entity from "./entity";
+import { Entity } from "./entity";
 import Tank from "./tank";
 import { BulletManager } from "./bullet";
 import ParticleManager from "./particle";
@@ -79,12 +79,13 @@ export default class Game {
         // updating
         Tank.updateTanks(this.level, this.tanks, this.bullets, delta);
         this.bullets.update(this.level, delta);
+        this.particles.update(this.level, delta);
 
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
         this.tanks.forEach((tank) => tank.draw(this.level));
         this.bullets.draw(this.level);
-        this.particles.draw(this.level, delta);
+        this.particles.draw(this.level);
     }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {

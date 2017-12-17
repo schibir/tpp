@@ -1,32 +1,25 @@
 
-import Entity from "./entity";
+import { Entity, EntityManager } from "./entity";
 import { PART } from "./global";
 
 class Particle {
     constructor(cx, cy) {
         this.entity = new Entity(cx, cy);
         this.creationTime = Date.now();
+        this.alive = true;
     }
     clear(level) {
         level.clearEntity(this.entity);
     }
-    draw(level, delta) {
+    draw(level) {
         const ind = ((Date.now() - this.creationTime) / 40) % level.textures.sparksFire.length | 0;
         level.drawEntity(this.entity, level.textures.sparksFire[ind]);
     }
+    update(level, delta) {}
 }
 
-export default class ParticleManager {
-    constructor() {
-        this.particles = [];
-    }
+export default class ParticleManager extends EntityManager {
     emit(cx, cy) {
-        this.particles.push(new Particle(cx, cy));
-    }
-    clear(level) {
-        this.particles.forEach((part) => part.clear(level));
-    }
-    draw(level, delta) {
-        this.particles.forEach((part) => part.draw(level, delta));
+        this.objects.push(new Particle(cx, cy));
     }
 }
