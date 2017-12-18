@@ -26,6 +26,13 @@ class Particle {
     clear(level) {
         level.clearEntity(this.entity);
     }
+    getBrickTexture(level) {
+        const id = this.random * level.textures.sparksBrick.length | 0;
+        const ind = (this.invAngle * this.deltatime / 30 + level.textures.sparksBrick[id].length * this.startAngle | 0) %
+            level.textures.sparksBrick[id].length | 0;
+        this.entity.vel = this.maxvel * (1 - this.deltatime / this.lifetime);
+        return level.textures.sparksBrick[id][ind];
+    }
     draw(level) {
         if (this.alive) {
             switch (this.type) {
@@ -41,11 +48,8 @@ class Particle {
                 break;
             }
             case PART.BRICK: {
-                const id = this.random * level.textures.sparksBrick.length | 0;
-                const ind = (this.invAngle * this.deltatime / 30 + level.textures.sparksBrick[id].length * this.startAngle | 0) %
-                    level.textures.sparksBrick[id].length | 0;
                 this.entity.vel = this.maxvel * (1 - this.deltatime / this.lifetime);
-                level.drawEntity(this.entity, level.textures.sparksBrick[id][ind]);
+                level.drawEntity(this.entity, this.getBrickTexture(level));
                 break;
             }
             default: break;
@@ -57,10 +61,7 @@ class Particle {
         if (this.deltatime >= this.lifetime) {
             this.alive = false;
             if (this.type === PART.BRICK) {
-                const id = this.random * level.textures.sparksBrick.length | 0;
-                const ind = (this.invAngle * this.deltatime / 30 + level.textures.sparksBrick[id].length * this.startAngle | 0) %
-                    level.textures.sparksBrick[id].length | 0;
-                level.drawEntityToAllLayers(this.entity, level.textures.sparksBrick[id][ind]);
+                level.drawEntityToAllLayers(this.entity, this.getBrickTexture(level));
             }
         }
 
