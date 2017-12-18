@@ -830,7 +830,9 @@ export default class GenTextures {
         this.sparksBrick = sparksBrick
             .normDist(1)
             .normalize(0, 1)
-            .getColor([255, 255, 255], sparksBrick);
+            .clamp(0.1, 0.3)
+            .normalize(0, 1)
+            .getColor(randColor([200, 80, 60]), sparksBrick);
 
         // particle for beton
 

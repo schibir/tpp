@@ -274,21 +274,26 @@ export default class Level {
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
         this.drawTile(this.layer.canvas, x, y, x, y, entity.size);
     }
-    drawEntityBegin(entity, texture) {
+    drawEntityBegin(entity, texture, destContext = this.context) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
         const y = entity.cy + 1 - entity.size * 0.5;    // for board
-        this.drawTile(texture, 0, 0, x, y, entity.size);
+        this.drawTile(texture, 0, 0, x, y, entity.size, destContext);
     }
-    drawEntityEnd(entity) {
+    drawEntityEnd(entity, destContext = this.context) {
         if (this.collidePoint(entity.cx, entity.cy, PREGRASS | GRASS)) {
             const x = entity.cx + 1 - entity.size * 0.5;    // for board
             const y = entity.cy + 1 - entity.size * 0.5;    // for board
-            this.drawTile(this.layerGrass.canvas, x, y, x, y, entity.size);
+            this.drawTile(this.layerGrass.canvas, x, y, x, y, entity.size, destContext);
         }
     }
     drawEntity(entity, texture) {
         this.drawEntityBegin(entity, texture);
         this.drawEntityEnd(entity);
+    }
+    drawEntityToAllLayers(entity, texture) {
+        this.drawEntityBegin(entity, texture, this.layer.context);
+        this.drawEntityEnd(entity, this.layer.context);
+        this.clearEntity(entity);
     }
     getTile(x, y) {
         if (x < 0 || x >= this.mapWidth ||

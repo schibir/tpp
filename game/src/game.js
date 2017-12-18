@@ -85,9 +85,9 @@ export default class Game {
 
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
+        this.particles.draw(this.level);
         this.tanks.draw(this.level);
         this.bullets.draw(this.level);
-        this.particles.draw(this.level);
     }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {

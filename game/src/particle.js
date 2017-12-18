@@ -14,7 +14,6 @@ class Particle {
 
         if (type === PART.FIRE) this.entity.size = 2;
         if (type === PART.BRICK) {
-            this.entity.vel *= 0.5;
             this.entity.cx += rand(0, 0.5);
             this.entity.cy += rand(0, 0.5);
             this.lifetime += rand(0, 100);
@@ -26,7 +25,10 @@ class Particle {
     }
     draw(level) {
         const dt = Date.now() - this.creationTime;
-        if (dt >= this.lifetime) this.alive = false;
+        if (dt >= this.lifetime) {
+            this.alive = false;
+            if (this.type === PART.BRICK) level.drawEntityToAllLayers(this.entity, level.textures.sparksBrick);
+        }
         else {
             switch (this.type) {
             case PART.SPARK: {
