@@ -787,8 +787,6 @@ export default class GenTextures {
             return ret;
         }
 
-        // particle for simple bullet
-
         // particle for fireball
         this.sparksFire = new Array(16);
         const COUNT_GENERATED_SPARKS = 4;
@@ -805,6 +803,26 @@ export default class GenTextures {
             const angle = Math.random() * 4;
             const ind = Math.random() * COUNT_GENERATED_SPARKS | 0;
             this.sparksFire[ind].forEach((spark) => this.sparksFire[i].push(rotateImage(spark, angle)));
+        }
+
+        // particle for simple bullet
+        this.sparksBullet = new Array(10);
+        for (let i = 0; i < this.sparksBullet.length; i++) {
+            const sparkMask = new SimpleBuffer(tileSize * 0.5 | 0);
+            sparkMask
+                .normDist(1)
+                .clamp(0.1, 0.3)
+                .normalize(0, 1);
+
+            const spark = new SimpleBuffer(tileSize * 0.5 | 0);
+            spark
+                .normDist(1)
+                .diff([1, 0.5])
+                .normalize(0.5, 1)
+                .forBuf(sparkMask, (a, b) => a * (5 * (Math.abs(b - 0.5) - 0.5) + 1));
+
+            sparkMask.normalize(0, 1 - i / this.sparksBullet.length);
+            this.sparksBullet[i] = spark.getColor([255, 255, 255], sparkMask);
         }
 
         // particle for brick

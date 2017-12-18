@@ -1,7 +1,7 @@
 
 import { Entity, EntityManager } from "./entity";
 import { sin, cos } from "./utils";
-import { bulletVelocity, tankRadius, BULLET } from "./global";
+import { bulletVelocity, tankRadius, BULLET, PART } from "./global";
 
 export class Bullet extends Entity {
     constructor(owner, type, callback) {
@@ -46,9 +46,7 @@ export class BulletManager extends EntityManager {
         super();
 
         this.particleCallback = (bullet) => {
-            if (bullet.type & BULLET.FIRE) {
-                particles.emit(bullet.cx, bullet.cy);
-            }
+            particles.emit(bullet.cx, bullet.cy, bullet.type & BULLET.FIRE ? PART.FIRE : PART.SPARK);
         };
     }
     add(bullet) {
