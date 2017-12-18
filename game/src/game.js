@@ -61,7 +61,7 @@ export default class Game {
         let levelName = `levels/${this.mode}`;
         if (this.mode === "level") levelName += `${this.currentLevel}`;
 
-        this.level = new Level(levelName, this.canvas);
+        this.level = new Level(levelName, this.canvas, this.particles);
     }
     update() {
         if (!this.level.ready()) return;

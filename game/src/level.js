@@ -1,6 +1,7 @@
 
 import { getMapSize, getTileSize, sin, cos } from "./utils";
 import GenTextures from "./gener/genTextures";
+import { PART } from "./global";
 
 const EMPTY = 1;
 const HALF = 2;
@@ -25,13 +26,14 @@ class Layer {
 }
 
 export default class Level {
-    constructor(levelName, canvas) {
+    constructor(levelName, canvas, particles) {
         const { mapWidth, mapHeight } = getMapSize();
         const tileSize = getTileSize(canvas.width, canvas.height);
         console.log(`tileSize = ${tileSize}`);
 
         this.drawTilesPerFrame = 0;
 
+        this.particles = particles;
         this.tileSize = tileSize;
         this.mapWidth = mapWidth - 2;       // board
         this.mapHeight = mapHeight - 2;     // board
@@ -333,10 +335,12 @@ export default class Level {
                     tile.type |= HALF;
                     this.drawTile(this.layer1.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
+                    this.particles.emit(tile.x - 0.5, tile.y - 0.5, PART.BRICK);
                 } else if (needEmpty) {
                     tile.type &= ~BULLET_MASK;
                     this.drawTile(this.layer0.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
+                    this.particles.emit(tile.x - 0.5, tile.y - 0.5, PART.BRICK);
                 }
             }
         };
