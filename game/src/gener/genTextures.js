@@ -826,20 +826,58 @@ export default class GenTextures {
         }
 
         // particle for brick
-        const sparkNoise = new SimpleBuffer(tileSize * 0.5 | 0);
-        sparkNoise
-            .perlin(5, 0.5)
-            .diff([1, 0.5])
-            .normalize(0.6, 1.4);
+        const createSparkBrick = () => {
+            const offsetX = new SimpleBuffer(tileSize * 0.5 | 0);
+            offsetX.perlin(2, 0.5);
+            const offsetY = new SimpleBuffer(tileSize * 0.5 | 0);
+            offsetY.perlin(2, 0.5);
 
-        const sparksBrick = new SimpleBuffer(tileSize * 0.5 | 0);
-        this.sparksBrick = sparksBrick
-            .normDist(1)
-            .normalize(0, 1)
-            .clamp(0.1, 0.3)
-            .normalize(0, 1)
-            .forBuf(sparkNoise, (a, b) => a * b)
-            .getColor(randColor([200, 80, 60]), sparksBrick);
+            const sparkBrickMask = new SimpleBuffer(tileSize * 0.5 | 0);
+            sparkBrickMask
+                .normDist(rand(0.75, 0.25))
+                .normalize(0, 1)
+                .clamp(0.1, 0.3)
+                .normalize(0, 1);
+
+            const sparkNoise = new SimpleBuffer(tileSize * 0.5 | 0);
+            sparkNoise
+                .perlin(5, 0.5)
+                .diff([1, 0.5])
+                .normalize(0.6, 1.4);
+
+            const random = Math.random() * 0.3 + 0.7;
+
+            const spark = new SimpleBuffer(tileSize * 0.5 | 0);
+            spark
+                .forEach((a, i, j) => {
+                    const x = (i / sparkBrickMask.size - 0.5) * 2;
+                    const y = (j / sparkBrickMask.size - 0.5) * 2;
+                    const factorX = 1 - 25 / 16 * x * x;
+                    const factorY = 1 - 25 / 16 * y * y;
+
+                    const dx = offsetX.getData(i, j);
+                    const dy = offsetY.getData(i, j);
+                    const tx = clamp(i + dx * step * 0.25, 0, sparkBrickMask.size) | 0;
+                    const ty = clamp(j + dy * step * 0.25, 0, sparkBrickMask.size) | 0;
+                    return sparkBrickMask.getData(tx, ty);
+                });
+
+            return (new SimpleBuffer(tileSize * 0.5 | 0))
+                .forBuf(spark, (a, b) => b * random)
+                .forBuf(sparkNoise, (a, b) => a * b)
+                .getColor(randColor([200, 80, 60]), spark);
+        };
+
+        this.sparksBrick = [];
+        for (let i = 0; i < 10; i++) {
+            this.sparksBrick[i] = [];
+            this.sparksBrick[i].push(createSparkBrick());
+
+            const COUNT_ANGLES = 32;
+            for (let angle = 1; angle < COUNT_ANGLES; angle++) {
+                this.sparksBrick[i].push(rotateImage(this.sparksBrick[i][0], angle / COUNT_ANGLES * 4));
+            }
+        }
 
         // particle for beton
 

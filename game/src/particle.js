@@ -19,6 +19,8 @@ class Particle {
             this.entity.cy += rand(0, 0.5);
             this.lifetime += rand(0, 100);
             this.maxvel = this.entity.vel;
+            this.startAngle = Math.random();
+            this.invAngle = Math.random() ? 1 : -1;
         }
     }
     clear(level) {
@@ -39,8 +41,11 @@ class Particle {
                 break;
             }
             case PART.BRICK: {
+                const id = this.random * level.textures.sparksBrick.length | 0;
+                const ind = (this.invAngle * this.deltatime / 30 + level.textures.sparksBrick[id].length * this.startAngle | 0) %
+                    level.textures.sparksBrick[id].length | 0;
                 this.entity.vel = this.maxvel * (1 - this.deltatime / this.lifetime);
-                level.drawEntity(this.entity, level.textures.sparksBrick);
+                level.drawEntity(this.entity, level.textures.sparksBrick[id][ind]);
                 break;
             }
             }
@@ -50,7 +55,12 @@ class Particle {
         this.deltatime = Date.now() - this.creationTime;
         if (this.deltatime >= this.lifetime) {
             this.alive = false;
-            if (this.type === PART.BRICK) level.drawEntityToAllLayers(this.entity, level.textures.sparksBrick);
+            if (this.type === PART.BRICK) {
+                const id = this.random * level.textures.sparksBrick.length | 0;
+                const ind = (this.invAngle * this.deltatime / 30 + level.textures.sparksBrick[id].length * this.startAngle | 0) %
+                    level.textures.sparksBrick[id].length | 0;
+                level.drawEntityToAllLayers(this.entity, level.textures.sparksBrick[id][ind]);
+            }
         }
 
         if (this.type !== PART.FIRE) {
@@ -61,7 +71,9 @@ class Particle {
 
 export default class ParticleManager extends EntityManager {
     emit(cx, cy, type) {
-        const count = type === PART.FIRE ? 1 : 5;
+        let count = 1;
+        if (type === PART.SPARK) count = 5;
+        else if (type === PART.BRICK) count = 10
         for (let i = 0; i < count; i++) {
             this.objects.push(new Particle(cx, cy, type));
         }
