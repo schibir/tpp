@@ -6,16 +6,22 @@ export class Entity {
     constructor(cx, cy, size = 2, angle = 0, vel = 0) {
         this.cx = cx;
         this.cy = cy;
-        this.size = size | 0;
-        this.angle = angle | 0;
+        this.size = size;
+        this.angle = angle;
         this.vel = vel;
     }
-    move(delta) {
+    moveImpl(delta, sinFun, cosFun) {
         const koef = 80.0 / 1024.0 / 25;
-        const dx = cos(this.angle) * this.vel * delta * koef;
-        const dy = sin(this.angle) * this.vel * delta * koef;
+        const dx = cosFun(this.angle) * this.vel * delta * koef;
+        const dy = sinFun(this.angle) * this.vel * delta * koef;
         this.cx += dx;
         this.cy += dy;
+    }
+    move(delta) {
+        this.moveImpl(delta, sin, cos);
+    }
+    moveEx(delta) {
+        this.moveImpl(delta, Math.sin, Math.cos);
     }
     collide(other, mySizeKoef, otherSizeKoef) {
         if (this === other) return false;

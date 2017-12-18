@@ -1,11 +1,14 @@
 
 import { Entity, EntityManager } from "./entity";
 import { PART } from "./global";
+import { rand } from "./utils";
 
 class Particle {
     constructor(cx, cy, type) {
-        const size = type === PART.FIRE ? 2 : 1;
-        this.entity = new Entity(cx, cy, size);
+        const angle = Math.random() * 2 * Math.PI;
+        const vel = rand(1, 0.5);
+        const size = type === PART.FIRE ? 2 : 0.5;
+        this.entity = new Entity(cx, cy, size, angle, vel);
         this.type = type;
         this.creationTime = Date.now();
         this.alive = true;
@@ -35,11 +38,16 @@ class Particle {
             }
         }
     }
-    update(level, delta) {}
+    update(level, delta) {
+        this.entity.moveEx(delta);
+    }
 }
 
 export default class ParticleManager extends EntityManager {
     emit(cx, cy, type) {
-        this.objects.push(new Particle(cx, cy, type));
+        const count = type === PART.FIRE ? 1 : 5;
+        for (let i = 0; i < count; i++) {
+            this.objects.push(new Particle(cx, cy, type));
+        }
     }
 }
