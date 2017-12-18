@@ -826,12 +826,19 @@ export default class GenTextures {
         }
 
         // particle for brick
+        const sparkNoise = new SimpleBuffer(tileSize * 0.5 | 0);
+        sparkNoise
+            .perlin(5, 0.5)
+            .diff([1, 0.5])
+            .normalize(0.6, 1.4);
+
         const sparksBrick = new SimpleBuffer(tileSize * 0.5 | 0);
         this.sparksBrick = sparksBrick
             .normDist(1)
             .normalize(0, 1)
             .clamp(0.1, 0.3)
             .normalize(0, 1)
+            .forBuf(sparkNoise, (a, b) => a * b)
             .getColor(randColor([200, 80, 60]), sparksBrick);
 
         // particle for beton

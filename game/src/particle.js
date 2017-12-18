@@ -11,6 +11,7 @@ class Particle {
         this.alive = true;
         this.random = Math.random();
         this.lifetime = 250;
+        this.deltatime = 0;
 
         if (type === PART.FIRE) this.entity.size = 2;
         if (type === PART.BRICK) {
@@ -24,26 +25,21 @@ class Particle {
         level.clearEntity(this.entity);
     }
     draw(level) {
-        const dt = Date.now() - this.creationTime;
-        if (dt >= this.lifetime) {
-            this.alive = false;
-            if (this.type === PART.BRICK) level.drawEntityToAllLayers(this.entity, level.textures.sparksBrick);
-        }
-        else {
+        if (this.alive) {
             switch (this.type) {
             case PART.SPARK: {
-                const ind = dt / this.lifetime * level.textures.sparksBullet.length | 0;
+                const ind = this.deltatime / this.lifetime * level.textures.sparksBullet.length | 0;
                 level.drawEntity(this.entity, level.textures.sparksBullet[ind]);
                 break;
             }
             case PART.FIRE: {
                 const id = this.random * level.textures.sparksFire.length | 0;
-                const ind = dt / this.lifetime * level.textures.sparksFire[id].length | 0;
+                const ind = this.deltatime / this.lifetime * level.textures.sparksFire[id].length | 0;
                 level.drawEntity(this.entity, level.textures.sparksFire[id][ind]);
                 break;
             }
             case PART.BRICK: {
-                this.entity.vel = this.maxvel * (1 - dt / this.lifetime);
+                this.entity.vel = this.maxvel * (1 - this.deltatime / this.lifetime);
                 level.drawEntity(this.entity, level.textures.sparksBrick);
                 break;
             }
@@ -51,6 +47,12 @@ class Particle {
         }
     }
     update(level, delta) {
+        this.deltatime = Date.now() - this.creationTime;
+        if (this.deltatime >= this.lifetime) {
+            this.alive = false;
+            if (this.type === PART.BRICK) level.drawEntityToAllLayers(this.entity, level.textures.sparksBrick);
+        }
+
         if (this.type !== PART.FIRE) {
             this.entity.moveEx(delta);
         }
