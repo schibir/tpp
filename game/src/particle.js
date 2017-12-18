@@ -48,6 +48,7 @@ class Particle {
                 level.drawEntity(this.entity, level.textures.sparksBrick[id][ind]);
                 break;
             }
+            default: break;
             }
         }
     }
@@ -73,7 +74,7 @@ export default class ParticleManager extends EntityManager {
     emit(cx, cy, type) {
         let count = 1;
         if (type === PART.SPARK) count = 5;
-        else if (type === PART.BRICK) count = 10
+        else if (type === PART.BRICK) count = 10;
         for (let i = 0; i < count; i++) {
             this.objects.push(new Particle(cx, cy, type));
         }

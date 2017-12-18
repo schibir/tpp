@@ -850,11 +850,6 @@ export default class GenTextures {
             const spark = new SimpleBuffer(tileSize * 0.5 | 0);
             spark
                 .forEach((a, i, j) => {
-                    const x = (i / sparkBrickMask.size - 0.5) * 2;
-                    const y = (j / sparkBrickMask.size - 0.5) * 2;
-                    const factorX = 1 - 25 / 16 * x * x;
-                    const factorY = 1 - 25 / 16 * y * y;
-
                     const dx = offsetX.getData(i, j);
                     const dy = offsetY.getData(i, j);
                     const tx = clamp(i + dx * step * 0.25, 0, sparkBrickMask.size) | 0;
