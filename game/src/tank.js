@@ -11,7 +11,7 @@ class Tank extends Entity {
         this.animTrack = 0;
         this.animTurret = 0;
         this.turret = new Entity(cx, cy);
-        this.weapon = new Weapon(this, BULLET.SIMPLE);
+        this.weapon = new Weapon(this, BULLET.SIMPLE | BULLET.FIRE);
         this.shoot = false;
         this.alive = true;
     }

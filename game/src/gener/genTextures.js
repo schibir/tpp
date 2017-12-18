@@ -750,9 +750,9 @@ export default class GenTextures {
         // particles
         function createSpark() {
             const COUNT_FRAMES = 10;
-            const COUNT_PART = 10;
+            const COUNT_PART = 5;
             const SIZE = tileSize * 2;
-            const LENGTH = step / 2;
+            const LENGTH = step / 4;
 
             const ret = [];
             const pos = new Array(COUNT_PART);
@@ -790,12 +790,22 @@ export default class GenTextures {
         // particle for simple bullet
 
         // particle for fireball
-        const sparks = createSpark();
-        this.sparksFire = [];
-        sparks.forEach((spark) => {
-            this.sparksFire.push(spark
-                .getColor2([255, 0, 0], [255, 255, 127], spark));
-        });
+        this.sparksFire = new Array(16);
+        const COUNT_GENERATED_SPARKS = 4;
+        for (let i = 0; i < COUNT_GENERATED_SPARKS; i++) {
+            const sparks = createSpark();
+            this.sparksFire[i] = [];
+            sparks.forEach((spark) => {
+                this.sparksFire[i].push(spark
+                    .getColor2([255, 0, 0], [255, 255, 127], spark));
+            });
+        }
+        for (let i = COUNT_GENERATED_SPARKS; i < this.sparksFire.length; i++) {
+            this.sparksFire[i] = [];
+            const angle = Math.random() * 4;
+            const ind = Math.random() * COUNT_GENERATED_SPARKS | 0;
+            this.sparksFire[ind].forEach((spark) => this.sparksFire[i].push(rotateImage(spark, angle)));
+        }
 
         // particle for brick
 
