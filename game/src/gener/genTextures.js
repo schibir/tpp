@@ -835,7 +835,7 @@ export default class GenTextures {
 
                 const sparkBrickMask = new SimpleBuffer(tileSize * 0.5 | 0);
                 sparkBrickMask
-                    .normDist(rand(0.75, 0.25))
+                    .normDist(Math.random())
                     .normalize(0, 1)
                     .clamp(0.1, 0.3)
                     .normalize(0, 1);
