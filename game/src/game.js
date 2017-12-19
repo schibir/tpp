@@ -30,12 +30,12 @@ const keyShoot = [
 ];
 
 export default class Game {
-    constructor(difficulty, canvas, mode = "level") {
+    constructor(canvas, params) {
         // common game settings
-        this.currentDifficulty = difficulty;
+        this.currentDifficulty = parseInt(params.difficulty);
         this.currentLevel = 1;
         this.canvas = canvas;
-        this.mode = mode;
+        this.mode = params.mode;
 
         const { mapWidth, mapHeight } = getMapSize();
         this.mapWidth = mapWidth - 2;       // board
