@@ -42,6 +42,6 @@ export const PART = {
     SPARK: 0,
     FIRE: 1,
     BRICK: 2,
-    BETON: 3,
-    EXPLODE: 4,
+    BETON: 4,
+    EXPLODE: 8,
 };

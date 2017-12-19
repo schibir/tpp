@@ -14,7 +14,7 @@ class Particle {
         this.deltatime = 0;
 
         if (type === PART.FIRE) this.entity.size = 2;
-        if (type === PART.BRICK) {
+        if (type & (PART.BRICK | PART.BETON)) {
             this.entity.cx += rand(0, 0.5);
             this.entity.cy += rand(0, 0.5);
             this.lifetime += rand(0, 100);
@@ -27,11 +27,12 @@ class Particle {
         level.clearEntity(this.entity);
     }
     getBrickTexture(level) {
-        const id = this.random * level.textures.sparksBrick.length | 0;
-        const ind = (this.invAngle * this.deltatime / 30 + level.textures.sparksBrick[id].length * this.startAngle | 0) %
-            level.textures.sparksBrick[id].length | 0;
+        const textures = this.type === PART.BRICK ? level.textures.sparksBrick : level.textures.sparksBeton;
+        const id = this.random * textures.length | 0;
+        const ind = (this.invAngle * this.deltatime / 30 + textures[id].length * this.startAngle | 0) %
+            textures[id].length | 0;
         this.entity.vel = this.maxvel * (1 - this.deltatime / this.lifetime);
-        return level.textures.sparksBrick[id][ind];
+        return textures[id][ind];
     }
     draw(level) {
         if (this.alive) {
@@ -47,7 +48,8 @@ class Particle {
                 level.drawEntity(this.entity, level.textures.sparksFire[id][ind]);
                 break;
             }
-            case PART.BRICK: {
+            case PART.BRICK: 
+            case PART.BETON: {
                 this.entity.vel = this.maxvel * (1 - this.deltatime / this.lifetime);
                 level.drawEntity(this.entity, this.getBrickTexture(level));
                 break;
@@ -60,7 +62,7 @@ class Particle {
         this.deltatime = Date.now() - this.creationTime;
         if (this.deltatime >= this.lifetime) {
             this.alive = false;
-            if (this.type === PART.BRICK) {
+            if (this.type & (PART.BRICK | PART.BETON)) {
                 level.drawEntityToAllLayers(this.entity, this.getBrickTexture(level));
             }
         }
@@ -75,7 +77,7 @@ export default class ParticleManager extends EntityManager {
     emit(cx, cy, type) {
         let count = 1;
         if (type === PART.SPARK) count = 5;
-        else if (type === PART.BRICK) count = 10;
+        else if (type & (PART.BRICK | PART.BETON)) count = 10;
         for (let i = 0; i < count; i++) {
             this.objects.push(new Particle(cx, cy, type));
         }

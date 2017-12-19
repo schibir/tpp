@@ -336,16 +336,17 @@ export default class Level {
                 const needEmpty = (tileType === (BRICK | HALF)) ||
                                  ((tileType === (BETON | HALF)) && power) ||
                                  ((tileType === BRICK) && power);
+                const partType = tileType & BRICK ? PART.BRICK : PART.BETON;
                 if (needHalf) {
                     tile.type |= HALF;
                     this.drawTile(this.layer1.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
-                    this.particles.emit(tile.x - 0.5, tile.y - 0.5, PART.BRICK);
+                    this.particles.emit(tile.x - 0.5, tile.y - 0.5, partType);
                 } else if (needEmpty) {
                     tile.type &= ~BULLET_MASK;
                     this.drawTile(this.layer0.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
-                    this.particles.emit(tile.x - 0.5, tile.y - 0.5, PART.BRICK);
+                    this.particles.emit(tile.x - 0.5, tile.y - 0.5, partType);
                 }
             }
         };
