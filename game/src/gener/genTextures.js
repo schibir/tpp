@@ -54,14 +54,14 @@ export default class GenTextures {
 
         const beton = new SimpleBuffer(tileSize * 8);
         const betonImg = beton
-            .brick(8, 8)
+            .brick(8, 8, false)
             .normalize(0.6, 1)
             .forBuf(betonNoise, (a, b) => a * b)
             .getColor(randColor([160, 160, 160]));
 
         const betonMask = new SimpleBuffer(tileSize * 8);
         this.beton = betonMask
-            .brickMask(8, 8)
+            .brickMask(8, 8, false)
             .gaussian(step * 0.5 | 0)
             .clamp(0.1, 0.3)
             .normalize(0, 1)

@@ -286,14 +286,14 @@ export default class SimpleBuffer {
         console.log("Differential free", Date.now() - time);
         return this;
     }
-    brick(countWidth, countHeight) {
+    brick(countWidth, countHeight, alternat = true) {
         const time = Date.now();
 
         const brickWidth = this.size / countWidth;
         const brickHeight = this.size / countHeight;
 
         for (let brickY = 0; brickY < countHeight; brickY++) {
-            const startX = (brickY % 2 | 0) ? (-brickWidth * 0.5 | 0) : 0;
+            const startX = (brickY % 2 | 0) && alternat ? (-brickWidth * 0.5 | 0) : 0;
             const startY = brickY * brickHeight | 0;
             for (let brickX = 0; brickX < countWidth; brickX++) {
                 const color = Math.random();
