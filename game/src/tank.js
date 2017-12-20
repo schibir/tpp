@@ -1,15 +1,8 @@
 
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
-import { BULLET, TANK } from "./global";
+import { BULLET, TANK, STATE } from "./global";
 import { sin, cos, getMapSize } from "./utils";
-
-const STATE = {
-    DEAD: 0,
-    RESPAWN: 1,
-    GOD: 2,
-    NORMAL: 3,
-}
 
 class Tank extends Entity {
     constructor(type) {
@@ -56,6 +49,7 @@ class Tank extends Entity {
             if (Date.now() > this.stateTime) {
                 this.state = STATE.NORMAL;
             }
+            this.shoot = false;
         } else {
             if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
             if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
@@ -86,7 +80,7 @@ class Tank extends Entity {
         const cy = Math.round(this.cy);
         for (let i = 0; i < tanks.length; i++) {
             const tank = tanks[i];
-            if (tank !== this) {
+            if (tank !== this && tank.state > STATE.RESPAWN) {
                 const tx = Math.round(tank.cx);
                 const ty = Math.round(tank.cy);
                 if (Math.abs(cx - tx) < 2 &&

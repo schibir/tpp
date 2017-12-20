@@ -1,7 +1,7 @@
 
 import { Entity, EntityManager } from "./entity";
 import { sin, cos } from "./utils";
-import { bulletVelocity, tankRadius, BULLET, PART } from "./global";
+import { bulletVelocity, tankRadius, BULLET, PART, STATE } from "./global";
 
 export class Bullet extends Entity {
     constructor(owner, type, callback) {
@@ -54,6 +54,7 @@ export class BulletManager extends EntityManager {
         this.objects.push(bullet);
     }
     collideTank(tank) {
+        if (tank.state <= STATE.RESPAWN) return;
         this.objects.forEach((bullet) => {
             if (!bullet.alive || bullet.owner === tank) return;
             if (tank.collide(bullet, tankRadius(tank.type), 0.5)) {

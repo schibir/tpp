@@ -10,6 +10,13 @@ export const TANK = {
     RANDOM: 7,
 };
 
+export const STATE = {
+    DEAD: 0,
+    RESPAWN: 1,
+    GOD: 2,
+    NORMAL: 3,
+};
+
 export function tankRadius(type) {
     return type < TANK.PANZER ? 0.8 : 1;
 }
