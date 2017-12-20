@@ -26,7 +26,7 @@ class Layer {
 }
 
 export default class Level {
-    constructor(levelName, canvas, particles) {
+    constructor(levelName, canvas, particles, onCreate) {
         const { mapWidth, mapHeight } = getMapSize();
         const tileSize = getTileSize(canvas.width, canvas.height);
         console.log(`tileSize = ${tileSize}`);
@@ -247,6 +247,8 @@ export default class Level {
             this.context.drawImage(this.layer.canvas, 0, 0);
 
             console.log(`Render time = ${Date.now() - renderTime}`);
+
+            onCreate();
         });
     }
     ready() {

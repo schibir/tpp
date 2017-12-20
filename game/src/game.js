@@ -40,11 +40,6 @@ export default class Game {
         const { mapWidth, mapHeight } = getMapSize();
         this.mapWidth = mapWidth - 2;       // board
         this.mapHeight = mapHeight - 2;     // board
-        this.lastTime = Date.now();
-
-        // player settings
-        this.keyMask = [0, 0];
-        this.shootKeyPress = [false, false];
 
         this.particles = new ParticleManager();
         this.tanks = new TankManager();
@@ -61,7 +56,16 @@ export default class Game {
         let levelName = `levels/${this.mode}`;
         if (this.mode === "level") levelName += `${this.currentLevel}`;
 
-        this.level = new Level(levelName, this.canvas, this.particles);
+        this.level = new Level(levelName, this.canvas, this.particles, () => {
+            this.particles.reset();
+            this.tanks.reset();
+            this.bullets.reset();
+            this.lastTime = Date.now();
+
+            // player settings
+            this.keyMask = [0, 0];
+            this.shootKeyPress = [false, false];
+        });
     }
     update() {
         if (!this.level.ready()) return;

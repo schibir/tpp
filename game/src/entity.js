@@ -35,6 +35,9 @@ export class EntityManager {
     constructor() {
         this.objects = [];
     }
+    reset() {
+        this.objects = [];
+    }
     clear(level) {
         this.objects.forEach((obj) => obj.clear(level));
     }

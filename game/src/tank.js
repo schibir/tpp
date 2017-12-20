@@ -1,7 +1,7 @@
 
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
-import { BULLET } from "./global";
+import { BULLET, TANK } from "./global";
 import { sin, cos } from "./utils";
 
 class Tank extends Entity {
@@ -69,6 +69,9 @@ export default class TankManager extends EntityManager {
         const tank = new Tank(cx, cy, type);
         this.objects.push(tank);
         return tank;
+    }
+    reset() {
+        this.objects = this.objects.filter((tank) => tank.type <= TANK.TANK2);
     }
     update(level, bullets, delta) {
         this.objects.forEach((tank) => {
