@@ -46,8 +46,8 @@ export default class Game {
         this.bullets = new BulletManager(this.particles);
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
-        const tank1 = this.tanks.create(10, 10, TANK.TANK1);
-        const tank2 = params.twoplayers === "true" ? this.tanks.create(15, 10, TANK.TANK2) : null;
+        const tank1 = this.tanks.create(TANK.TANK1);
+        const tank2 = params.twoplayers === "true" ? this.tanks.create(TANK.TANK2) : null;
         this.players = [tank1, tank2];
 
         this.newLevel();
@@ -105,6 +105,8 @@ export default class Game {
                 this.shootKeyPress[p] = true;
             }
         }
+
+        if (key === "N".charCodeAt(0)) this.newLevel();
     }
     onkeyup(key) {
         for (let p = 0; p < 2; p++) {

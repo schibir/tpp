@@ -2,18 +2,31 @@
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import { BULLET, TANK } from "./global";
-import { sin, cos } from "./utils";
+import { sin, cos, getMapSize } from "./utils";
 
 class Tank extends Entity {
-    constructor(cx, cy, type) {
-        super(cx, cy);
+    constructor(type) {
+        super(0, 0);
         this.type = type;
+        this.weapon = new Weapon(this, type === 0 ? BULLET.SIMPLE | BULLET.FIRE : BULLET.SIMPLE);
+        this.respawn();
+    }
+    respawn() {
         this.animTrack = 0;
         this.animTurret = 0;
-        this.turret = new Entity(cx, cy);
-        this.weapon = new Weapon(this, type === 0 ? BULLET.SIMPLE | BULLET.FIRE : BULLET.SIMPLE);
         this.shoot = false;
         this.alive = true;
+        this.turret = new Entity(0, 0);
+        this.weapon.reset();
+
+        const { mapWidth, mapHeight } = getMapSize();
+
+        if (this.type <= TANK.TANK2) {
+            this.angle = 0;
+            this.cx = mapWidth / 2 - 5;
+            this.cy = mapHeight - 3;
+            if (this.type === TANK.TANK2) this.cx += 8
+        }
     }
     clear(level) {
         level.clearEntity(this);
@@ -72,6 +85,7 @@ export default class TankManager extends EntityManager {
     }
     reset() {
         this.objects = this.objects.filter((tank) => tank.type <= TANK.TANK2);
+        this.objects.forEach((tank) => tank.respawn());
     }
     update(level, bullets, delta) {
         this.objects.forEach((tank) => {

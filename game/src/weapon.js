@@ -7,6 +7,9 @@ export default class Weapon {
         this.owner = owner;
         this.setType(type);
     }
+    reset() {
+        this.count = bulletsCount(this.type);
+    }
     setType(type) {
         this.type = type;
         this.count = bulletsCount(type);
