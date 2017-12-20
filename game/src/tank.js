@@ -17,6 +17,7 @@ class Tank extends Entity {
         this.shoot = false;
         this.alive = true;
         this.turret = new Entity(0, 0);
+        this.shield = new Entity(0, 0, 3);
         this.weapon.reset();
         this.state = STATE.RESPAWN;
         this.stateTime = Date.now() + 2000;     // respawn time
@@ -31,7 +32,7 @@ class Tank extends Entity {
         }
     }
     clear(level) {
-        level.clearEntity(this);
+        level.clearEntity(this.state === STATE.GOD ? this.shield : this);
     }
     draw(level) {
         if (this.state === STATE.RESPAWN) {
@@ -41,16 +42,27 @@ class Tank extends Entity {
             level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
             level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
             level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
-            level.drawEntityEnd(this);
+
+            if (this.state === STATE.GOD) {
+                const ind = Math.random() * level.textures.shield.length | 0;
+                level.drawEntity(this.shield, level.textures.shield[ind]);
+            } else {
+                level.drawEntityEnd(this);
+            }
         }
     }
     update(level, tanks, delta) {
         if (this.state === STATE.RESPAWN) {
             if (Date.now() > this.stateTime) {
-                this.state = STATE.NORMAL;
+                this.state = STATE.GOD;
+                this.stateTime = Date.now() + 3000;     // time GOD;
             }
             this.shoot = false;
         } else {
+            if (this.state === STATE.GOD) {
+                if (Date.now() > this.stateTime) this.state = STATE.NORMAL;
+            }
+
             if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
             if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
 
@@ -64,6 +76,8 @@ class Tank extends Entity {
         }
         this.turret.cx = this.cx + cos(this.angle) * this.animTurret;
         this.turret.cy = this.cy + sin(this.angle) * this.animTurret;
+        this.shield.cx = this.cx;
+        this.shield.cy = this.cy;
         this.animTurret *= 0.9;
     }
     updateWeapon() {
