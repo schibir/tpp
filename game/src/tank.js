@@ -4,6 +4,13 @@ import Weapon from "./weapon";
 import { BULLET, TANK } from "./global";
 import { sin, cos, getMapSize } from "./utils";
 
+const STATE = {
+    DEAD: 0,
+    RESPAWN: 1,
+    GOD: 2,
+    NORMAL: 3,
+}
+
 class Tank extends Entity {
     constructor(type) {
         super(0, 0);
@@ -18,6 +25,8 @@ class Tank extends Entity {
         this.alive = true;
         this.turret = new Entity(0, 0);
         this.weapon.reset();
+        this.state = STATE.RESPAWN;
+        this.stateTime = Date.now() + 2000;     // respawn time
 
         const { mapWidth, mapHeight } = getMapSize();
 
@@ -32,22 +41,33 @@ class Tank extends Entity {
         level.clearEntity(this);
     }
     draw(level) {
-        level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
-        level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
-        level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
-        level.drawEntityEnd(this);
+        if (this.state === STATE.RESPAWN) {
+            const ind = ((Date.now() % 800) / 50) % level.textures.respawn.length | 0;
+            level.drawEntity(this, level.textures.respawn[ind]);
+        } else {
+            level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
+            level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
+            level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
+            level.drawEntityEnd(this);
+        }
     }
     update(level, tanks, delta) {
-        if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
-        if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
+        if (this.state === STATE.RESPAWN) {
+            if (Date.now() > this.stateTime) {
+                this.state = STATE.NORMAL;
+            }
+        } else {
+            if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
+            if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
 
-        this.move(delta);
-        if (level.collideTank(this) ||
-            this.collideTanks(tanks)) this.move(-delta);
-        else if (this.vel > 0.01) {
-            this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
+            this.move(delta);
+            if (level.collideTank(this) ||
+                this.collideTanks(tanks)) this.move(-delta);
+            else if (this.vel > 0.01) {
+                this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
+            }
+
         }
-
         this.turret.cx = this.cx + cos(this.angle) * this.animTurret;
         this.turret.cy = this.cy + sin(this.angle) * this.animTurret;
         this.animTurret *= 0.9;
