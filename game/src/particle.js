@@ -20,7 +20,7 @@ class Particle {
             this.lifetime += rand(0, 100);
             this.maxvel = this.entity.vel;
             this.startAngle = Math.random();
-            this.invAngle = Math.random() ? 1 : -1;
+            this.omega = rand(0, 1 / 30);
         }
     }
     clear(level) {
@@ -29,9 +29,8 @@ class Particle {
     getBrickTexture(level) {
         const textures = this.type === PART.BRICK ? level.textures.sparksBrick : level.textures.sparksBeton;
         const id = this.random * textures.length | 0;
-        const ind = (this.invAngle * this.deltatime / 30 + textures[id].length * this.startAngle | 0) %
-            textures[id].length | 0;
-        this.entity.vel = this.maxvel * (1 - this.deltatime / this.lifetime);
+        let ind = (this.deltatime * this.omega + textures[id].length * this.startAngle | 0) % textures[id].length | 0;
+        if (ind < 0) ind += textures[id].length;
         return textures[id][ind];
     }
     draw(level) {

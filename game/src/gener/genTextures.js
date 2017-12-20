@@ -846,15 +846,15 @@ export default class GenTextures {
                     .diff([1, 0.5])
                     .normalize(0.6, 1.4);
 
-                const random = Math.random() * 0.3 + 0.7;
+                const random = rand(0.8, 0.2);
 
                 const spark = new SimpleBuffer(tileSize * 0.5 | 0);
                 spark
                     .forEach((a, i, j) => {
                         const dx = offsetX.getData(i, j);
                         const dy = offsetY.getData(i, j);
-                        const tx = clamp(i + dx * step * 0.25, 0, sparkBrickMask.size) | 0;
-                        const ty = clamp(j + dy * step * 0.25, 0, sparkBrickMask.size) | 0;
+                        const tx = clamp(i + dx * step * 0.4, 0, sparkBrickMask.size) | 0;
+                        const ty = clamp(j + dy * step * 0.4, 0, sparkBrickMask.size) | 0;
                         return sparkBrickMask.getData(tx, ty);
                     });
 
