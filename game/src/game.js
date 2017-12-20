@@ -51,9 +51,9 @@ export default class Game {
         this.bullets = new BulletManager(this.particles);
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
-        this.tanks.create(10, 10, TANK.TANK1);
-        this.tanks.create(15, 10, TANK.TANK2);
-        this.players = [this.tanks.objects[0], this.tanks.objects[1]];
+        const tank1 = this.tanks.create(10, 10, TANK.TANK1);
+        const tank2 = params.twoplayers === "true" ? this.tanks.create(15, 10, TANK.TANK2) : null;
+        this.players = [tank1, tank2];
 
         this.newLevel();
     }

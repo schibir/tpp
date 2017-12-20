@@ -66,7 +66,9 @@ class Tank extends Entity {
 
 export default class TankManager extends EntityManager {
     create(cx, cy, type) {
-        this.objects.push(new Tank(cx, cy, type));
+        const tank = new Tank(cx, cy, type);
+        this.objects.push(tank);
+        return tank;
     }
     update(level, bullets, delta) {
         this.objects.forEach((tank) => {
