@@ -34,9 +34,9 @@ export class Bullet extends Entity {
         if (this.size > 1.5) texture = level.textures.fireLong[this.angle];
         level.drawEntity(this, texture);
     }
-    update(level, delta) {
+    update(level, time) {
         if (!this.alive) return;
-        this.move(delta);
+        this.move(this.getDelta(time));
         if (level.collideBullet(this, (this.type & BULLET.POWER) === BULLET.POWER)) this.died();
     }
 }
@@ -62,7 +62,7 @@ export class BulletManager extends EntityManager {
             }
         });
     }
-    update(level, delta) {
+    update(level, time) {
         const collide = (bullet) => {
             if (!bullet.alive) return;
             for (let i = 0; i < this.objects.length; i++) {
@@ -79,6 +79,6 @@ export class BulletManager extends EntityManager {
         };
 
         this.objects.forEach((bullet) => collide(bullet));
-        super.update(level, delta);
+        super.update(level, time);
     }
 }

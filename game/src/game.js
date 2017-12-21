@@ -87,7 +87,7 @@ export default class Game {
 
         // updating
         this.tanks.update(this.level, this.bullets, delta);
-        this.bullets.update(this.level, delta);
+        this.bullets.update(this.level, currentTime);
         this.particles.update(this.level, currentTime);
 
         // drawing
