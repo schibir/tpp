@@ -7,7 +7,7 @@ class Particle extends Entity {
     constructor(cx, cy, type) {
         super(cx, cy, 0.5, Math.random() * 2 * Math.PI, rand(1, 0.5));
         this.type = type;
-        this.creationTime = Date.now();
+        this.creationTime = 0;
         this.alive = true;
         this.random = Math.random();
         this.lifetime = 250;
@@ -58,6 +58,7 @@ class Particle extends Entity {
         }
     }
     update(level, time) {
+        if (!this.creationTime) this.creationTime = time;
         const delta = this.getDelta(time);
         this.deltatime = time - this.creationTime;
         if (this.deltatime >= this.lifetime) {

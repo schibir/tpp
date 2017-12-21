@@ -9,9 +9,10 @@ export class Entity {
         this.size = size;
         this.angle = angle;
         this.vel = vel;
-        this.lastTime = Date.now();
+        this.lastTime = 0;
     }
     getDelta(time) {
+        if (!this.lastTime) this.lastTime = time;
         const delta = time - this.lastTime;
         this.lastTime = time;
         return delta;
@@ -50,8 +51,8 @@ export class EntityManager {
     draw(level) {
         this.objects.forEach((obj) => obj.draw(level));
     }
-    update(level, delta) {
-        this.objects.forEach((obj) => obj.update(level, delta));
+    update(level, time) {
+        this.objects.forEach((obj) => obj.update(level, time));
         this.splice();
     }
     splice() {

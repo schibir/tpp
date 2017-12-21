@@ -5,13 +5,13 @@ import { BULLET, TANK, STATE } from "./global";
 import { sin, cos, getMapSize } from "./utils";
 
 class Tank extends Entity {
-    constructor(type) {
+    constructor(type, time) {
         super(0, 0);
         this.type = type;
         this.weapon = new Weapon(this, type === 0 ? BULLET.SIMPLE | BULLET.FIRE : BULLET.SIMPLE);
-        this.respawn();
+        this.respawn(time);
     }
-    respawn() {
+    respawn(time) {
         this.animTrack = 0;
         this.animTurret = 0;
         this.shoot = false;
@@ -20,7 +20,7 @@ class Tank extends Entity {
         this.shield = new Entity(0, 0, 3);
         this.weapon.reset();
         this.state = STATE.RESPAWN;
-        this.stateTime = Date.now() + 2000;     // respawn time
+        this.stateTime = time + 2000;     // respawn time
 
         const { mapWidth, mapHeight } = getMapSize();
 
@@ -51,21 +51,22 @@ class Tank extends Entity {
             }
         }
     }
-    update(level, tanks, delta) {
+    update(level, tanks, time) {
         if (this.state === STATE.RESPAWN) {
-            if (Date.now() > this.stateTime) {
+            if (time > this.stateTime) {
                 this.state = STATE.GOD;
-                this.stateTime = Date.now() + 3000;     // time GOD;
+                this.stateTime = time + 3000;     // time GOD;
             }
             this.shoot = false;
         } else {
             if (this.state === STATE.GOD) {
-                if (Date.now() > this.stateTime) this.state = STATE.NORMAL;
+                if (time > this.stateTime) this.state = STATE.NORMAL;
             }
 
             if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
             if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
 
+            const delta = this.getDelta(time);
             this.move(delta);
             if (level.collideTank(this) ||
                 this.collideTanks(tanks)) this.move(-delta);
@@ -106,18 +107,18 @@ class Tank extends Entity {
 }
 
 export default class TankManager extends EntityManager {
-    create(cx, cy, type) {
-        const tank = new Tank(cx, cy, type);
+    create(type, time = 0) {
+        const tank = new Tank(type, time);
         this.objects.push(tank);
         return tank;
     }
-    reset() {
+    reset(time) {
         this.objects = this.objects.filter((tank) => tank.type <= TANK.TANK2);
-        this.objects.forEach((tank) => tank.respawn());
+        this.objects.forEach((tank) => tank.respawn(time));
     }
-    update(level, bullets, delta) {
+    update(level, bullets, time) {
         this.objects.forEach((tank) => {
-            tank.update(level, this.objects, delta);
+            tank.update(level, this.objects, time);
             const bullet = tank.updateWeapon();
             if (bullet) {
                 bullets.add(bullet);

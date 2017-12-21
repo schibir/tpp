@@ -58,9 +58,8 @@ export default class Game {
 
         this.level = new Level(levelName, this.canvas, this.particles, () => {
             this.particles.reset();
-            this.tanks.reset();
+            this.tanks.reset(Date.now());
             this.bullets.reset();
-            this.lastTime = Date.now();
             this.pauseTime = 0;
 
             // player settings
@@ -70,10 +69,6 @@ export default class Game {
     }
     update() {
         if (!this.level.ready()) return;
-
-        const time = Date.now();
-        const delta = time - this.lastTime;
-        this.lastTime = time;
 
         const currentTime = Date.now() - this.pauseTime;
 
@@ -86,7 +81,7 @@ export default class Game {
         this.particles.clear(this.level);
 
         // updating
-        this.tanks.update(this.level, this.bullets, delta);
+        this.tanks.update(this.level, this.bullets, currentTime);
         this.bullets.update(this.level, currentTime);
         this.particles.update(this.level, currentTime);
 
