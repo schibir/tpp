@@ -827,7 +827,7 @@ export default class GenTextures {
 
         // particle for brick
         const createSparkBrickBeton = (color) => {
-            const createSparkBrick = () => {
+            const createSparkBrick = (size) => {
                 const offsetX = new SimpleBuffer(tileSize * 0.5 | 0);
                 offsetX.perlin(2, 0.5);
                 const offsetY = new SimpleBuffer(tileSize * 0.5 | 0);
@@ -835,7 +835,7 @@ export default class GenTextures {
 
                 const sparkBrickMask = new SimpleBuffer(tileSize * 0.5 | 0);
                 sparkBrickMask
-                    .normDist(Math.random())
+                    .normDist(size)
                     .normalize(0, 1)
                     .clamp(0.1, 0.3)
                     .normalize(0, 1);
@@ -867,7 +867,7 @@ export default class GenTextures {
             const ret = [];
             for (let i = 0; i < 10; i++) {
                 ret[i] = [];
-                ret[i].push(createSparkBrick());
+                ret[i].push(createSparkBrick(i / 10));
 
                 const COUNT_ANGLES = 32;
                 for (let angle = 1; angle < COUNT_ANGLES; angle++) {
