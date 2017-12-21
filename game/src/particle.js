@@ -57,8 +57,9 @@ class Particle extends Entity {
             }
         }
     }
-    update(level, delta) {
-        this.deltatime = Date.now() - this.creationTime;
+    update(level, time) {
+        const delta = this.getDelta(time);
+        this.deltatime = time - this.creationTime;
         if (this.deltatime >= this.lifetime) {
             this.alive = false;
             if (this.type & (PART.BRICK | PART.BETON)) {

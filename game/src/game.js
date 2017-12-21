@@ -61,6 +61,7 @@ export default class Game {
             this.tanks.reset();
             this.bullets.reset();
             this.lastTime = Date.now();
+            this.pauseTime = 0;
 
             // player settings
             this.keyMask = [0, 0];
@@ -74,6 +75,8 @@ export default class Game {
         const delta = time - this.lastTime;
         this.lastTime = time;
 
+        const currentTime = Date.now() - this.pauseTime;
+
         this.level.update();
 
         // clearing
@@ -85,7 +88,7 @@ export default class Game {
         // updating
         this.tanks.update(this.level, this.bullets, delta);
         this.bullets.update(this.level, delta);
-        this.particles.update(this.level, delta);
+        this.particles.update(this.level, currentTime);
 
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);

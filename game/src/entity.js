@@ -9,6 +9,12 @@ export class Entity {
         this.size = size;
         this.angle = angle;
         this.vel = vel;
+        this.lastTime = Date.now();
+    }
+    getDelta(time) {
+        const delta = time - this.lastTime;
+        this.lastTime = time;
+        return delta;
     }
     moveImpl(delta, sinFun, cosFun) {
         const koef = 80.0 / 1024.0 / 25;
