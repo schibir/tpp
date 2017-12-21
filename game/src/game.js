@@ -61,6 +61,7 @@ export default class Game {
             this.tanks.reset(Date.now());
             this.bullets.reset();
             this.pauseTime = 0;
+            this.startPauseTime = 0;
 
             // player settings
             this.keyMask = [0, 0];
@@ -70,7 +71,8 @@ export default class Game {
     update() {
         if (!this.level.ready()) return;
 
-        const currentTime = Date.now() - this.pauseTime;
+        const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0
+        const currentTime = Date.now() - this.pauseTime - timeOffset;
 
         this.level.update();
 
@@ -105,6 +107,13 @@ export default class Game {
         }
 
         if (key === "N".charCodeAt(0)) this.newLevel();
+        if (key === "P".charCodeAt(0)) {
+            if (this.startPauseTime) {
+                this.pauseTime += Date.now() - this.startPauseTime;
+                this.startPauseTime = 0;
+            }
+            else this.startPauseTime = Date.now();
+        }
     }
     onkeyup(key) {
         for (let p = 0; p < 2; p++) {
