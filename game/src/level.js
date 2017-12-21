@@ -160,19 +160,19 @@ export default class Level {
                 const parser = new DOMParser();
                 const xml = parser.parseFromString(reader.responseText, "text/xml");
 
-                console.assert(xml.children.length === 1, "Count children must bu 1");
+                console.assert(xml.childNodes.length === 1, "Count children must bu 1");
 
-                const attrs = xml.children[0].attributes;
+                const attrs = xml.childNodes[0].attributes;
                 console.assert(attrs.width.textContent === `${this.mapWidth}`);
                 console.assert(attrs.height.textContent === `${this.mapHeight}`);
-                console.assert(xml.children[0].children.length === 2, "Should be tileset and layer");
-                console.assert(xml.children[0].children[1].children.length === 1, "Should be data");
+                console.assert(xml.childNodes[0].childNodes.length === 5, "Should be tileset and layer");
+                console.assert(xml.childNodes[0].childNodes[3].childNodes.length === 3, "Should be data");
 
                 const data = xml
-                    .children[0]
-                    .children[1]
-                    .children[0]
-                    .innerHTML
+                    .childNodes[0]
+                    .childNodes[3]
+                    .childNodes[1]
+                    .textContent
                     .split(/\s|,/)
                     .filter((val) => val !== "")
                     .map((val) => parseInt(val, 10));
