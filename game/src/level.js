@@ -295,6 +295,8 @@ export default class Level {
     drawEntityToAllLayers(entity, texture) {
         this.drawEntityBegin(entity, texture, this.layer.context);
         this.drawEntityEnd(entity, this.layer.context);
+        this.drawEntityBegin(entity, texture, this.layer0.context);
+        this.drawEntityEnd(entity, this.layer0.context);
         this.clearEntity(entity);
     }
     getTile(x, y) {
