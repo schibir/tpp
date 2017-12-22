@@ -45,7 +45,7 @@ function parseURL() {
     const params = url.split("&");
     params.forEach((param) => {
         const [key, value] = param.split("=");
-        if (key in retParams) {
+        if (key in retParams && value !== undefined) {
             retParams[key] = value;
         }
     });
