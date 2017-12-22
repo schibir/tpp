@@ -73,7 +73,6 @@ class Tank extends Entity {
             else if (this.vel > 0.01) {
                 this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
             }
-
         }
         this.turret.cx = this.cx + cos(this.angle) * this.animTurret;
         this.turret.cy = this.cy + sin(this.angle) * this.animTurret;
