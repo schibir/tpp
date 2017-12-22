@@ -28,7 +28,7 @@ class Tank extends Entity {
             this.angle = 0;
             this.cx = mapWidth / 2 - 5;
             this.cy = mapHeight - 3;
-            if (this.type === TANK.TANK2) this.cx += 8
+            if (this.type === TANK.TANK2) this.cx += 8;
         }
     }
     clear(level) {

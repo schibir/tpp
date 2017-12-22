@@ -47,7 +47,7 @@ class Particle extends Entity {
                 level.drawEntity(this, level.textures.sparksFire[id][ind]);
                 break;
             }
-            case PART.BRICK: 
+            case PART.BRICK:
             case PART.BETON: {
                 this.vel = this.maxvel * (1 - this.deltatime / this.lifetime);
                 level.drawEntity(this, this.getBrickTexture(level));

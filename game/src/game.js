@@ -32,7 +32,7 @@ const keyShoot = [
 export default class Game {
     constructor(canvas, params) {
         // common game settings
-        this.currentDifficulty = parseInt(params.difficulty);
+        this.currentDifficulty = parseInt(params.difficulty, 10);
         this.currentLevel = 1;
         this.canvas = canvas;
         this.mode = params.mode;
@@ -71,7 +71,7 @@ export default class Game {
     update() {
         if (!this.level.ready()) return;
 
-        const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0
+        const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0;
         const currentTime = Date.now() - this.pauseTime - timeOffset;
 
         this.level.update();
@@ -111,8 +111,7 @@ export default class Game {
             if (this.startPauseTime) {
                 this.pauseTime += Date.now() - this.startPauseTime;
                 this.startPauseTime = 0;
-            }
-            else this.startPauseTime = Date.now();
+            } else this.startPauseTime = Date.now();
         }
     }
     onkeyup(key) {

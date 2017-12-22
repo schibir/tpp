@@ -44,9 +44,9 @@ function parseURL() {
     const url = window.location.search.substr(1); // skip ? symbol
     const params = url.split("&");
     params.forEach((param) => {
-        const pair = param.split("=");
-        if (pair.length === 2 && pair[0] in retParams) {
-            retParams[pair[0]] = pair[1];
+        const [key, value] = param.split("=");
+        if (key in retParams) {
+            retParams[key] = value;
         }
     });
     return retParams;

@@ -875,7 +875,7 @@ export default class GenTextures {
                 }
             }
             return ret;
-        }
+        };
 
         this.sparksBrick = createSparkBrickBeton([200, 80, 60]);
 
