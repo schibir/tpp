@@ -752,36 +752,41 @@ export default class GenTextures {
             const COUNT_FRAMES = 10;
             const COUNT_PART = 5;
             const SIZE = tileSize * 2;
-            const LENGTH = step / 4;
 
             const ret = [];
             const pos = new Array(COUNT_PART);
             const vel = new Array(COUNT_PART);
-            const len = new Array(COUNT_PART);
 
             for (let i = 0; i < COUNT_PART; i++) {
-                const sx = rand(0, SIZE / COUNT_FRAMES / 2);
-                const sy = rand(0, SIZE / COUNT_FRAMES / 2);
-                const px = SIZE / 2;
-                const py = SIZE / 2;
+                const sx = rand(0, 1 / COUNT_FRAMES);
+                const sy = rand(0, 1 / COUNT_FRAMES);
+                const px = 0;
+                const py = 0;
                 pos[i] = [px, py];
                 vel[i] = [sx, sy];
-                len[i] = (Math.random() + 0.5) * LENGTH;
             }
 
+            let bufPrevFrame = null;
             for (let i = 0; i < COUNT_FRAMES; i++) {
                 const buf = new SimpleBuffer(SIZE);
+
+                if (bufPrevFrame) {
+                    buf.forBuf(bufPrevFrame, (a, b) => b * 0.9);
+                }
+
                 for (let j = 0; j < COUNT_PART; j++) {
-                    const x = pos[j][0] | 0;
-                    const y = pos[j][1] | 0;
-                    buf.bresenham(x, y, (x - vel[j][0] * len[j]) | 0, (y - vel[j][1] * len[j]) | 0, 1);
+                    const x = pos[j][0];
+                    const y = pos[j][1];
+
+                    const bufPart = new SimpleBuffer(SIZE);
+                    bufPart.normDist(0.25, x, y);
+                    buf.forBuf(bufPart, (a, b) => a + b);
+
                     pos[j][0] += vel[j][0];
                     pos[j][1] += vel[j][1];
                 }
-                buf
-                    .gaussian(step)
-                    .clamp(0, 0.2)
-                    .normalize(0, 2 - 2 * i / COUNT_FRAMES);
+                buf.normalize(0, 2 - 2 * i / COUNT_FRAMES);
+                bufPrevFrame = buf;
                 ret.push(buf);
             }
             return ret;
