@@ -166,9 +166,10 @@ class Tank extends Entity {
 }
 
 export default class TankManager extends EntityManager {
-    constructor(difficulty) {
+    constructor(difficulty, event) {
         super();
         this.difficulty = clamp(difficulty, 0, 15);
+        this.event = event;
     }
     create(type, time = 0, level = null) {
         const tank = new Tank(type, time, this.difficulty, level);
@@ -192,6 +193,7 @@ export default class TankManager extends EntityManager {
             if (tank.state === STATE.DEAD) {
                 if (tank.type <= TANK.TANK2) {
                     this.objects[i] = this.create(tank.type, time);
+                    this.event.emit("playerCreated", this.objects[i]);
                 } else tank.alive = false;
             }
             tank.update(level, this.objects, time);

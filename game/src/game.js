@@ -44,7 +44,7 @@ export default class Game {
 
         this.event = new Event();
         this.particles = new ParticleManager(this.event);
-        this.tanks = new TankManager(currentDifficulty);
+        this.tanks = new TankManager(currentDifficulty, this.event);
         this.bullets = new BulletManager(this.event);
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
@@ -62,6 +62,9 @@ export default class Game {
             // player settings
             this.keyMask = [0, 0];
             this.shootKeyPress = [false, false];
+        });
+        this.event.on("playerCreated", (tank) => {
+            this.players[tank.type] = tank;
         });
 
         this.newLevel();
