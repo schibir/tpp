@@ -31,8 +31,6 @@ export default class Level {
         const tileSize = getTileSize(canvas.width, canvas.height);
         console.log(`tileSize = ${tileSize}`);
 
-        this.drawTilesPerFrame = 0;
-
         this.event = event;
         this.tileSize = tileSize;
         this.mapWidth = mapWidth - 2;       // board
@@ -254,22 +252,12 @@ export default class Level {
     ready() {
         return !!this.context;
     }
-    update() {
-        this.context.fillStyle = "black";
-        this.context.fillRect(2 * this.tileSize, this.context.canvas.height - this.tileSize, 3 * this.tileSize, this.tileSize);
-        this.context.font = `${this.tileSize * 0.35 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
-        this.context.fillStyle = "white";
-        this.context.fillText(`Tiles = ${this.drawTilesPerFrame}`, 2 * this.tileSize, this.context.canvas.height - 10);
-
-        this.drawTilesPerFrame = 0;
-    }
     drawTile(texture, srcx, srcy, dstx, dsty, size, destContext = this.context) {
         destContext.drawImage(texture,
             srcx * this.tileSize, srcy * this.tileSize,
             size * this.tileSize, size * this.tileSize,
             dstx * this.tileSize, dsty * this.tileSize,
             size * this.tileSize, size * this.tileSize);
-        this.drawTilesPerFrame += size * size;
     }
     clearEntity(entity) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board

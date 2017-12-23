@@ -81,8 +81,6 @@ export default class Game {
         const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0;
         const currentTime = Date.now() - this.pauseTime - timeOffset;
 
-        this.level.update();
-
         // clearing
         this.level.clearEntity(this.eagle);
         this.tanks.clear(this.level);
