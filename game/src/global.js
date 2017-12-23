@@ -46,9 +46,9 @@ export const ITEM = {
 };
 
 export const PART = {
-    SPARK: 0,
-    FIRE: 1,
-    BRICK: 2,
-    BETON: 4,
-    EXPLODE: 8,
+    SPARK: 1,
+    FIRE: 2,
+    BRICK: 4,
+    BETON: 8,
+    EXPLODE: 16,
 };

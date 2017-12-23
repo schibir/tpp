@@ -75,7 +75,7 @@ class Particle extends Entity {
             }
         }
 
-        if (this.type & (PART.FIRE | PART.EXPLODE) === 0) {
+        if (this.type & (PART.SPARK | PART.BRICK | PART.BETON)) {
             this.moveEx(delta);
         }
     }
@@ -89,5 +89,13 @@ export default class ParticleManager extends EntityManager {
         for (let i = 0; i < count; i++) {
             this.objects.push(new Particle(cx, cy, type));
         }
+    }
+    draw(level, layer) {
+        const layer0 = PART.BRICK | PART.BETON;
+        const layer1 = PART.SPARK | PART.FIRE | PART.EXPLODE;
+        this.objects.forEach((part) => {
+            if ((part.type & layer0) && (layer === 0)) part.draw(level);
+            else if ((part.type & layer1) && (layer === 1)) part.draw(level);
+        });
     }
 }
