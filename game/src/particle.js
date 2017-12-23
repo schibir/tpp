@@ -14,7 +14,8 @@ class Particle extends Entity {
         this.deltatime = 0;
 
         if (type === PART.FIRE) this.size = 2;
-        if (type & (PART.BRICK | PART.BETON)) {
+        else if (type === PART.EXPLODE) this.size = 4;
+        else if (type & (PART.BRICK | PART.BETON)) {
             this.cx += Math.cos(this.angle) * 0.5 * Math.random();
             this.cy += Math.sin(this.angle) * 0.5 * Math.random();
             this.lifetime += rand(100, 100);
@@ -53,6 +54,12 @@ class Particle extends Entity {
                 level.drawEntity(this, this.getBrickTexture(level));
                 break;
             }
+            case PART.EXPLODE: {
+                const id = this.random * level.textures.explode.length | 0;
+                const ind = this.deltatime / this.lifetime * level.textures.explode[id].length | 0;
+                level.drawEntity(this, level.textures.explode[id][ind]);
+                break;
+            }
             default: break;
             }
         }
@@ -68,7 +75,7 @@ class Particle extends Entity {
             }
         }
 
-        if (this.type !== PART.FIRE) {
+        if (this.type & (PART.FIRE | PART.EXPLODE) === 0) {
             this.moveEx(delta);
         }
     }
