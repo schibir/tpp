@@ -731,21 +731,34 @@ export default class GenTextures {
         };
 
         // decal
-        const decal = new SimpleBuffer(tileSize * 3);
-        const halfSize = decal.size * 0.5 | 0;
-        decal.normDist(1);
+        const createDecal = () => {
+            const decal = new SimpleBuffer(tileSize * 3);
+            const halfSize = decal.size * 0.5 | 0;
+            decal.normDist(1);
 
-        for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 30) {
-            const x = halfSize + Math.cos(angle) * rand(halfSize * 0.75, halfSize * 0.25) | 0;
-            const y = halfSize + Math.sin(angle) * rand(halfSize * 0.75, halfSize * 0.25) | 0;
-            decal.bresenham(halfSize, halfSize, x, y, 1);
+            for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 30) {
+                const x = halfSize + Math.cos(angle) * rand(halfSize * 0.75, halfSize * 0.25) | 0;
+                const y = halfSize + Math.sin(angle) * rand(halfSize * 0.75, halfSize * 0.25) | 0;
+                decal.bresenham(halfSize, halfSize, x, y, 1);
+            }
+
+            return decal
+                .gaussian(step)
+                .clamp(0, 0.5)
+                .normalize(0, 0.5)
+                .getColor([0, 0, 0], decal);
+        };
+
+        this.decals = [];
+        const COUNT_DECALS = 5;
+        for (let i = 0; i < COUNT_DECALS; i++) {
+            this.decals.push(createDecal());
         }
-
-        this.decal = decal
-            .gaussian(step)
-            .clamp(0, 0.5)
-            .normalize(0, 0.5)
-            .getColor([0, 0, 0], decal);
+        for (let i = 0; i < 16; i++) {
+            const angle = Math.random() * 4;
+            const ind = Math.random() * COUNT_DECALS | 0;
+            this.decals.push(rotateImage(this.decals[ind], angle));
+        }
 
         // particles
         function createSpark(fireball) {

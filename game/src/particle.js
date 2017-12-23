@@ -14,8 +14,10 @@ class Particle extends Entity {
         this.deltatime = 0;
 
         if (type === PART.FIRE) this.size = 2;
-        else if (type === PART.EXPLODE) this.size = 4;
-        else if (type & (PART.BRICK | PART.BETON)) {
+        else if (type === PART.EXPLODE) {
+            this.size = 4;
+            this.decal = new Entity(cx, cy, 3);
+        } else if (type & (PART.BRICK | PART.BETON)) {
             this.cx += Math.cos(this.angle) * 0.5 * Math.random();
             this.cy += Math.sin(this.angle) * 0.5 * Math.random();
             this.lifetime += rand(100, 100);
@@ -58,6 +60,11 @@ class Particle extends Entity {
                 const id = this.random * level.textures.explode.length | 0;
                 const ind = this.deltatime / this.lifetime * level.textures.explode[id].length | 0;
                 level.drawEntity(this, level.textures.explode[id][ind]);
+                if (this.decal) {
+                    const index = Math.random() * level.textures.decals.length | 0;
+                    level.drawEntityToAllLayers(this.decal, level.textures.decals[index]);
+                    this.decal = null;
+                }
                 break;
             }
             default: break;
@@ -85,14 +92,17 @@ export default class ParticleManager extends EntityManager {
     constructor(event) {
         super();
 
-        event.on("particle", (cx, cy, type) => {
+        const emit = (cx, cy, type) => {
             let count = 1;
             if (type === PART.SPARK) count = 5;
             else if (type & (PART.BRICK | PART.BETON)) count = 10;
             for (let i = 0; i < count; i++) {
                 this.objects.push(new Particle(cx, cy, type));
             }
-        });
+        };
+
+        event.on("particle", (cx, cy, type) => emit(cx, cy, type));
+        event.on("tankDead", (tank) => emit(tank.cx, tank.cy, PART.EXPLODE));
     }
     draw(level, layer) {
         const layer0 = PART.BRICK | PART.BETON;

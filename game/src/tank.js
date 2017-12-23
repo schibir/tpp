@@ -191,6 +191,7 @@ export default class TankManager extends EntityManager {
         for (let i = 0; i < this.objects.length; i++) {
             const tank = this.objects[i];
             if (tank.state === STATE.DEAD) {
+                this.event.emit("tankDead", tank);
                 if (tank.type <= TANK.TANK2) {
                     this.objects[i] = this.create(tank.type, time);
                     this.event.emit("playerCreated", this.objects[i]);
