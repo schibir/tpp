@@ -892,5 +892,21 @@ export default class GenTextures {
         // fire and smoke
 
         // explode
+        this.explode = new Array(16);
+        const COUNT_GENERATED_EXPLODE = 2;
+        for (let i = 0; i < COUNT_GENERATED_EXPLODE; i++) {
+            const explode = createSpark(false);
+            this.explode[i] = [];
+            explode.forEach((exp) => {
+                this.explode[i].push(exp
+                    .getColor2([255, 0, 0], [255, 255, 127], exp));
+            });
+        }
+        for (let i = COUNT_GENERATED_EXPLODE; i < this.explode.length; i++) {
+            this.explode[i] = [];
+            const angle = Math.random() * 4;
+            const ind = Math.random() * COUNT_GENERATED_EXPLODE | 0;
+            this.explode[ind].forEach((exp) => this.explode[i].push(rotateImage(exp, angle)));
+        }
     }
 }
