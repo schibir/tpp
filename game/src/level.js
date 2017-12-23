@@ -26,14 +26,14 @@ class Layer {
 }
 
 export default class Level {
-    constructor(levelName, canvas, particles, onCreate) {
+    constructor(levelName, canvas, event) {
         const { mapWidth, mapHeight } = getMapSize();
         const tileSize = getTileSize(canvas.width, canvas.height);
         console.log(`tileSize = ${tileSize}`);
 
         this.drawTilesPerFrame = 0;
 
-        this.particles = particles;
+        this.event = event;
         this.tileSize = tileSize;
         this.mapWidth = mapWidth - 2;       // board
         this.mapHeight = mapHeight - 2;     // board
@@ -248,7 +248,7 @@ export default class Level {
 
             console.log(`Render time = ${Date.now() - renderTime}`);
 
-            onCreate();
+            this.event.emit("levelCreated");
         });
     }
     ready() {
@@ -353,12 +353,12 @@ export default class Level {
                     tile.type |= HALF;
                     this.drawTile(this.layer1.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
-                    this.particles.emit(tile.x - 0.5, tile.y - 0.5, partType);
+                    this.event.emit("particle", tile.x - 0.5, tile.y - 0.5, partType);
                 } else if (needEmpty) {
                     tile.type &= ~BULLET_MASK;
                     this.drawTile(this.layer0.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
-                    this.particles.emit(tile.x - 0.5, tile.y - 0.5, partType);
+                    this.event.emit("particle", tile.x - 0.5, tile.y - 0.5, partType);
                 }
             }
         };

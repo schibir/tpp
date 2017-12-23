@@ -42,11 +42,11 @@ export class Bullet extends Entity {
 }
 
 export class BulletManager extends EntityManager {
-    constructor(particles) {
+    constructor(event) {
         super();
 
         this.particleCallback = (bullet) => {
-            particles.emit(bullet.cx, bullet.cy, bullet.type & BULLET.FIRE ? PART.FIRE : PART.SPARK);
+            event.emit("particle", bullet.cx, bullet.cy, bullet.type & BULLET.FIRE ? PART.FIRE : PART.SPARK);
         };
     }
     add(bullet) {

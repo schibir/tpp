@@ -43,22 +43,16 @@ export default class Game {
         this.mapHeight = mapHeight - 2;     // board
 
         this.event = new Event();
-        this.particles = new ParticleManager();
+        this.particles = new ParticleManager(this.event);
         this.tanks = new TankManager(currentDifficulty);
-        this.bullets = new BulletManager(this.particles);
+        this.bullets = new BulletManager(this.event);
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
         const tank1 = this.tanks.create(TANK.TANK1);
         const tank2 = params.twoplayers === "true" ? this.tanks.create(TANK.TANK2) : null;
         this.players = [tank1, tank2];
 
-        this.newLevel();
-    }
-    newLevel() {
-        let levelName = `levels/${this.mode}`;
-        if (this.mode === "level") levelName += `${this.currentLevel}`;
-
-        this.level = new Level(levelName, this.canvas, this.particles, () => {
+        this.event.on("levelCreated", () => {
             this.particles.reset();
             this.tanks.reset(Date.now());
             this.bullets.reset();
@@ -69,6 +63,14 @@ export default class Game {
             this.keyMask = [0, 0];
             this.shootKeyPress = [false, false];
         });
+
+        this.newLevel();
+    }
+    newLevel() {
+        let levelName = `levels/${this.mode}`;
+        if (this.mode === "level") levelName += `${this.currentLevel}`;
+
+        this.level = new Level(levelName, this.canvas, this.event);
     }
     update() {
         if (!this.level.ready()) return;

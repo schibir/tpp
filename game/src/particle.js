@@ -82,13 +82,17 @@ class Particle extends Entity {
 }
 
 export default class ParticleManager extends EntityManager {
-    emit(cx, cy, type) {
-        let count = 1;
-        if (type === PART.SPARK) count = 5;
-        else if (type & (PART.BRICK | PART.BETON)) count = 10;
-        for (let i = 0; i < count; i++) {
-            this.objects.push(new Particle(cx, cy, type));
-        }
+    constructor(event) {
+        super();
+
+        event.on("particle", (cx, cy, type) => {
+            let count = 1;
+            if (type === PART.SPARK) count = 5;
+            else if (type & (PART.BRICK | PART.BETON)) count = 10;
+            for (let i = 0; i < count; i++) {
+                this.objects.push(new Particle(cx, cy, type));
+            }
+        });
     }
     draw(level, layer) {
         const layer0 = PART.BRICK | PART.BETON;
