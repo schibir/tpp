@@ -35,3 +35,13 @@ export function cos(angle) {
 export function sin(angle) {
     return [-1, 0, 1, 0][angle];
 }
+
+export function getProbability(probabilities) {
+    const sum = probabilities.reduce((acc, val) => acc + val);
+    let current = Math.random() * sum;
+    for (let i = 0; i < probabilities.length; i++) {
+        current -= probabilities[i];
+        if (current < 0) return i;
+    }
+    return 0;
+}

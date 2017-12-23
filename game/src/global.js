@@ -1,4 +1,6 @@
 
+import { getProbability } from "./utils";
+
 export const TANK = {
     TANK1: 0,
     TANK2: 1,
@@ -19,6 +21,19 @@ export const STATE = {
 
 export function tankRadius(type) {
     return type < TANK.PANZER ? 0.8 : 1;
+}
+
+const botTypeProbability = [
+    [0, 0, 10, 6, 6, 3, 1],         // Private
+    [0, 0, 5, 5, 5, 3, 2],          // Sergeant
+    [0, 0, 2, 4, 4, 4, 3],          // Lieutenant
+    [0, 0, 1, 3, 3, 4, 4],          // General
+];
+
+export function getBotTypeProbability(difficulty) {
+    const ind = difficulty / 4 | 0;
+    console.assert(ind >= 0 && ind < 4, "Wrong difficulty value");
+    return getProbability(botTypeProbability[ind]);
 }
 
 export const BULLET = {

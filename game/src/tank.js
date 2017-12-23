@@ -29,6 +29,8 @@ class Tank extends Entity {
             this.cx = mapWidth / 2 - 5;
             this.cy = mapHeight - 3;
             if (this.type === TANK.TANK2) this.cx += 8;
+        } else {
+            console.assert(this.type === TANK.RANDOM, "Should be unknown type of bot");
         }
     }
     clear(level) {
