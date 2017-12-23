@@ -23,14 +23,13 @@ export function tankRadius(type) {
     return type < TANK.PANZER ? 0.8 : 1;
 }
 
-const botTypeProbabilities = [
-    [0, 0, 10, 6, 6, 3, 1],         // Private
-    [0, 0, 5, 5, 5, 3, 2],          // Sergeant
-    [0, 0, 2, 4, 4, 4, 3],          // Lieutenant
-    [0, 0, 1, 3, 3, 4, 4],          // General
-];
-
 export function botTypeProbability(difficulty) {
+    const botTypeProbabilities = [
+        [0, 0, 10, 6, 6, 3, 1],         // Private
+        [0, 0, 5, 5, 5, 3, 2],          // Sergeant
+        [0, 0, 2, 4, 4, 4, 3],          // Lieutenant
+        [0, 0, 1, 3, 3, 4, 4],          // General
+    ];
     const ind = difficulty / 4 | 0;
     console.assert(ind >= 0 && ind < 4, "Wrong difficulty value");
     return getProbability(botTypeProbabilities[ind]);
@@ -72,3 +71,14 @@ export const PART = {
     BETON: 8,
     EXPLODE: 16,
 };
+
+export function timeToRespawn(difficulty) {
+    const respTable = [
+        5000, 4000, 3000, 2000,
+        1500, 1350, 1200, 1100,
+        1000, 850, 700, 600,
+        500, 400, 300, 200,
+    ];
+    console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");
+    return respTable[difficulty] + Math.random() * 3000;
+}

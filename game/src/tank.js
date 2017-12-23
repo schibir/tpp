@@ -1,8 +1,13 @@
 
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
-import { BULLET, TANK, STATE, tankVelocity } from "./global";
-import { sin, cos, getMapSize, botTypeProbability } from "./utils";
+import {
+    BULLET, TANK, STATE,
+    botTypeProbability,
+    tankVelocity,
+    timeToRespawn,
+} from "./global";
+import { sin, cos, getMapSize } from "./utils";
 
 class Tank extends Entity {
     constructor(type, time, level = null) {
@@ -34,7 +39,7 @@ class Tank extends Entity {
         } else {
             console.assert(this.type === TANK.RANDOM, "Should be unknown type of bot");
             console.assert(level, "Need level object for generate position of bot");
-            this.type = botTypeProbability(4);
+            this.type = botTypeProbability(4);      // TODO: use real difficulty
             this.angle = 2;
             this.cy = 1;
             do {
@@ -128,16 +133,23 @@ class Tank extends Entity {
 }
 
 export default class TankManager extends EntityManager {
-    create(type, time = 0) {
-        const tank = new Tank(type, time);
+    create(type, time = 0, level = null) {
+        const tank = new Tank(type, time, level);
         this.objects.push(tank);
         return tank;
     }
     reset(time) {
         this.objects = this.objects.filter((tank) => tank.type <= TANK.TANK2);
         this.objects.forEach((tank) => tank.respawn(time));
+
+        this.timeRespawn = 0;
     }
     update(level, bullets, time) {
+        if (time > this.timeRespawn) {
+            this.timeRespawn = time + timeToRespawn(4);
+            this.create(TANK.RANDOM, time, level);
+        }
+
         this.objects.forEach((tank) => {
             tank.update(level, this.objects, time);
             const bullet = tank.updateWeapon();
