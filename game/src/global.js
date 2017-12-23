@@ -73,6 +73,17 @@ export const BULLET = {
     FIRE: 4,
 };
 
+export function tankWeaponType(type) {
+    const weaTable = [
+        BULLET.SIMPLE, BULLET.SIMPLE,
+        BULLET.SIMPLE, BULLET.SIMPLE, BULLET.SINGLE,
+        BULLET.SIMPLE, BULLET.POWER | BULLET.FIRE,
+        BULLET.SIMPLE,
+    ];
+    console.assert(type >= TANK.TANK1 && type <= TANK.RANDOM, "Wrong tank type");
+    return weaTable[type];
+}
+
 export function bulletVelocity(type) {
     return type & (BULLET.SINGLE | BULLET.DOUBLE) ? 7.2 : 2.88;
 }

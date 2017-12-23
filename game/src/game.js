@@ -32,7 +32,7 @@ const keyShoot = [
 export default class Game {
     constructor(canvas, params) {
         // common game settings
-        this.currentDifficulty = parseInt(params.difficulty, 10);
+        const currentDifficulty = parseInt(params.difficulty, 10);
         this.currentLevel = 1;
         this.canvas = canvas;
         this.mode = params.mode;
@@ -42,7 +42,7 @@ export default class Game {
         this.mapHeight = mapHeight - 2;     // board
 
         this.particles = new ParticleManager();
-        this.tanks = new TankManager();
+        this.tanks = new TankManager(currentDifficulty);
         this.bullets = new BulletManager(this.particles);
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);

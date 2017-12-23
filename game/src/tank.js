@@ -2,7 +2,7 @@
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import {
-    BULLET, TANK, STATE,
+    TANK, STATE,
     tankLife,
     botTypeProbability,
     angleProbability,
@@ -10,16 +10,18 @@ import {
     timeToRespawn,
     directionTime,
     shootTime,
+    tankWeaponType,
 } from "./global";
-import { sin, cos, getMapSize } from "./utils";
+import { sin, cos, getMapSize, clamp } from "./utils";
 
 class Tank extends Entity {
-    constructor(type, time, level = null) {
+    constructor(type, time, difficulty, level = null) {
         super(0, 0);
         this.type = type;
-        this.weapon = new Weapon(this, type === 0 ? BULLET.SIMPLE | BULLET.FIRE : BULLET.SIMPLE);
+        this.weapon = new Weapon(this, tankWeaponType(type));
         this.life = tankLife(type);
         this.velocity = tankVelocity(type);
+        this.difficulty = difficulty;
         this.respawn(time, level);
     }
     respawn(time, level = null) {
@@ -43,19 +45,14 @@ class Tank extends Entity {
         } else {
             console.assert(this.type === TANK.RANDOM, "Should be unknown type of bot");
             console.assert(level, "Need level object for generate position of bot");
-            this.type = botTypeProbability(4);      // TODO: use real difficulty
+            this.type = botTypeProbability(this.difficulty);
             this.angle = 2;
             this.cy = 1;
             do {
                 this.cx = Math.random() * (mapWidth - 4) + 1 | 0;
             } while (level.collideTankEx(this));
 
-            const weaTable = [
-                BULLET.SIMPLE, BULLET.SIMPLE, BULLET.SINGLE,
-                BULLET.SIMPLE, BULLET.POWER | BULLET.FIRE,
-            ];
-            this.weapon.setType(weaTable[this.type - 2]);
-
+            this.weapon.setType(tankWeaponType(this.type));
             this.life = tankLife(this.type);
             this.velocity = tankVelocity(this.type);
             this.vel = this.velocity;
@@ -89,7 +86,7 @@ class Tank extends Entity {
             if (time > this.stateTime) {
                 this.state = STATE.GOD;
                 this.stateTime = time + 3000;     // time GOD;
-                this.shootTime = time + shootTime(4);
+                this.shootTime = time + shootTime(this.difficulty);
 
                 for (let tank = this.collideTanks(tanks); tank; tank = this.collideTanks(tanks)) {
                     tank.damage(-1);
@@ -109,7 +106,7 @@ class Tank extends Entity {
                     this.changedDir = true;
                 }
                 if (time > this.shootTime) {
-                    this.shootTime = time + shootTime(4);
+                    this.shootTime = time + shootTime(this.difficulty);
                     this.shoot = Math.random() < 0.5;
                 }
             }
@@ -169,8 +166,12 @@ class Tank extends Entity {
 }
 
 export default class TankManager extends EntityManager {
+    constructor(difficulty) {
+        super();
+        this.difficulty = clamp(difficulty, 0, 15);
+    }
     create(type, time = 0, level = null) {
-        const tank = new Tank(type, time, level);
+        const tank = new Tank(type, time, this.difficulty, level);
         this.objects.push(tank);
         return tank;
     }
@@ -182,7 +183,7 @@ export default class TankManager extends EntityManager {
     }
     update(level, bullets, time) {
         if (time > this.timeRespawn) {
-            this.timeRespawn = time + timeToRespawn(4);
+            this.timeRespawn = time + timeToRespawn(this.difficulty);
             this.create(TANK.RANDOM, time, level);
         }
 

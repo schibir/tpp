@@ -256,7 +256,7 @@ export default class Level {
     }
     update() {
         this.context.fillStyle = "black";
-        this.context.fillRect(2 * this.tileSize, this.context.canvas.height - this.tileSize, 2 * this.tileSize, this.tileSize);
+        this.context.fillRect(2 * this.tileSize, this.context.canvas.height - this.tileSize, 3 * this.tileSize, this.tileSize);
         this.context.font = `${this.tileSize * 0.35 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
         this.context.fillStyle = "white";
         this.context.fillText(`Tiles = ${this.drawTilesPerFrame}`, 2 * this.tileSize, this.context.canvas.height - 10);
