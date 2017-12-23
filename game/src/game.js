@@ -1,6 +1,6 @@
 
-import { getMapSize } from "./utils";
-import Level from "./level";
+import { getMapSize, getTileSize } from "./utils";
+import { Level, Layer } from "./level";
 import { Entity } from "./entity";
 import TankManager from "./tank";
 import { BulletManager } from "./bullet";
@@ -30,6 +30,19 @@ const keyShoot = [
     "Q".charCodeAt(0),
 ];
 
+class Menu {
+    constructor(text, width, height) {
+        const { mapWidth, mapHeight } = getMapSize();
+        const size = getTileSize(width, height);
+        this.entity = new Entity((mapWidth - 1) / 2, (mapHeight - 1) / 2, 12);
+        this.layer = new Layer(this.entity.size * size, this.entity.size * size);
+
+        const ctx = this.layer.context;
+        ctx.fillStyle = "red";
+        ctx.fillRect(0, 4 * size, this.layer.canvas.width, this.layer.canvas.height - 8 * size);
+    }
+}
+
 export default class Game {
     constructor(canvas, params) {
         // common game settings
@@ -46,6 +59,8 @@ export default class Game {
         this.particles = new ParticleManager(this.event);
         this.tanks = new TankManager(currentDifficulty, this.event);
         this.bullets = new BulletManager(this.event);
+
+        this.pauseMenu = new Menu("Pause", canvas.width, canvas.height);
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
         const tank1 = this.tanks.create(TANK.TANK1);
@@ -98,6 +113,9 @@ export default class Game {
         this.tanks.draw(this.level);
         this.bullets.draw(this.level);
         this.particles.draw(this.level, 1);
+
+        // draw menu
+        // this.level.drawEntityBegin(this.pauseMenu.entity, this.pauseMenu.layer.canvas);
     }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {

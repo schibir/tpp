@@ -16,7 +16,7 @@ const BRIDGE = BRIDGEH | BRIDGEV;
 const MOVE_MASK = HALF | BRICK | BETON | WATER;
 const BULLET_MASK = HALF | BRICK | BETON;
 
-class Layer {
+export class Layer {
     constructor(width, height) {
         this.canvas = document.createElement("canvas");
         this.canvas.width = width;
@@ -25,7 +25,7 @@ class Layer {
     }
 }
 
-export default class Level {
+export class Level {
     constructor(levelName, canvas, event) {
         const { mapWidth, mapHeight } = getMapSize();
         const tileSize = getTileSize(canvas.width, canvas.height);
