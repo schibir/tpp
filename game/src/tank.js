@@ -1,17 +1,19 @@
 
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
-import { BULLET, TANK, STATE } from "./global";
-import { sin, cos, getMapSize } from "./utils";
+import { BULLET, TANK, STATE, tankVelocity } from "./global";
+import { sin, cos, getMapSize, botTypeProbability } from "./utils";
 
 class Tank extends Entity {
-    constructor(type, time) {
+    constructor(type, time, level = null) {
         super(0, 0);
         this.type = type;
         this.weapon = new Weapon(this, type === 0 ? BULLET.SIMPLE | BULLET.FIRE : BULLET.SIMPLE);
-        this.respawn(time);
+        this.life = 1;
+        this.velocity = tankVelocity(type);
+        this.respawn(time, level);
     }
-    respawn(time) {
+    respawn(time, level = null) {
         this.animTrack = 0;
         this.animTurret = 0;
         this.shoot = false;
@@ -31,6 +33,24 @@ class Tank extends Entity {
             if (this.type === TANK.TANK2) this.cx += 8;
         } else {
             console.assert(this.type === TANK.RANDOM, "Should be unknown type of bot");
+            console.assert(level, "Need level object for generate position of bot");
+            this.type = botTypeProbability(4);
+            this.angle = 2;
+            this.cy = 1;
+            do {
+                this.cx = Math.random() * (mapWidth - 4) + 1 | 0;
+            } while (level.collideTank(this));
+
+            const weaTable = [
+                BULLET.SIMPLE, BULLET.SIMPLE, BULLET.SINGLE,
+                BULLET.SIMPLE, BULLET.POWER | BULLET.FIRE,
+            ];
+            this.weapon.setType(weaTable[this.type - 2]);
+
+            const lifeTable = [1, 1, 1, 4, 8];
+            this.life = lifeTable[this.type - 2];
+
+            this.velocity = tankVelocity(this.type);
         }
     }
     clear(level) {

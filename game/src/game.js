@@ -98,7 +98,7 @@ export default class Game {
         for (let p = 0; p < 2; p++) {
             if (this.players[p] && key in keyToAngle[p]) {
                 this.players[p].angle = keyToAngle[p][key];
-                this.players[p].vel = 1.5;
+                this.players[p].vel = this.players[p].velocity;
                 this.keyMask[p] |= 1 << keyToAngle[p][key];
             }
             if (this.players[p] && key === keyShoot[p]) {

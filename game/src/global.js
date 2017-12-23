@@ -23,17 +23,22 @@ export function tankRadius(type) {
     return type < TANK.PANZER ? 0.8 : 1;
 }
 
-const botTypeProbability = [
+const botTypeProbabilities = [
     [0, 0, 10, 6, 6, 3, 1],         // Private
     [0, 0, 5, 5, 5, 3, 2],          // Sergeant
     [0, 0, 2, 4, 4, 4, 3],          // Lieutenant
     [0, 0, 1, 3, 3, 4, 4],          // General
 ];
 
-export function getBotTypeProbability(difficulty) {
+export function botTypeProbability(difficulty) {
     const ind = difficulty / 4 | 0;
     console.assert(ind >= 0 && ind < 4, "Wrong difficulty value");
-    return getProbability(botTypeProbability[ind]);
+    return getProbability(botTypeProbabilities[ind]);
+}
+
+export function tankVelocity(type) {
+    console.assert(type >= TANK.TANK1 && type <= TANK.RANDOM, "Wrong tank type");
+    return [1.5, 1.5, 1.2, 2.4, 1.2, 1, 0.75, 0][type];
 }
 
 export const BULLET = {
