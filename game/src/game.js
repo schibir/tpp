@@ -6,6 +6,7 @@ import TankManager from "./tank";
 import { BulletManager } from "./bullet";
 import ParticleManager from "./particle";
 import { TANK } from "./global";
+import Event from "./event";
 
 const keyToAngle = [{
     38: 0,  // UP
@@ -41,6 +42,7 @@ export default class Game {
         this.mapWidth = mapWidth - 2;       // board
         this.mapHeight = mapHeight - 2;     // board
 
+        this.event = new Event();
         this.particles = new ParticleManager();
         this.tanks = new TankManager(currentDifficulty);
         this.bullets = new BulletManager(this.particles);
