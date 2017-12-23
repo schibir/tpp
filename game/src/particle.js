@@ -16,6 +16,7 @@ class Particle extends Entity {
         if (type === PART.FIRE) this.size = 2;
         else if (type === PART.EXPLODE) {
             this.size = 4;
+            this.lifetime = 400;
             this.decal = new Entity(cx, cy, 3);
         } else if (type & (PART.BRICK | PART.BETON)) {
             this.cx += Math.cos(this.angle) * 0.5 * Math.random();
