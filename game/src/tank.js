@@ -48,7 +48,7 @@ class Tank extends Entity {
             this.cy = 1;
             do {
                 this.cx = Math.random() * (mapWidth - 4) + 1 | 0;
-            } while (level.collideTank(this));
+            } while (level.collideTankEx(this));
 
             const weaTable = [
                 BULLET.SIMPLE, BULLET.SIMPLE, BULLET.SINGLE,
@@ -90,6 +90,10 @@ class Tank extends Entity {
                 this.state = STATE.GOD;
                 this.stateTime = time + 3000;     // time GOD;
                 this.shootTime = time + shootTime(4);
+
+                for (let tank = this.collideTanks(tanks); tank; tank = this.collideTanks(tanks)) {
+                    tank.damage(-1);
+                }
             }
             this.shoot = false;
         } else {

@@ -322,6 +322,14 @@ export default class Level {
 
         return this.collidePoint(x1, y1, MOVE_MASK) || this.collidePoint(x2, y2, MOVE_MASK);
     }
+    collideTankEx(entity) {
+        const x = entity.cx;
+        const y = entity.cy;
+        return this.collidePoint(x + 0.5, y + 0.5, MOVE_MASK) ||
+               this.collidePoint(x + 0.5, y - 0.5, MOVE_MASK) ||
+               this.collidePoint(x - 0.5, y - 0.5, MOVE_MASK) ||
+               this.collidePoint(x - 0.5, y + 0.5, MOVE_MASK);
+    }
     collideBullet(entity, power) {
         const x1 = entity.cx + cos(entity.angle + 1 & 3) * 0.5;
         const y1 = entity.cy + sin(entity.angle + 1 & 3) * 0.5;

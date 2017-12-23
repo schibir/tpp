@@ -77,6 +77,10 @@ export function bulletVelocity(type) {
     return type & (BULLET.SINGLE | BULLET.DOUBLE) ? 7.2 : 2.88;
 }
 
+export function bulletDamage(type) {
+    return (type & BULLET.POWER) === BULLET.POWER ? 2 : 1;
+}
+
 export function bulletsCount(type) {
     return type & BULLET.DOUBLE ? 2 : 1;
 }
