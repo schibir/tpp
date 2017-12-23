@@ -4,8 +4,11 @@ import Weapon from "./weapon";
 import {
     BULLET, TANK, STATE,
     botTypeProbability,
+    angleProbability,
     tankVelocity,
     timeToRespawn,
+    directionTime,
+    shootTime,
 } from "./global";
 import { sin, cos, getMapSize } from "./utils";
 
@@ -56,7 +59,11 @@ class Tank extends Entity {
             this.life = lifeTable[this.type - 2];
 
             this.velocity = tankVelocity(this.type);
+            this.vel = this.velocity;
         }
+        this.dirTime = 0;
+        this.shootTime = 0;
+        this.changedDir = false;
     }
     clear(level) {
         level.clearEntity(this.state === STATE.GOD ? this.shield : this);
@@ -83,6 +90,7 @@ class Tank extends Entity {
             if (time > this.stateTime) {
                 this.state = STATE.GOD;
                 this.stateTime = time + 3000;     // time GOD;
+                this.shootTime = time + shootTime(4);
             }
             this.shoot = false;
         } else {
@@ -90,14 +98,31 @@ class Tank extends Entity {
                 if (time > this.stateTime) this.state = STATE.NORMAL;
             }
 
+            if (this.type > TANK.TANK2) {
+                // AI
+                if (time > this.dirTime) {
+                    this.dirTime = time + directionTime(false);
+                    this.angle = angleProbability();
+                    this.changedDir = true;
+                }
+                if (time > this.shootTime) {
+                    this.shootTime = time + shootTime(4);
+                    this.shoot = Math.random() < 0.5;
+                }
+            }
+
             if (this.angle === 0 || this.angle === 2) this.cx = Math.round(this.cx);
             if (this.angle === 1 || this.angle === 3) this.cy = Math.round(this.cy);
 
             const delta = this.getDelta(time);
             this.move(delta);
-            if (level.collideTank(this) ||
-                this.collideTanks(tanks)) this.move(-delta);
-            else if (this.vel > 0.01) {
+            if (level.collideTank(this) || this.collideTanks(tanks)) {
+                this.move(-delta);
+                if (this.changedDir) {
+                    this.dirTime = time + directionTime(true);
+                    this.changedDir = false;
+                }
+            } else if (this.vel > 0.01) {
                 this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
             }
         }

@@ -1,5 +1,5 @@
 
-import { getProbability } from "./utils";
+import { rand, getProbability } from "./utils";
 
 export const TANK = {
     TANK1: 0,
@@ -35,9 +35,28 @@ export function botTypeProbability(difficulty) {
     return getProbability(botTypeProbabilities[ind]);
 }
 
+export function angleProbability() {
+    return getProbability([1, 3, 5, 3]);
+}
+
+export function shootTime(difficulty) {
+    const shootTable = [
+        2000, 1700, 1300, 1000,
+        800, 750, 700, 650,
+        600, 500, 450, 400,
+        350, 300, 250, 200,
+    ];
+    console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");
+    return shootTable[difficulty];
+}
+
 export function tankVelocity(type) {
     console.assert(type >= TANK.TANK1 && type <= TANK.RANDOM, "Wrong tank type");
     return [1.5, 1.5, 1.2, 2.4, 1.2, 1, 0.75, 0][type];
+}
+
+export function directionTime(collision) {
+    return collision ? rand(250, 150) : rand(3000, 1000);
 }
 
 export const BULLET = {
