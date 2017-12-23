@@ -3,6 +3,7 @@ import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import {
     BULLET, TANK, STATE,
+    tankLife,
     botTypeProbability,
     angleProbability,
     tankVelocity,
@@ -17,7 +18,7 @@ class Tank extends Entity {
         super(0, 0);
         this.type = type;
         this.weapon = new Weapon(this, type === 0 ? BULLET.SIMPLE | BULLET.FIRE : BULLET.SIMPLE);
-        this.life = 1;
+        this.life = tankLife(type);
         this.velocity = tankVelocity(type);
         this.respawn(time, level);
     }
@@ -55,9 +56,7 @@ class Tank extends Entity {
             ];
             this.weapon.setType(weaTable[this.type - 2]);
 
-            const lifeTable = [1, 1, 1, 4, 8];
-            this.life = lifeTable[this.type - 2];
-
+            this.life = tankLife(this.type);
             this.velocity = tankVelocity(this.type);
             this.vel = this.velocity;
         }
@@ -132,6 +131,14 @@ class Tank extends Entity {
         this.shield.cy = this.cy;
         this.animTurret *= 0.9;
     }
+    damage(value) {
+        if (value < 0) this.state = STATE.DEAD;
+        else if (this.state !== STATE.GOD) {
+            this.life -= value;
+            for (let i = 0; i < value; i++) this.weapon.dec();
+            if (this.life <= 0) this.state = STATE.DEAD;
+        }
+    }
     updateWeapon() {
         const bullet = this.shoot ? this.weapon.shoot() : null;
         this.shoot = false;
@@ -175,7 +182,13 @@ export default class TankManager extends EntityManager {
             this.create(TANK.RANDOM, time, level);
         }
 
-        this.objects.forEach((tank) => {
+        for (let i = 0; i < this.objects.length; i++) {
+            const tank = this.objects[i];
+            if (tank.state === STATE.DEAD) {
+                if (tank.type <= TANK.TANK2) {
+                    this.objects[i] = this.create(tank.type, time);
+                } else tank.alive = false;
+            }
             tank.update(level, this.objects, time);
             const bullet = tank.updateWeapon();
             if (bullet) {
@@ -183,7 +196,7 @@ export default class TankManager extends EntityManager {
             }
 
             bullets.collideTank(tank);
-        });
+        }
 
         this.splice();
     }

@@ -23,6 +23,12 @@ export function tankRadius(type) {
     return type < TANK.PANZER ? 0.8 : 1;
 }
 
+export function tankLife(type) {
+    console.assert(type >= TANK.TANK1 && type <= TANK.RANDOM, "Wrong tank type");
+    const lifeTable = [1, 1, 1, 1, 1, 4, 6, 0];
+    return lifeTable[type];
+}
+
 export function botTypeProbability(difficulty) {
     const botTypeProbabilities = [
         [0, 0, 10, 6, 6, 3, 1],         // Private
