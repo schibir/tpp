@@ -66,7 +66,7 @@ export default class Game {
         this.particles = new ParticleManager(this.event);
         this.tanks = new TankManager(currentDifficulty, this.event);
         this.bullets = new BulletManager(this.event);
-        this.item = new ItemManager(this.event);
+        this.item = new ItemManager(currentDifficulty, this.event);
 
         this.pauseMenu = new Menu("Pause", canvas.width, canvas.height);
         this.loadMenu = new Menu("Loading", canvas.width, canvas.height);
@@ -83,7 +83,7 @@ export default class Game {
             this.particles.reset();
             this.tanks.reset(Date.now());
             this.bullets.reset();
-            this.item.reset();
+            this.item.reset(Date.now());
             this.pauseTime = 0;
             this.startPauseTime = 0;
             this.drawLoading = false;

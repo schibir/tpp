@@ -110,6 +110,17 @@ export function getItem() {
     return ind;
 }
 
+export function itemRespawnTime(difficulty) {
+    const timeTable = [
+        15000, 13000, 12000, 11000,
+        10000, 8000, 7000, 6000,
+        5000, 3000, 2000, 1000,
+        1, 1, 1, 1,
+    ];
+    console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");
+    return Math.random() * timeTable[difficulty] + 10000;
+}
+
 const SMOKE0 = 32;
 const SMOKE1 = 64;
 const SMOKE2 = 128;
