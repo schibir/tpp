@@ -196,15 +196,19 @@ export default class TankManager extends EntityManager {
         super();
         this.difficulty = clamp(difficulty, 0, 15);
         this.event = event;
+        this.life = 2;
 
         event.on("item", (type, tank) => {
             switch (type) {
             case ITEM.LIFE:
+                this.life++;
                 break;
             case ITEM.KNUKLE:
                 if (tank.type <= TANK.TANK2) {
-                    this.objects.forEach((bots) => {
-                        if (bots.state > STATE.RESPAWN && bots.type > TANK.TANK2) bots.damage(-1);
+                    this.objects.forEach((bot) => {
+                        if (bot.state > STATE.RESPAWN &&
+                            bot.type > TANK.TANK2 &&
+                            bot.type !== TANK.EAGLE) bot.damage(-1);
                     });
                 }
                 break;
@@ -240,8 +244,11 @@ export default class TankManager extends EntityManager {
             if (tank.state === STATE.DEAD) {
                 this.event.emit("tankDead", tank);
                 if (tank.type <= TANK.TANK2) {
-                    const player = this.create(tank.type, time);
-                    this.event.emit("playerCreated", player);
+                    if (this.life > 0) {
+                        this.life--;
+                        const player = this.create(tank.type, time);
+                        this.event.emit("playerCreated", player);
+                    }
                 } else if (tank.type === TANK.EAGLE) {
                     this.event.emit("gameOver");
                 }
