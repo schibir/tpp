@@ -97,7 +97,7 @@ function main() {
 
         animationFrame(update);
     };
-    update();
+    animationFrame(update);
 
     // events
     document.onkeydown = (event) => {

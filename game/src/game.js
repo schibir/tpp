@@ -67,6 +67,10 @@ export default class Game {
         this.bullets = new BulletManager(this.event);
 
         this.pauseMenu = new Menu("Pause", canvas.width, canvas.height);
+        this.loadMenu = new Menu("Loading", canvas.width, canvas.height);
+        this.menu = null;
+        this.level = null;
+        this.drawLoading = false;
 
         this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
         const tank1 = this.tanks.create(TANK.TANK1);
@@ -79,6 +83,7 @@ export default class Game {
             this.bullets.reset();
             this.pauseTime = 0;
             this.startPauseTime = 0;
+            this.drawLoading = false;
 
             // player settings
             this.keyMask = [0, 0];
@@ -87,8 +92,6 @@ export default class Game {
         this.event.on("playerCreated", (tank) => {
             this.players[tank.type] = tank;
         });
-
-        this.newLevel();
     }
     newLevel() {
         let levelName = `levels/${this.mode}`;
@@ -97,13 +100,23 @@ export default class Game {
         this.level = new Level(levelName, this.canvas, this.event);
     }
     update() {
-        if (!this.level.ready()) return;
+        if (!this.level) {
+            if (!this.drawLoading) {
+                const x = this.canvas.width / 2 - this.loadMenu.layer.canvas.width / 2;
+                const y = this.canvas.height / 2 - this.loadMenu.layer.canvas.height / 2;
+                this.canvas.getContext("2d").drawImage(this.loadMenu.layer.canvas, x, y);
+                this.drawLoading = true;
+            } else {
+                this.newLevel();
+            }
+        }
+        if (!this.level || !this.level.ready()) return;
 
         const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0;
         const currentTime = Date.now() - this.pauseTime - timeOffset;
 
         // clearing
-        this.level.clearEntity(this.pauseMenu.entity);
+        if (this.menu) this.level.clearEntity(this.menu.entity);
         this.level.clearEntity(this.eagle);
         this.tanks.clear(this.level);
         this.bullets.clear(this.level);
@@ -114,6 +127,9 @@ export default class Game {
         this.bullets.update(this.level, currentTime);
         this.particles.update(this.level, currentTime);
 
+        if (this.startPauseTime) this.menu = this.pauseMenu;
+        else this.menu = null;
+
         // drawing
         this.level.drawEntity(this.eagle, this.level.textures.eagle);
         this.particles.draw(this.level, 0);
@@ -122,7 +138,9 @@ export default class Game {
         this.particles.draw(this.level, 1);
 
         // draw menu
-        this.level.drawEntityBegin(this.pauseMenu.entity, this.pauseMenu.layer.canvas);
+        if (this.menu) {
+            this.level.drawEntityBegin(this.menu.entity, this.menu.layer.canvas);
+        }
     }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {
@@ -137,7 +155,7 @@ export default class Game {
             }
         }
 
-        if (key === "N".charCodeAt(0)) this.newLevel();
+        if (key === "N".charCodeAt(0)) this.level = null;
         if (key === "P".charCodeAt(0)) {
             if (this.startPauseTime) {
                 this.pauseTime += Date.now() - this.startPauseTime;
