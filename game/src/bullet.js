@@ -13,7 +13,6 @@ export class Bullet extends Entity {
         this.owner = owner;
         this.type = type;
         this.callback = callback;
-        this.alive = true;
         this.particleCallback = () => {};
     }
     setParticleCallback(callback) {
@@ -25,9 +24,6 @@ export class Bullet extends Entity {
             this.alive = false;
             this.callback();
         }
-    }
-    clear(level) {
-        level.clearEntity(this);
     }
     draw(level) {
         let texture = this.type & BULLET.FIRE ? level.textures.fireSmall[this.angle] : level.textures.bullet;

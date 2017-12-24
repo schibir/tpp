@@ -8,7 +8,6 @@ class Particle extends Entity {
         super(cx, cy, 0.5, Math.random() * 2 * Math.PI, rand(1, 0.5));
         this.type = type;
         this.creationTime = 0;
-        this.alive = true;
         this.random = Math.random();
         this.lifetime = 250;
         this.deltatime = 0;
@@ -33,9 +32,6 @@ class Particle extends Entity {
             this.cx = rand(cx, 0.1);
             this.cy = rand(cy, 0.1);
         }
-    }
-    clear(level) {
-        level.clearEntity(this);
     }
     getBrickTexture(level) {
         const textures = this.type === PART.BRICK ? level.textures.sparksBrick : level.textures.sparksBeton;

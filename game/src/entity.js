@@ -10,6 +10,7 @@ export class Entity {
         this.angle = angle;
         this.vel = vel;
         this.lastTime = 0;
+        this.alive = true;
     }
     getDelta(time) {
         if (!this.lastTime) this.lastTime = time;
@@ -35,6 +36,9 @@ export class Entity {
         const minRadius = this.size * mySizeKoef * 0.5 + other.size * otherSizeKoef * 0.5;
         return (Math.abs(this.cx - other.cx) <= minRadius &&
                 Math.abs(this.cy - other.cy) <= minRadius);
+    }
+    clear(level) {
+        level.clearEntity(this);
     }
 }
 
