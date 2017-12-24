@@ -56,7 +56,7 @@ export class BulletManager extends EntityManager {
             if (tank.collide(bullet, tankRadius(tank.type), 0.5)) {
                 bullet.died();
 
-                const table = [0, 0, 1, 1, 1, 1, 1];
+                const table = [0, 0, 1, 1, 1, 1, 1, 1, 2];
                 if (table[bullet.owner.type] !== table[tank.type]) {
                     tank.damage(bulletDamage(bullet.type));
                 }

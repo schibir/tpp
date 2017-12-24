@@ -74,7 +74,6 @@ export default class Game {
         this.level = null;
         this.drawLoading = false;
 
-        this.eagle = new Entity(this.mapWidth * 0.5, this.mapHeight - 1);
         const tank1 = this.tanks.create(TANK.TANK1);
         const tank2 = params.twoplayers === "true" ? this.tanks.create(TANK.TANK2) : null;
         this.players = [tank1, tank2];
@@ -120,7 +119,6 @@ export default class Game {
 
         // clearing
         if (this.menu) this.level.clearEntity(this.menu.entity);
-        this.level.clearEntity(this.eagle);
         this.tanks.clear(this.level);
         this.bullets.clear(this.level);
         this.particles.clear(this.level);
@@ -136,7 +134,6 @@ export default class Game {
         else this.menu = null;
 
         // drawing
-        this.level.drawEntity(this.eagle, this.level.textures.eagle);
         this.particles.draw(this.level, 0);
         this.tanks.draw(this.level);
         this.bullets.draw(this.level);

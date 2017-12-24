@@ -1,7 +1,7 @@
 
 import { getMapSize } from "./utils";
 import { Entity, EntityManager } from "./entity";
-import { STATE, tankRadius, getItem, itemRespawnTime } from "./global";
+import { STATE, TANK, tankRadius, getItem, itemRespawnTime } from "./global";
 
 class Item extends Entity {
     constructor(event) {
@@ -18,7 +18,7 @@ class Item extends Entity {
     }
     update(tanks) {
         tanks.objects.forEach((tank) => {
-            if (tank.state <= STATE.RESPAWN || !this.alive) return;
+            if (tank.state <= STATE.RESPAWN || tank.type === TANK.EAGLE || !this.alive) return;
             if (this.collide(tank, tankRadius(tank.type), 0.8)) {
                 this.alive = false;
                 this.event.emit("item", this.type, tank);

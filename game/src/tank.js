@@ -41,6 +41,10 @@ class Tank extends Entity {
             this.cx = mapWidth / 2 - 5;
             this.cy = mapHeight - 3;
             if (this.type === TANK.TANK2) this.cx += 8;
+        } else if (this.type === TANK.EAGLE) {
+            this.cx = mapWidth / 2 - 1;
+            this.cy = mapHeight - 3;
+            this.state = STATE.NORMAL;
         } else {
             console.assert(this.type === TANK.RANDOM, "Should be unknown type of bot");
             console.assert(level, "Need level object for generate position of bot");
@@ -69,9 +73,13 @@ class Tank extends Entity {
             const ind = ((Date.now() % 800) / 50) % level.textures.respawn.length | 0;
             level.drawEntity(this, level.textures.respawn[ind]);
         } else {
-            level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
-            level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
-            level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
+            if (this.type === TANK.EAGLE) {
+                level.drawEntityBegin(this, level.textures.eagle);
+            } else {
+                level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
+                level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
+                level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
+            }
 
             if (this.state === STATE.GOD) {
                 const ind = Math.random() * level.textures.shield.length | 0;
@@ -82,6 +90,7 @@ class Tank extends Entity {
         }
     }
     update(level, tanks, time) {
+        if (this.type === TANK.EAGLE) return;
         if (this.state === STATE.RESPAWN) {
             if (time > this.stateTime) {
                 this.state = STATE.GOD;
@@ -216,6 +225,7 @@ export default class TankManager extends EntityManager {
     reset(time) {
         this.objects = this.objects.filter((tank) => tank.type <= TANK.TANK2);
         this.objects.forEach((tank) => tank.respawn(time));
+        this.create(TANK.EAGLE);
 
         this.timeRespawn = 0;
     }

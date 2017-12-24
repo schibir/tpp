@@ -10,6 +10,7 @@ export const TANK = {
     STRONG: 5,
     PANZER: 6,
     RANDOM: 7,
+    EAGLE: 8,
 };
 
 export const STATE = {
@@ -24,8 +25,8 @@ export function tankRadius(type) {
 }
 
 export function tankLife(type) {
-    console.assert(type >= TANK.TANK1 && type <= TANK.RANDOM, "Wrong tank type");
-    const lifeTable = [1, 1, 1, 1, 1, 4, 6, 0];
+    console.assert(type >= TANK.TANK1 && type <= TANK.EAGLE, "Wrong tank type");
+    const lifeTable = [1, 1, 1, 1, 1, 4, 6, 0, 1];
     return lifeTable[type];
 }
 
@@ -57,8 +58,8 @@ export function shootTime(difficulty) {
 }
 
 export function tankVelocity(type) {
-    console.assert(type >= TANK.TANK1 && type <= TANK.RANDOM, "Wrong tank type");
-    return [1.5, 1.5, 1.2, 2.4, 1.2, 1, 0.75, 0][type];
+    console.assert(type >= TANK.TANK1 && type <= TANK.EAGLE, "Wrong tank type");
+    return [1.5, 1.5, 1.2, 2.4, 1.2, 1, 0.75, 0, 0][type];
 }
 
 export function directionTime(collision) {
@@ -78,9 +79,9 @@ export function tankWeaponType(type) {
         BULLET.SIMPLE, BULLET.SIMPLE,
         BULLET.SIMPLE, BULLET.SIMPLE, BULLET.SINGLE,
         BULLET.SIMPLE, BULLET.POWER | BULLET.FIRE,
-        BULLET.SIMPLE,
+        BULLET.SIMPLE, BULLET.SIMPLE,
     ];
-    console.assert(type >= TANK.TANK1 && type <= TANK.RANDOM, "Wrong tank type");
+    console.assert(type >= TANK.TANK1 && type <= TANK.EAGLE, "Wrong tank type");
     return weaTable[type];
 }
 
