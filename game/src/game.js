@@ -7,6 +7,7 @@ import { BulletManager } from "./bullet";
 import ParticleManager from "./particle";
 import { TANK } from "./global";
 import Event from "./event";
+import ItemManager from "./item";
 
 const keyToAngle = [{
     38: 0,  // UP
@@ -65,6 +66,7 @@ export default class Game {
         this.particles = new ParticleManager(this.event);
         this.tanks = new TankManager(currentDifficulty, this.event);
         this.bullets = new BulletManager(this.event);
+        this.item = new ItemManager(this.event);
 
         this.pauseMenu = new Menu("Pause", canvas.width, canvas.height);
         this.loadMenu = new Menu("Loading", canvas.width, canvas.height);
@@ -81,6 +83,7 @@ export default class Game {
             this.particles.reset();
             this.tanks.reset(Date.now());
             this.bullets.reset();
+            this.item.reset();
             this.pauseTime = 0;
             this.startPauseTime = 0;
             this.drawLoading = false;
@@ -121,11 +124,13 @@ export default class Game {
         this.tanks.clear(this.level);
         this.bullets.clear(this.level);
         this.particles.clear(this.level);
+        this.item.clear(this.level);
 
         // updating
         this.tanks.update(this.level, this.bullets, currentTime);
         this.bullets.update(this.level, currentTime);
         this.particles.update(this.level, currentTime);
+        this.item.update(this.level, currentTime);
 
         if (this.startPauseTime) this.menu = this.pauseMenu;
         else this.menu = null;
@@ -136,6 +141,7 @@ export default class Game {
         this.tanks.draw(this.level);
         this.bullets.draw(this.level);
         this.particles.draw(this.level, 1);
+        this.item.draw(this.level);
 
         // draw menu
         if (this.menu) {

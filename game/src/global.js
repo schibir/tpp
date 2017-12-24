@@ -104,6 +104,12 @@ export const ITEM = {
     FIREBALL: 4,
 };
 
+export function getItem() {
+    const probs = [1, 2, 2, 2, 2];
+    const ind = getProbability(probs);
+    return ind;
+}
+
 const SMOKE0 = 32;
 const SMOKE1 = 64;
 const SMOKE2 = 128;
