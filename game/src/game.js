@@ -66,7 +66,7 @@ export default class Game {
         this.particles = new ParticleManager(this.event);
         this.tanks = new TankManager(currentDifficulty, this.event);
         this.bullets = new BulletManager(this.event);
-        this.item = new ItemManager(currentDifficulty, this.event);
+        this.items = new ItemManager(currentDifficulty, this.event);
 
         this.pauseMenu = new Menu("Pause", canvas.width, canvas.height);
         this.loadMenu = new Menu("Loading", canvas.width, canvas.height);
@@ -83,7 +83,7 @@ export default class Game {
             this.particles.reset();
             this.tanks.reset(Date.now());
             this.bullets.reset();
-            this.item.reset(Date.now());
+            this.items.reset(Date.now());
             this.pauseTime = 0;
             this.startPauseTime = 0;
             this.drawLoading = false;
@@ -124,13 +124,13 @@ export default class Game {
         this.tanks.clear(this.level);
         this.bullets.clear(this.level);
         this.particles.clear(this.level);
-        this.item.clear(this.level);
+        this.items.clear(this.level);
 
         // updating
         this.tanks.update(this.level, this.bullets, currentTime);
         this.bullets.update(this.level, currentTime);
         this.particles.update(this.level, currentTime);
-        this.item.update(this.level, currentTime);
+        this.items.update(this.level, this.tanks, currentTime);
 
         if (this.startPauseTime) this.menu = this.pauseMenu;
         else this.menu = null;
@@ -141,7 +141,7 @@ export default class Game {
         this.tanks.draw(this.level);
         this.bullets.draw(this.level);
         this.particles.draw(this.level, 1);
-        this.item.draw(this.level);
+        this.items.draw(this.level);
 
         // draw menu
         if (this.menu) {
