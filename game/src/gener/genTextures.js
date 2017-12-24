@@ -903,6 +903,31 @@ export default class GenTextures {
         this.sparksBeton = createSparkBrickBeton([160, 160, 160]);
 
         // fire and smoke
+        const createSmoke = () => {
+            const ret = new Array(16);
+            for (let i = 0; i < ret.length; i++) {
+                const smokeNoise = new SimpleBuffer(tileSize);
+                smokeNoise
+                    .perlin(2, 0.5)
+                    .forEach(Math.abs);
+
+                const factor = i / ret.length;
+                const smoke = new SimpleBuffer(tileSize);
+                smoke
+                    .normDist(1)
+                    .normalize(0, 1)
+                    .forBuf(smokeNoise, (a, b) => a * b)
+                    .normalize(0, 1 - factor);
+
+                if (i === 0) {
+                    ret[i] = smoke.getColor2([255, 0, 0], [255, 255, 127], smoke);
+                } else {
+                    ret[i] = smoke.getColor([190, 190, 190], smoke);
+                }
+            }
+            return ret;
+        };
+        this.smokes = createSmoke();
 
         // explode
         this.explode = new Array(16);

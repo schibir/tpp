@@ -25,6 +25,13 @@ class Particle extends Entity {
             this.maxvel = this.vel;
             this.startAngle = Math.random();
             this.omega = rand(0, 1 / 30);
+        } else if (type === PART.SMOKE) {
+            this.size = 1;
+            this.lifetime = rand(1000, 500);
+            this.angle = rand(-1, 0.2);
+            this.vel = rand(0.5, 0.2);
+            this.cx = rand(cx, 0.1);
+            this.cy = rand(cy, 0.1);
         }
     }
     clear(level) {
@@ -68,6 +75,11 @@ class Particle extends Entity {
                 }
                 break;
             }
+            case PART.SMOKE: {
+                const ind = this.deltatime / this.lifetime * level.textures.smokes.length | 0;
+                level.drawEntity(this, level.textures.smokes[ind]);
+                break;
+            }
             default: break;
             }
         }
@@ -83,7 +95,7 @@ class Particle extends Entity {
             }
         }
 
-        if (this.type & (PART.SPARK | PART.BRICK | PART.BETON)) {
+        if (this.type & (PART.SPARK | PART.BRICK | PART.BETON | PART.SMOKE)) {
             this.moveEx(delta);
         }
     }
@@ -107,7 +119,7 @@ export default class ParticleManager extends EntityManager {
     }
     draw(level, layer) {
         const layer0 = PART.BRICK | PART.BETON;
-        const layer1 = PART.SPARK | PART.FIRE | PART.EXPLODE;
+        const layer1 = PART.SPARK | PART.FIRE | PART.EXPLODE | PART.SMOKE;
         this.objects.forEach((part) => {
             if ((part.type & layer0) && (layer === 0)) part.draw(level);
             else if ((part.type & layer1) && (layer === 1)) part.draw(level);

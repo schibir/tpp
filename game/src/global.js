@@ -110,6 +110,7 @@ export const PART = {
     BRICK: 4,
     BETON: 8,
     EXPLODE: 16,
+    SMOKE: 32,
 };
 
 export function timeToRespawn(difficulty) {
