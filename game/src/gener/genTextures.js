@@ -915,7 +915,7 @@ export default class GenTextures {
                 const factor = i / ret.length;
                 const smoke = new SimpleBuffer(tileSize);
                 smoke
-                    .normDist(1)
+                    .normDist(1.5)
                     .normalize(0, 1)
                     .forBuf(smokeNoise, (a, b) => a * b)
                     .normalize(0, koef * (1 - factor));
