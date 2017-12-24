@@ -104,13 +104,22 @@ export const ITEM = {
     FIREBALL: 4,
 };
 
+const SMOKE0 = 32;
+const SMOKE1 = 64;
+const SMOKE2 = 128;
+const SMOKE3 = 256;
+
 export const PART = {
     SPARK: 1,
     FIRE: 2,
     BRICK: 4,
     BETON: 8,
     EXPLODE: 16,
-    SMOKE: 32,
+    SMOKE0,
+    SMOKE1,
+    SMOKE2,
+    SMOKE3,
+    SMOKE: SMOKE0 | SMOKE1 | SMOKE2 | SMOKE3,
 };
 
 export function timeToRespawn(difficulty) {

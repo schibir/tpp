@@ -25,7 +25,7 @@ class Particle extends Entity {
             this.maxvel = this.vel;
             this.startAngle = Math.random();
             this.omega = rand(0, 1 / 30);
-        } else if (type === PART.SMOKE) {
+        } else if (type & PART.SMOKE) {
             this.size = 1;
             this.lifetime = rand(1000, 500);
             this.angle = rand(-1, 0.2);
@@ -75,9 +75,12 @@ class Particle extends Entity {
                 }
                 break;
             }
-            case PART.SMOKE: {
-                const ind = this.deltatime / this.lifetime * level.textures.smokes.length | 0;
-                level.drawEntity(this, level.textures.smokes[ind]);
+            case PART.SMOKE0:
+            case PART.SMOKE1:
+            case PART.SMOKE2:
+            case PART.SMOKE3: {
+                const ind = this.deltatime / this.lifetime * level.textures.smokes[this.type].length | 0;
+                level.drawEntity(this, level.textures.smokes[this.type][ind]);
                 break;
             }
             default: break;

@@ -2,7 +2,7 @@
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import {
-    TANK, STATE,
+    TANK, STATE, PART,
     tankLife,
     botTypeProbability,
     angleProbability,
@@ -60,6 +60,7 @@ class Tank extends Entity {
         this.dirTime = 0;
         this.shootTime = 0;
         this.changedDir = false;
+        this.maxlife = tankLife(this.type);
     }
     clear(level) {
         level.clearEntity(this.state === STATE.GOD ? this.shield : this);
@@ -205,6 +206,16 @@ export default class TankManager extends EntityManager {
             }
 
             bullets.collideTank(tank);
+
+            // smoke
+            if (tank.state !== STATE.DEAD && tank.life < tank.maxlife) {
+                let smoke = PART.SMOKE0;
+                if (tank.life === 1) smoke = PART.SMOKE3;
+                else if (tank.maxlife - tank.life === 1) smoke = PART.SMOKE0;
+                else if (tank.life / tank.maxlife > 0.5) smoke = PART.SMOKE1;
+                else smoke = PART.SMOKE2;
+                this.event.emit("particle", tank.cx, tank.cy, smoke);
+            }
         }
 
         this.splice();

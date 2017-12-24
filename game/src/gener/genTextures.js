@@ -1,7 +1,7 @@
 
 import SimpleBuffer from "./buffer";
 import { randColor, clamp, rand } from "../utils";
-import { TANK, ITEM } from "../global";
+import { TANK, ITEM, PART } from "../global";
 
 export default class GenTextures {
     constructor(tileSize) {
@@ -903,7 +903,7 @@ export default class GenTextures {
         this.sparksBeton = createSparkBrickBeton([160, 160, 160]);
 
         // fire and smoke
-        const createSmoke = () => {
+        const createSmoke = (lvl) => {
             const ret = new Array(16);
             for (let i = 0; i < ret.length; i++) {
                 const smokeNoise = new SimpleBuffer(tileSize);
@@ -911,15 +911,16 @@ export default class GenTextures {
                     .perlin(2, 0.5)
                     .forEach(Math.abs);
 
+                const koef = 0.25 * (lvl + 1);
                 const factor = i / ret.length;
                 const smoke = new SimpleBuffer(tileSize);
                 smoke
                     .normDist(1)
                     .normalize(0, 1)
                     .forBuf(smokeNoise, (a, b) => a * b)
-                    .normalize(0, 1 - factor);
+                    .normalize(0, koef * (1 - factor));
 
-                if (i === 0) {
+                if (i === 0 && lvl === 3) {
                     ret[i] = smoke.getColor2([255, 0, 0], [255, 255, 127], smoke);
                 } else {
                     ret[i] = smoke.getColor([190, 190, 190], smoke);
@@ -927,7 +928,12 @@ export default class GenTextures {
             }
             return ret;
         };
-        this.smokes = createSmoke();
+        this.smokes = {
+            [PART.SMOKE0]: createSmoke(0),
+            [PART.SMOKE1]: createSmoke(1),
+            [PART.SMOKE2]: createSmoke(2),
+            [PART.SMOKE3]: createSmoke(3),
+        };
 
         // explode
         this.explode = new Array(16);
