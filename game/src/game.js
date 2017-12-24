@@ -70,9 +70,11 @@ export default class Game {
 
         this.pauseMenu = new Menu("Pause", canvas.width, canvas.height);
         this.loadMenu = new Menu("Loading", canvas.width, canvas.height);
+        this.gameoverMenu = new Menu("Game Over", canvas.width, canvas.height);
         this.menu = null;
         this.level = null;
         this.drawLoading = false;
+        this.gameover = false;
 
         const tank1 = this.tanks.create(TANK.TANK1);
         const tank2 = params.twoplayers === "true" ? this.tanks.create(TANK.TANK2) : null;
@@ -93,6 +95,10 @@ export default class Game {
         });
         this.event.on("playerCreated", (tank) => {
             this.players[tank.type] = tank;
+        });
+        this.event.on("gameOver", () => {
+            this.pause();
+            this.gameover = true;
         });
     }
     newLevel() {
@@ -132,6 +138,7 @@ export default class Game {
 
         if (this.startPauseTime) this.menu = this.pauseMenu;
         else this.menu = null;
+        if (this.gameover) this.menu = this.gameoverMenu;
 
         // drawing
         this.particles.draw(this.level, 0);
@@ -144,6 +151,13 @@ export default class Game {
         if (this.menu) {
             this.level.drawEntityBegin(this.menu.entity, this.menu.layer.canvas);
         }
+    }
+    pause() {
+        if (this.gameover) return;
+        if (this.startPauseTime) {
+            this.pauseTime += Date.now() - this.startPauseTime;
+            this.startPauseTime = 0;
+        } else this.startPauseTime = Date.now();
     }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {
@@ -158,13 +172,7 @@ export default class Game {
             }
         }
 
-        if (key === "N".charCodeAt(0)) this.level = null;
-        if (key === "P".charCodeAt(0)) {
-            if (this.startPauseTime) {
-                this.pauseTime += Date.now() - this.startPauseTime;
-                this.startPauseTime = 0;
-            } else this.startPauseTime = Date.now();
-        }
+        if (key === "P".charCodeAt(0)) this.pause();
     }
     onkeyup(key) {
         for (let p = 0; p < 2; p++) {

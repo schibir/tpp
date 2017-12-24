@@ -242,6 +242,8 @@ export default class TankManager extends EntityManager {
                 if (tank.type <= TANK.TANK2) {
                     const player = this.create(tank.type, time);
                     this.event.emit("playerCreated", player);
+                } else if (tank.type === TANK.EAGLE) {
+                    this.event.emit("gameOver");
                 }
                 tank.alive = false;
             }

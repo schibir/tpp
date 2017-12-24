@@ -83,7 +83,8 @@ class Particle extends Entity {
             }
         }
     }
-    update(level, time) {
+    update(level) {
+        const time = Date.now();
         if (!this.creationTime) this.creationTime = time;
         const delta = this.getDelta(time);
         this.deltatime = time - this.creationTime;
