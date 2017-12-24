@@ -14,6 +14,9 @@ export default class Weapon {
         this.type = type;
         this.count = bulletsCount(type);
     }
+    setFire() {
+        this.type |= BULLET.FIRE;
+    }
     changeType(type) {
         const old = bulletsCount(this.type);
         this.type &= ~BULLET.POWER;

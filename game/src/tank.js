@@ -2,7 +2,7 @@
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import {
-    TANK, STATE, PART,
+    TANK, STATE, PART, ITEM,
     tankLife,
     botTypeProbability,
     angleProbability,
@@ -140,6 +140,23 @@ class Tank extends Entity {
             if (this.life <= 0) this.state = STATE.DEAD;
         }
     }
+    upgrade(type) {
+        switch (type) {
+        case ITEM.STAR:
+            this.weapon.inc();
+            this.life = Math.min(this.life + 1, 6);
+            this.maxlife = this.life;
+            break;
+        case ITEM.SPEED:
+            this.velocity = tankVelocity(TANK.BMP);
+            this.vel = this.velocity;
+            break;
+        case ITEM.FIREBALL:
+            this.weapon.setFire();
+            break;
+        default: break;
+        }
+    }
     updateWeapon() {
         const bullet = this.shoot ? this.weapon.shoot() : null;
         this.shoot = false;
@@ -170,6 +187,26 @@ export default class TankManager extends EntityManager {
         super();
         this.difficulty = clamp(difficulty, 0, 15);
         this.event = event;
+
+        event.on("item", (type, tank) => {
+            switch (type) {
+            case ITEM.LIFE:
+                break;
+            case ITEM.KNUKLE:
+                if (tank.type <= TANK.TANK2) {
+                    this.objects.forEach((bots) => {
+                        if (bots.state > STATE.RESPAWN && bots.type > TANK.TANK2) bots.damage(-1);
+                    });
+                }
+                break;
+            case ITEM.STAR:
+            case ITEM.SPEED:
+            case ITEM.FIREBALL:
+                tank.upgrade(type);
+                break;
+            default: break;
+            }
+        });
     }
     create(type, time = 0, level = null) {
         const tank = new Tank(type, time, this.difficulty, level);
