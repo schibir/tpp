@@ -38,8 +38,14 @@ class Menu {
         this.layer = new Layer(this.entity.size * size, this.entity.size * size);
 
         const ctx = this.layer.context;
-        ctx.fillStyle = "red";
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = "rgb(193, 156, 34)";
         ctx.fillRect(0, 4 * size, this.layer.canvas.width, this.layer.canvas.height - 8 * size);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = "rgb(198, 205, 242)";
+        ctx.textAlign = "center";
+        ctx.font = `${size * 2 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
+        ctx.fillText(text, this.layer.canvas.width / 2, this.layer.canvas.height / 2 + size / 2);
     }
 }
 
@@ -97,6 +103,7 @@ export default class Game {
         const currentTime = Date.now() - this.pauseTime - timeOffset;
 
         // clearing
+        this.level.clearEntity(this.pauseMenu.entity);
         this.level.clearEntity(this.eagle);
         this.tanks.clear(this.level);
         this.bullets.clear(this.level);
@@ -115,7 +122,7 @@ export default class Game {
         this.particles.draw(this.level, 1);
 
         // draw menu
-        // this.level.drawEntityBegin(this.pauseMenu.entity, this.pauseMenu.layer.canvas);
+        this.level.drawEntityBegin(this.pauseMenu.entity, this.pauseMenu.layer.canvas);
     }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {
