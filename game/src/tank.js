@@ -72,7 +72,7 @@ class Tank extends Entity {
         this.dirTime = 0;
         this.shootTime = 0;
         this.changedDir = false;
-        this.maxlife = tankLife(this.type);
+        this.maxlife = this.life;
     }
     clear(level) {
         level.clearEntity(this.state === STATE.GOD ? this.shield : this);

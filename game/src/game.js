@@ -54,7 +54,7 @@ export default class Game {
     constructor(canvas, params) {
         // common game settings
         const currentDifficulty = parseInt(params.difficulty, 10);
-        this.currentLevel = 1;
+        this.currentLevel = 0;
         this.canvas = canvas;
         this.mode = params.mode;
 
@@ -101,13 +101,13 @@ export default class Game {
             this.gameover = true;
         });
         this.event.on("levelComplete", () => {
-            this.currentLevel++;
+            this.currentLevel = (this.currentLevel + 1) % 5 | 0;
             this.level = null;
         });
     }
     newLevel() {
         let levelName = `levels/${this.mode}`;
-        if (this.mode === "level") levelName += `${this.currentLevel}`;
+        if (this.mode === "level") levelName += `${this.currentLevel + 1}`;
 
         this.level = new Level(levelName, this.canvas, this.event);
     }
