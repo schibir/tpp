@@ -965,5 +965,25 @@ export default class GenTextures {
         this.indicator = (new SimpleBuffer(tileSize))
             .forEach((a, i) => i / tileSize)
             .getColor2([255, 0, 0], [0, 255, 0]);
+
+        // text
+        const itemText = {
+            [ITEM.LIFE]: "Жизняга",
+            [ITEM.KNUKLE]: "Кулак",
+            [ITEM.STAR]: "Звезда",
+            [ITEM.SPEED]: "Скорость",
+            [ITEM.FIREBALL]: "Фаерболл",
+        };
+        this.itemText = {};
+        for (let i = ITEM.LIFE; i <= ITEM.FIREBALL; i++) {
+            const mask = new SimpleBuffer(tileSize * 2);
+            const buf = mask.getColor([0, 0, 0], mask);
+            const ctx = buf.getContext("2d");
+            ctx.font = `${tileSize * 0.35 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
+            ctx.fillStyle = "rgb(200, 255, 200)";
+            ctx.textAlign = "center";
+            ctx.fillText(itemText[i], tileSize, tileSize);
+            this.itemText[i] = buf;
+        }
     }
 }

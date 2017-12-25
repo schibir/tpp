@@ -31,6 +31,11 @@ class Tank extends Entity {
         this.shoot = false;
         this.turret = new Entity(0, 0);
         this.shield = new Entity(0, 0, 3);
+        this.text = {
+            obj: new Entity(0, 0),
+            tex: 0,
+            time: 0,
+        };
         this.weapon.reset();
         this.state = STATE.RESPAWN;
         this.stateTime = time + 2000;     // respawn time
@@ -68,6 +73,7 @@ class Tank extends Entity {
     }
     clear(level) {
         level.clearEntity(this.state === STATE.GOD ? this.shield : this);
+        if (this.text.time) level.clearEntity(this.text.obj);
     }
     draw(level) {
         if (this.state === STATE.RESPAWN) {
@@ -87,6 +93,9 @@ class Tank extends Entity {
                     level.drawEntityBegin(this.turret, level.textures.tankTurretEx[this.angle][this.type]);
                 } else {
                     level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
+                }
+                if (this.text.time) {
+                    level.drawEntityBegin(this.text.obj, level.textures.itemText[this.text.tex]);
                 }
             }
 
@@ -148,7 +157,14 @@ class Tank extends Entity {
         this.turret.cy = this.cy + sin(this.angle) * this.animTurret;
         this.shield.cx = this.cx;
         this.shield.cy = this.cy;
+        this.text.obj.cx = this.cx;
+        this.text.obj.cy = this.cy - 1.5;
+        if (time > this.text.time) this.text.time = 0;
         this.animTurret *= 0.9;
+    }
+    setText(time, itemType) {
+        this.text.time = time + 3000;
+        this.text.tex = itemType;
     }
     damage(value) {
         if (value < 0) this.state = STATE.DEAD;
@@ -218,7 +234,8 @@ export default class TankManager extends EntityManager {
             [ITEM.STAR]: false,
         };
 
-        event.on("item", (type, tank) => {
+        event.on("item", (type, tank, time) => {
+            tank.setText(time, type);
             switch (type) {
             case ITEM.LIFE:
                 this.life++;
