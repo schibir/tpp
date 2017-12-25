@@ -241,6 +241,10 @@ export default class TankManager extends EntityManager {
 
         this.timeRespawn = 0;
     }
+    draw(level) {
+        super.draw(level);
+        level.drawInterface(this.life);
+    }
     update(level, bullets, time) {
         if (time > this.timeRespawn) {
             this.timeRespawn = time + timeToRespawn(this.difficulty);

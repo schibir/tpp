@@ -595,7 +595,7 @@ export default class GenTextures {
 
         // speed
         const speed = new SimpleBuffer(tileSize * 2);
-        const speedImg = speed
+        this.speedImg = speed
             .forEach((a, i, j) => {
                 const x = (i / itemTemplate.size - 0.5) * 2;
                 const y = (j / itemTemplate.size - 0.5) * 2;
@@ -610,7 +610,7 @@ export default class GenTextures {
             .getColor([127, 174, 249], speed);
 
         const itemSpeed = getItemTemplateImg();
-        itemSpeed.getContext("2d").drawImage(speedImg, 0, 0);
+        itemSpeed.getContext("2d").drawImage(this.speedImg, 0, 0);
 
         // knukle
         const knukleCoord = [
@@ -676,14 +676,14 @@ export default class GenTextures {
             .clamp(0.1, 0.2)
             .normalize(0, 1);
 
-        const starImg = createStar()
+        this.starImg = createStar()
             .diff([1, 1])
             .normalize(0, 2)
             .gaussian(step * 0.5 | 0)
             .getColor([239, 230, 155], starMask);
 
         const itemStar = getItemTemplateImg();
-        itemStar.getContext("2d").drawImage(starImg, 0, 0);
+        itemStar.getContext("2d").drawImage(this.starImg, 0, 0);
 
         // life
         const life = new SimpleBuffer(tileSize * 2);
@@ -720,7 +720,7 @@ export default class GenTextures {
             });
 
         const lifeColor = new SimpleBuffer(tileSize * 2);
-        const lifeImg = lifeColor
+        this.lifeImg = lifeColor
             .copy(life)
             .gaussian(step)
             .diff([1, 0.5])
@@ -728,7 +728,7 @@ export default class GenTextures {
             .getColor([190, 190, 190], life);
 
         const itemLife = getItemTemplateImg();
-        itemLife.getContext("2d").drawImage(lifeImg, 0, 0);
+        itemLife.getContext("2d").drawImage(this.lifeImg, 0, 0);
 
         this.item = {
             [ITEM.LIFE]: itemLife,
