@@ -265,7 +265,7 @@ export default class TankManager extends EntityManager {
             Math.max((this.endTime - time) / LEVEL_TIME, 0));
     }
     update(level, bullets, time) {
-        if (time > this.timeRespawn) {
+        if (time > this.timeRespawn && time < this.endTime) {
             this.timeRespawn = time + timeToRespawn(this.difficulty);
             this.create(TANK.RANDOM, time, level);
         }
