@@ -142,7 +142,7 @@ export default class Game {
 
         // drawing
         this.particles.draw(this.level, 0);
-        this.tanks.draw(this.level);
+        this.tanks.draw(this.level, currentTime);
         this.bullets.draw(this.level);
         this.particles.draw(this.level, 1);
         this.items.draw(this.level);

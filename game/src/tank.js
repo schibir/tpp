@@ -3,6 +3,7 @@ import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import {
     TANK, STATE, PART, ITEM, BULLET,
+    LEVEL_TIME,
     tankLife,
     botTypeProbability,
     angleProbability,
@@ -253,10 +254,15 @@ export default class TankManager extends EntityManager {
         this.create(TANK.EAGLE);
 
         this.timeRespawn = 0;
+        this.endTime = time + LEVEL_TIME;
     }
-    draw(level) {
+    draw(level, time) {
         super.draw(level);
-        level.drawInterface(this.life, this.items[ITEM.FIREBALL], this.items[ITEM.SPEED], this.items[ITEM.STAR]);
+        level.drawInterface(this.life,
+            this.items[ITEM.FIREBALL],
+            this.items[ITEM.SPEED],
+            this.items[ITEM.STAR],
+            Math.max((this.endTime - time) / LEVEL_TIME, 0));
     }
     update(level, bullets, time) {
         if (time > this.timeRespawn) {

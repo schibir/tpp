@@ -253,7 +253,7 @@ export class Level {
     ready() {
         return !!this.context;
     }
-    drawInterface(life, fireball, speed, star) {
+    drawInterface(life, fireball, speed, star, time) {
         this.context.fillStyle = "black";
         this.context.fillRect(
             2 * this.tileSize,
@@ -269,8 +269,15 @@ export class Level {
         this.context.font = `${this.tileSize * 0.75 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
         this.context.fillStyle = "white";
         this.context.fillText(`x ${life}`,
-            (this.mapWidth / 2 + 1) * this.tileSize,
+            (x + 6) * this.tileSize,
             (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
+
+        // render indicator
+        this.context.drawImage(this.textures.indicator,
+            0 * this.tileSize, 0 * this.tileSize,
+            time * this.tileSize, 1 * this.tileSize,
+            (x + 10) * this.tileSize, (this.mapHeight + 2) * this.tileSize,
+            time * 13 * this.tileSize, 1 * this.tileSize);
     }
     drawTile(texture, srcx, srcy, dstx, dsty, size, destContext = this.context) {
         destContext.drawImage(texture,

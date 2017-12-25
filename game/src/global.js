@@ -150,3 +150,5 @@ export function timeToRespawn(difficulty) {
     console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");
     return respTable[difficulty] + Math.random() * 3000;
 }
+
+export const LEVEL_TIME = 80000;

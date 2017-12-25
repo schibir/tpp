@@ -960,5 +960,10 @@ export default class GenTextures {
             const ind = Math.random() * COUNT_GENERATED_EXPLODE | 0;
             this.explode[ind].forEach((exp) => this.explode[i].push(rotateImage(exp, angle)));
         }
+
+        // indicator
+        this.indicator = (new SimpleBuffer(tileSize))
+            .forEach((a, i) => i / tileSize)
+            .getColor2([255, 0, 0], [0, 255, 0]);
     }
 }
