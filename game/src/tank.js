@@ -281,7 +281,8 @@ export default class TankManager extends EntityManager {
             this.items[ITEM.FIREBALL],
             this.items[ITEM.SPEED],
             this.items[ITEM.STAR],
-            Math.max((this.endTime - time) / LEVEL_TIME, 0));
+            Math.max((this.endTime - time) / LEVEL_TIME, 0),
+            ITEM.FIREBALL + this.difficulty + 1);
     }
     update(level, bullets, time) {
         if (time > this.timeRespawn && time < this.endTime) {
