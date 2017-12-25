@@ -159,19 +159,25 @@ class Tank extends Entity {
     }
     upgrade(type) {
         switch (type) {
-        case ITEM.STAR:
+        case ITEM.STAR: {
+            const old = this.weapon.type;
             this.weapon.inc();
             this.life = Math.min(this.life + 1, 6);
             this.maxlife = this.life;
-            break;
-        case ITEM.SPEED:
+            return old !== this.weapon.type;
+        }
+        case ITEM.SPEED: {
+            const old = this.velocity;
             this.velocity = tankVelocity(TANK.BMP);
             this.vel = this.velocity;
-            break;
-        case ITEM.FIREBALL:
+            return old < 2;
+        }
+        case ITEM.FIREBALL: {
+            const old = this.weapon.type;
             this.weapon.setFire();
-            break;
-        default: break;
+            return old !== this.weapon.type;
+        }
+        default: return false;
         }
     }
     updateWeapon() {
@@ -205,6 +211,11 @@ export default class TankManager extends EntityManager {
         this.difficulty = clamp(difficulty, 0, 15);
         this.event = event;
         this.life = 2;
+        this.items = {
+            [ITEM.FIREBALL]: false,
+            [ITEM.SPEED]: false,
+            [ITEM.STAR]: false,
+        };
 
         event.on("item", (type, tank) => {
             switch (type) {
@@ -222,9 +233,11 @@ export default class TankManager extends EntityManager {
                 break;
             case ITEM.STAR:
             case ITEM.SPEED:
-            case ITEM.FIREBALL:
-                tank.upgrade(type);
+            case ITEM.FIREBALL: {
+                const upgraded = tank.upgrade(type);
+                if (!upgraded && tank.type <= TANK.TANK2) this.items[type] = true;
                 break;
+            }
             default: break;
             }
         });
@@ -243,7 +256,7 @@ export default class TankManager extends EntityManager {
     }
     draw(level) {
         super.draw(level);
-        level.drawInterface(this.life);
+        level.drawInterface(this.life, this.items[ITEM.FIREBALL], this.items[ITEM.SPEED], this.items[ITEM.STAR]);
     }
     update(level, bullets, time) {
         if (time > this.timeRespawn) {
