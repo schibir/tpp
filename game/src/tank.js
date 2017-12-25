@@ -12,17 +12,20 @@ import {
     directionTime,
     shootTime,
     tankWeaponType,
+    getScores,
+    scoreToLevelup,
 } from "./global";
 import { sin, cos, getMapSize, clamp } from "./utils";
 
 class Tank extends Entity {
-    constructor(type, time, difficulty, level = null) {
+    constructor(type, time, difficulty, event, level = null) {
         super(0, 0);
         this.type = type;
         this.weapon = new Weapon(this, tankWeaponType(type));
         this.life = tankLife(type);
         this.velocity = tankVelocity(type);
         this.difficulty = difficulty;
+        this.event = event;
         this.respawn(time, level);
     }
     respawn(time, level = null) {
@@ -47,7 +50,6 @@ class Tank extends Entity {
             this.cx = mapWidth / 2 - 5;
             this.cy = mapHeight - 3;
             if (this.type === TANK.TANK2) this.cx += 8;
-            this.setText(time, ITEM.FIREBALL + this.difficulty + 1);
         } else if (this.type === TANK.EAGLE) {
             this.cx = mapWidth / 2 - 1;
             this.cy = mapHeight - 3;
@@ -168,12 +170,15 @@ class Tank extends Entity {
         if (itemType > ITEM.FIREBALL) this.text.time += 3000;
         this.text.tex = itemType;
     }
-    damage(value) {
+    damage(value, time) {
         if (value < 0) this.state = STATE.DEAD;
         else if (this.state !== STATE.GOD) {
             this.life -= value;
             for (let i = 0; i < value; i++) this.weapon.dec();
-            if (this.life <= 0) this.state = STATE.DEAD;
+            if (this.life <= 0) {
+                this.state = STATE.DEAD;
+                this.event.emit("botDead", this.type, time);
+            }
         }
     }
     upgrade(type) {
@@ -230,6 +235,7 @@ export default class TankManager extends EntityManager {
         this.difficulty = clamp(difficulty, 0, 15);
         this.event = event;
         this.life = 2;
+        this.scores = 0;
         this.items = {
             [ITEM.FIREBALL]: false,
             [ITEM.SPEED]: false,
@@ -261,9 +267,20 @@ export default class TankManager extends EntityManager {
             default: break;
             }
         });
+        event.on("botDead", (type, time) => {
+            this.scores += getScores(type);
+            if (this.scores > scoreToLevelup(this.difficulty)) {
+                this.difficulty = Math.min(this.difficulty + 1, 15);
+                this.scores = 0;
+                this.objects.forEach((tank) => {
+                    if (tank.type <= TANK.TANK2) tank.setText(time, ITEM.FIREBALL + this.difficulty + 1);
+                });
+                event.emit("levelup", this.difficulty);
+            }
+        });
     }
     create(type, time = 0, level = null) {
-        const tank = new Tank(type, time, this.difficulty, level);
+        const tank = new Tank(type, time, this.difficulty, this.event, level);
         this.objects.push(tank);
         return tank;
     }
@@ -332,7 +349,7 @@ export default class TankManager extends EntityManager {
                 bullets.add(bullet);
             }
 
-            bullets.collideTank(tank);
+            bullets.collideTank(tank, time);
 
             // smoke
             if (tank.state !== STATE.DEAD && tank.life < tank.maxlife) {

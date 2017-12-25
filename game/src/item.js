@@ -32,6 +32,10 @@ export default class ItemManager extends EntityManager {
         super();
         this.event = event;
         this.difficulty = difficulty;
+
+        event.on("levelup", (diff) => {
+            this.difficulty = diff;
+        });
     }
     reset(time) {
         super.reset();

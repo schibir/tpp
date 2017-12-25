@@ -151,4 +151,14 @@ export function timeToRespawn(difficulty) {
     return respTable[difficulty] + Math.random() * 3000;
 }
 
+export function getScores(type) {
+    console.assert(type >= TANK.TANK1 && type <= TANK.EAGLE, "Wrong tank type");
+    return [0, 0, 1, 3, 2, 5, 8, 0, 0][type];
+}
+
+export function scoreToLevelup(difficulty) {
+    console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");
+    return 25 * (difficulty + 1);
+}
+
 export const LEVEL_TIME = 80000;
