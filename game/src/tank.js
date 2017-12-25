@@ -2,7 +2,7 @@
 import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import {
-    TANK, STATE, PART, ITEM,
+    TANK, STATE, PART, ITEM, BULLET,
     tankLife,
     botTypeProbability,
     angleProbability,
@@ -76,9 +76,17 @@ class Tank extends Entity {
             if (this.type === TANK.EAGLE) {
                 level.drawEntityBegin(this, level.textures.eagle);
             } else {
-                level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
+                if (this.type <= TANK.TANK2 && this.velocity > 2) {
+                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][TANK.BMP][this.animTrack]);
+                } else {
+                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
+                }
                 level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
-                level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
+                if (this.type <= TANK.TANK2 && this.weapon.type & BULLET.POWER) {
+                    level.drawEntityBegin(this.turret, level.textures.tankTurretEx[this.angle][this.type]);
+                } else {
+                    level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
+                }
             }
 
             if (this.state === STATE.GOD) {

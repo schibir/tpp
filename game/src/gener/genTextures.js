@@ -375,6 +375,7 @@ export default class GenTextures {
 
         this.tankBodies = new Array(4);
         this.tankTurret = new Array(4);
+        this.tankTurretEx = new Array(4);
         this.tankTrack = new Array(4);
 
         this.tankBodies[0] = {
@@ -395,6 +396,10 @@ export default class GenTextures {
             [TANK.CANNON]:  createTurret(0.7, 0.1, 1, colors[TANK.CANNON]),
             [TANK.STRONG]:  createTurret(0.7, 0.1, 0.7, colors[TANK.STRONG]),
             [TANK.PANZER]:  createTurret(1, 0.2, 1, colors[TANK.PANZER]),
+        };
+        this.tankTurretEx[0] = {
+            [TANK.TANK1]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK2]),
+            [TANK.TANK2]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK1]),
         };
 
         const countAnimTrack = 8;
@@ -422,6 +427,7 @@ export default class GenTextures {
         for (let i = 1; i < 4; i++) {
             this.tankBodies[i] = {};
             this.tankTurret[i] = {};
+            this.tankTurretEx[i] = {};
             this.tankTrack[i] = {};
 
             for (let type = TANK.TANK1; type < TANK.RANDOM; type++) {
@@ -432,6 +438,8 @@ export default class GenTextures {
                     this.tankTrack[i][type][offset] = rotateImage(this.tankTrack[0][type][offset], i);
                 }
             }
+            this.tankTurretEx[i][TANK.TANK1] = rotateImage(this.tankTurretEx[0][TANK.TANK1], i);
+            this.tankTurretEx[i][TANK.TANK2] = rotateImage(this.tankTurretEx[0][TANK.TANK2], i);
         }
 
         // bullet
