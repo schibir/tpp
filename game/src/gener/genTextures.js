@@ -973,16 +973,34 @@ export default class GenTextures {
             [ITEM.STAR]: "Звезда",
             [ITEM.SPEED]: "Скорость",
             [ITEM.FIREBALL]: "Фаерболл",
+            [ITEM.FIREBALL + 1]: "Рядовой",
+            [ITEM.FIREBALL + 2]: "Ефрейтор",
+            [ITEM.FIREBALL + 3]: "Младший#сержант",
+            [ITEM.FIREBALL + 4]: "Сержант",
+            [ITEM.FIREBALL + 5]: "Старший#сержант",
+            [ITEM.FIREBALL + 6]: "Старшина",
+            [ITEM.FIREBALL + 7]: "Младший#лейтенант",
+            [ITEM.FIREBALL + 8]: "Лейтенант",
+            [ITEM.FIREBALL + 9]: "Капитан",
+            [ITEM.FIREBALL + 10]: "Майор",
+            [ITEM.FIREBALL + 11]: "Полковник",
+            [ITEM.FIREBALL + 12]: "Генерал-#майор",
+            [ITEM.FIREBALL + 13]: "Генерал-#лейтенант",
+            [ITEM.FIREBALL + 14]: "Генерал-#полковник",
+            [ITEM.FIREBALL + 15]: "Генерал#армии",
+            [ITEM.FIREBALL + 16]: "Маршал",
         };
         this.itemText = {};
-        for (let i = ITEM.LIFE; i <= ITEM.FIREBALL; i++) {
+        for (let i = ITEM.LIFE; i <= ITEM.FIREBALL + 16; i++) {
             const mask = new SimpleBuffer(tileSize * 2);
             const buf = mask.getColor([0, 0, 0], mask);
             const ctx = buf.getContext("2d");
             ctx.font = `${tileSize * 0.35 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
-            ctx.fillStyle = "rgb(200, 255, 200)";
+            ctx.fillStyle = i <= ITEM.FIREBALL ? "rgb(200, 255, 200)" : "rgb(255, 200, 200)";
             ctx.textAlign = "center";
-            ctx.fillText(itemText[i], tileSize, tileSize);
+            const texts = itemText[i].split("#");
+            ctx.fillText(texts[0], tileSize, tileSize);
+            if (texts.length === 2) ctx.fillText(texts[1], tileSize, tileSize * 1.5);
             this.itemText[i] = buf;
         }
     }

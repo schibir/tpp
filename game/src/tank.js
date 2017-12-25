@@ -47,6 +47,7 @@ class Tank extends Entity {
             this.cx = mapWidth / 2 - 5;
             this.cy = mapHeight - 3;
             if (this.type === TANK.TANK2) this.cx += 8;
+            this.setText(time, ITEM.FIREBALL + this.difficulty + 1);
         } else if (this.type === TANK.EAGLE) {
             this.cx = mapWidth / 2 - 1;
             this.cy = mapHeight - 3;
@@ -164,6 +165,7 @@ class Tank extends Entity {
     }
     setText(time, itemType) {
         this.text.time = time + 3000;
+        if (itemType > ITEM.FIREBALL) this.text.time += 3000;
         this.text.tex = itemType;
     }
     damage(value) {
