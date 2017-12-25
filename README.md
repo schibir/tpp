@@ -11,12 +11,14 @@ Controls:
 Play it here https://schibir.github.io/tpp/
 
 <p align="center">
-  <img src="" alt="Screenshot"/>
+  <img src="https://github.com/schibir/tpp/blob/master/screenshot/tpp.png?raw=true" alt="Screenshot"/>
 </p>
 
 How do I get set up?
 
-* $npm install
-* first console: $npm run start
-* second console: $npm run build
-* http://localhost:8000
+```
+$ npm install
+first console: $ npm run start
+second console: $ npm run build
+http://localhost:8000
+```
