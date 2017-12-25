@@ -273,6 +273,16 @@ export default class TankManager extends EntityManager {
                         this.life--;
                         const player = this.create(tank.type, time);
                         this.event.emit("playerCreated", player);
+
+                        // upgrade
+                        for (let type = ITEM.LIFE; type <= ITEM.FIREBALL; type++) {
+                            if (type in this.items) {
+                                if (this.items[type]) {
+                                    player.upgrade(type);
+                                    this.items[type] = false;
+                                }
+                            }
+                        }
                     }
                 } else if (tank.type === TANK.EAGLE) {
                     this.event.emit("gameOver");

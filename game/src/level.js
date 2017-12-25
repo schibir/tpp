@@ -262,7 +262,7 @@ export class Level {
             this.tileSize);
 
         const x = this.mapWidth / 2 - 5;
-        if (fireball) this.drawTile(this.textures.fireSmall[0], 0, 0, x, this.mapHeight + 2, 1);
+        if (fireball) this.drawTile(this.textures.fireSmall[0], 0, 0, x, this.mapHeight + 2.1, 1);
         if (speed) this.drawTile(this.textures.speedImg, 0, 0, x + 0.5, this.mapHeight + 1.5, 2);
         if (star) this.drawTile(this.textures.starImg, 0, 0, x + 1.75, this.mapHeight + 1.5, 2);
         this.drawTile(this.textures.lifeImg, 0, 0, x + 4.1, this.mapHeight + 1.5, 2);
