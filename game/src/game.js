@@ -100,6 +100,10 @@ export default class Game {
             this.pause();
             this.gameover = true;
         });
+        this.event.on("levelComplete", () => {
+            this.currentLevel++;
+            this.level = null;
+        });
     }
     newLevel() {
         let levelName = `levels/${this.mode}`;
@@ -131,7 +135,7 @@ export default class Game {
         this.items.clear(this.level);
 
         // updating
-        this.tanks.update(this.level, this.bullets, currentTime);
+        if (!this.tanks.update(this.level, this.bullets, currentTime)) return;
         this.bullets.update(this.level, currentTime);
         this.particles.update(this.level, currentTime);
         this.items.update(this.level, this.tanks, currentTime);

@@ -270,6 +270,17 @@ export default class TankManager extends EntityManager {
             this.create(TANK.RANDOM, time, level);
         }
 
+        if (time > this.endTime) {
+            let countBots = 0;
+            this.objects.forEach((tank) => {
+                if (tank.type > TANK.TANK2 && tank.type < TANK.RANDOM) countBots++;
+            });
+            if (countBots === 0) {
+                this.event.emit("levelComplete");
+                return false;
+            }
+        }
+
         for (let i = 0; i < this.objects.length; i++) {
             const tank = this.objects[i];
             if (tank.state === STATE.DEAD) {
@@ -315,5 +326,6 @@ export default class TankManager extends EntityManager {
         }
 
         this.splice();
+        return true;
     }
 }
