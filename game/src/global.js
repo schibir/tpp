@@ -142,9 +142,9 @@ export const PART = {
 
 export function timeToRespawn(difficulty) {
     const respTable = [
-        5000, 4000, 3000, 2000,
-        1500, 1350, 1200, 1100,
-        1000, 850, 700, 600,
+        1000, 950, 900, 850,
+        800, 750, 700, 650,
+        600, 575, 550, 525,
         500, 400, 300, 200,
     ];
     console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");

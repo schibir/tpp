@@ -29,42 +29,18 @@
                 <label for="two-players">Two players</label>
             </span>
         </div>
-        <p>Difficulty level</p>
-        <div class="menu-container">
-            <span>
-                <input id="easy" type="radio" name="difficulty">
-                <label for="easy">Private</label>
-            </span>
-            <span>
-                <input id="medium" type="radio" name="difficulty" checked="checked">
-                <label for="medium">Sergeant</label>
-            </span>
-            <span>
-                <input id="hard" type="radio" name="difficulty">
-                <label for="hard">Lieutenant</label>
-            </span>
-            <span>
-                <input id="very-hard" type="radio" name="difficulty">
-                <label for="very-hard">General</label>
-            </span>
-        </div>
         <div class="menu-container">
             <div class="button -regular center" id="play-btn">Play</div>
             <div class="button -regular center" id="play-bench">Benchmark</div>
         </div>
     </div>
     <script type="text/javascript">
-    var difficulty = 4;
     var twoplayers = "false";
-    document.getElementById("easy").onclick = function() { difficulty = 0; };
-    document.getElementById("medium").onclick = function() { difficulty = 4; };
-    document.getElementById("hard").onclick = function() { difficulty = 8; };
-    document.getElementById("very-hard").onclick = function() { difficulty = 12; };
     document.getElementById("one-player").onclick = function() { twoplayers = "false"; };
     document.getElementById("two-players").onclick = function() { twoplayers = "true"; };
 
     document.getElementById("play-btn").onclick = function() {
-        window.location.href += "game?mode=level&difficulty=" + difficulty + "&twoplayers=" + twoplayers;
+        window.location.href += "game?mode=level&difficulty=0&twoplayers=" + twoplayers;
     };
     document.getElementById("play-bench").onclick = function() {
         window.location.href += "game?mode=bench&difficulty=15&twoplayers=true";
