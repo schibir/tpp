@@ -102,14 +102,14 @@ export default class Game {
         });
         this.event.on("levelComplete", () => {
             setTimeout(() => {
-                this.currentLevel = (this.currentLevel + 1) % 5 | 0;
+                this.currentLevel = (this.currentLevel + 1) % 6 | 0;
                 this.level = null;
             }, 500);
         });
     }
     newLevel() {
         let levelName = `levels/${this.mode}`;
-        if (this.mode === "level") levelName += `${this.currentLevel + 1}`;
+        if (this.mode === "level") levelName += `${this.currentLevel}`;
 
         this.level = new Level(levelName, this.canvas, this.event);
     }
