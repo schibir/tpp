@@ -291,6 +291,7 @@ export default class TankManager extends EntityManager {
 
         this.timeRespawn = 0;
         this.endTime = time + LEVEL_TIME;
+        this.end = false;
     }
     draw(level, time) {
         super.draw(level);
@@ -302,6 +303,7 @@ export default class TankManager extends EntityManager {
             ITEM.FIREBALL + this.difficulty + 1);
     }
     update(level, bullets, time) {
+        if (this.end) return;
         if (time > this.timeRespawn && time < this.endTime) {
             this.timeRespawn = time + timeToRespawn(this.difficulty);
             this.create(TANK.RANDOM, time, level);
@@ -313,8 +315,8 @@ export default class TankManager extends EntityManager {
                 if (tank.type > TANK.TANK2 && tank.type < TANK.RANDOM) countBots++;
             });
             if (countBots === 0) {
+                this.end = true;
                 this.event.emit("levelComplete");
-                return false;
             }
         }
 
@@ -363,6 +365,5 @@ export default class TankManager extends EntityManager {
         }
 
         this.splice();
-        return true;
     }
 }
