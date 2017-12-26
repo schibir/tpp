@@ -246,7 +246,8 @@ export default class TankManager extends EntityManager {
             tank.setText(time, type);
             switch (type) {
             case ITEM.LIFE:
-                this.life++;
+                if (tank.type <= TANK.TANK2) this.life++;
+                else this.life = Math.max(this.life - 1, 0);
                 break;
             case ITEM.KNUKLE:
                 if (tank.type <= TANK.TANK2) {
@@ -254,6 +255,11 @@ export default class TankManager extends EntityManager {
                         if (bot.state > STATE.RESPAWN &&
                             bot.type > TANK.TANK2 &&
                             bot.type !== TANK.EAGLE) bot.damage(-1);
+                    });
+                } else {
+                    this.objects.forEach((bot) => {
+                        if (bot.state > STATE.RESPAWN &&
+                            bot.type <= TANK.TANK2) bot.damage(-1);
                     });
                 }
                 break;
