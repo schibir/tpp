@@ -259,7 +259,7 @@ export default class TankManager extends EntityManager {
                 } else {
                     this.objects.forEach((bot) => {
                         if (bot.state > STATE.RESPAWN &&
-                            bot.type <= TANK.TANK2) bot.damage(-1);
+                            bot.type <= TANK.TANK2) bot.damage(1);
                     });
                 }
                 break;
