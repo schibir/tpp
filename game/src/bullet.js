@@ -38,8 +38,9 @@ export class Bullet extends Entity {
 }
 
 export class BulletManager extends EntityManager {
-    constructor(event) {
+    constructor(event, mode) {
         super();
+        this.mode = mode;
 
         this.particleCallback = (bullet) => {
             event.emit("particle", bullet.cx, bullet.cy, bullet.type & BULLET.FIRE ? PART.FIRE : PART.SPARK);
@@ -57,7 +58,7 @@ export class BulletManager extends EntityManager {
                 bullet.died();
 
                 const table = [0, 0, 1, 1, 1, 1, 1, 1, 2];
-                if (table[bullet.owner.type] !== table[tank.type]) {
+                if (table[bullet.owner.type] !== table[tank.type] || this.mode === "bench") {
                     tank.damage(bulletDamage(bullet.type), time);
                 }
             }

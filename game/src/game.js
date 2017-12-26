@@ -65,7 +65,7 @@ export default class Game {
         this.event = new Event();
         this.particles = new ParticleManager(this.event);
         this.tanks = new TankManager(currentDifficulty, this.event);
-        this.bullets = new BulletManager(this.event);
+        this.bullets = new BulletManager(this.event, this.mode);
         this.items = new ItemManager(currentDifficulty, this.event);
 
         this.pauseMenu = new Menu("Pause", canvas.width, canvas.height);
