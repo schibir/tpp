@@ -148,7 +148,7 @@ export function timeToRespawn(difficulty) {
         500, 400, 300, 200,
     ];
     console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");
-    return respTable[difficulty] + Math.random() * 3000;
+    return respTable[difficulty] + Math.random() * (3000 - difficulty * 133);
 }
 
 export function getScores(type) {
