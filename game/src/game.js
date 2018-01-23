@@ -195,4 +195,32 @@ export default class Game {
             }
         }
     }
+    gpAxes(ax, ay) {
+        const x = ax < -0.5 ? -1 : (ax > 0.5 ? 1 : 0);
+        const y = ay < -0.5 ? -1 : (ay > 0.5 ? 1 : 0);
+
+        if (this.players[0]) {
+            let angle = -1;
+            if (x === 0 && y === -1) angle = 0;
+            if (x === 1 && y === 0) angle = 1;
+            if (x === 0 && y === 1) angle = 2;
+            if (x === -1 && y === 0) angle = 3;
+            if (x === 0 && y === 0) {
+                this.players[0].vel = 0;
+            }
+            if (angle === -1) return;
+            this.players[0].vel = this.players[0].velocity;
+            this.players[0].angle = angle;
+        }
+    }
+    gpButton(pressed) {
+        if (!this.players[0] || !this.shootKeyPress) return;
+
+        if (pressed) {
+            this.players[0].shoot = !this.shootKeyPress[0];
+            this.shootKeyPress[0] = true;
+        } else {
+            this.shootKeyPress[0] = false;
+        }
+    }
 }

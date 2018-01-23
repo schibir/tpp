@@ -90,8 +90,39 @@ function main() {
         }
     };
 
+    // gamepad
+    const getGamepads = () => {
+        if (navigator.getGamepads) return navigator.getGamepads();
+
+        // These are the functions that match the spec, and should be preferred
+        if ("webkitGetGamepads" in navigator) {
+            return navigator.webkitGetGamepads();
+        }
+        if ("mozGetGamepads" in navigator) {
+            return navigator.mozGetGamepads();
+        }
+        // Older property-based methods
+        if ("webkitGamepads" in navigator) {
+            return navigator.webkitGamepads;
+        }
+        if ("mozGamepads" in navigator) {
+            return navigator.mozGamepads;
+        }
+        return [];
+    };
+
     const animationFrame = getRequestAnimationFrame();
     const update = () => {
+        // handle gamepad
+        const gamepads = getGamepads();
+        for (let i = 0; i < gamepads.length; i++) {
+            const gp = gamepads[i];
+            if (gp) {
+                game.gpAxes(gp.axes[0], gp.axes[1]);
+                game.gpButton(gp.buttons[1].pressed);
+            }
+        }
+
         game.update();
         calcFPS();
 
