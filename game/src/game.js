@@ -30,6 +30,12 @@ const keyShoot = [
     " ".charCodeAt(0),
     "Q".charCodeAt(0),
 ];
+const angleToKey = {
+    0: 38,  // UP
+    1: 39,  // RIGHT
+    2: 40,  // DOWN
+    3: 37,  // LEFT
+};
 
 class Menu {
     constructor(text, width, height) {
@@ -92,6 +98,7 @@ export default class Game {
             // player settings
             this.keyMask = [0, 0];
             this.shootKeyPress = [false, false];
+            this.axes = [false, false, false, false];
         });
         this.event.on("playerCreated", (tank) => {
             this.players[tank.type] = tank;
@@ -195,22 +202,16 @@ export default class Game {
             }
         }
     }
-    gpAxes(ax, ay) {
-        const x = ax < -0.5 ? -1 : (ax > 0.5 ? 1 : 0);
-        const y = ay < -0.5 ? -1 : (ay > 0.5 ? 1 : 0);
+    gpAxes(x, y) {
+        if (!this.players[0] || !this.axes) return;
 
-        if (this.players[0]) {
-            let angle = -1;
-            if (x === 0 && y === -1) angle = 0;
-            if (x === 1 && y === 0) angle = 1;
-            if (x === 0 && y === 1) angle = 2;
-            if (x === -1 && y === 0) angle = 3;
-            if (x === 0 && y === 0) {
-                this.players[0].vel = 0;
+        const key = [y < -0.5, x > 0.5, y > 0.5, x < -0.5];
+        for (let a = 0; a < 4; a++) {
+            if (this.axes[a] !== key[a]) {
+                if (key[a]) this.onkeydown(angleToKey[a]);
+                else this.onkeyup(angleToKey[a]);
+                this.axes[a] = key[a];
             }
-            if (angle === -1) return;
-            this.players[0].vel = this.players[0].velocity;
-            this.players[0].angle = angle;
         }
     }
     gpButton(pressed) {
