@@ -179,6 +179,8 @@ class Tank extends Entity {
                 this.state = STATE.DEAD;
                 this.event.emit("botDead", this.type, time);
             }
+        } else if (value > 1) {
+            this.state = STATE.NORMAL;
         }
     }
     upgrade(type) {
