@@ -16,7 +16,7 @@ export default class LocalStorage {
     static getBestScore(id) {
         const supported = LocalStorage.localStorageSupported();
         if (!supported) return 0;
-        return window.localStorage.getItem(id) || 0;
+        return window.localStorage.getItem(`tpp ${id}`) || 0;
     }
 
     static setBestScore(id, score) {
@@ -24,7 +24,7 @@ export default class LocalStorage {
         if (!supported) return 0;
         const current = parseInt(this.getBestScore(id), 10);
         if (!current || score > current) {
-            window.localStorage.setItem(id, score);
+            window.localStorage.setItem(`tpp ${id}`, score);
             return score;
         }
         return current;
