@@ -253,7 +253,7 @@ export class Level {
     ready() {
         return !!this.context;
     }
-    drawInterface(life, fireball, speed, star, time, diff, scores) {
+    drawInterface(life, fireball, speed, star, time, diff, scores, bestScores) {
         this.context.fillStyle = "black";
         this.context.fillRect(
             2 * this.tileSize,
@@ -272,7 +272,8 @@ export class Level {
         this.context.fillText(`x ${life}`,
             (x + 6) * this.tileSize,
             (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
-        this.context.fillText(`Scores: ${scores}`,
+        this.context.font = `${this.tileSize * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
+        this.context.fillText(`Scores: ${scores} (best: ${bestScores})`,
             (x - 8) * this.tileSize,
             (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
 

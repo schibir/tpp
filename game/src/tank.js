@@ -16,6 +16,7 @@ import {
     scoreToLevelup,
 } from "./global";
 import { sin, cos, getMapSize, clamp } from "./utils";
+import LocalStorage from "./local_storage";
 
 class Tank extends Entity {
     constructor(type, time, difficulty, event, level = null) {
@@ -235,10 +236,12 @@ export default class TankManager extends EntityManager {
     constructor(difficulty, event) {
         super();
         this.difficulty = clamp(difficulty, 0, 15);
+        this.start_difficulty = this.difficulty;
         this.event = event;
         this.life = 2;
         this.scores = 0;
-        this.total_scores = this.difficulty === 0 ? 0 : scoreToLevelup(this.difficulty - 1);
+        this.total_scores = 0;
+        this.best_scores = LocalStorage.getBestScore(this.start_difficulty);
         this.items = {
             [ITEM.FIREBALL]: false,
             [ITEM.SPEED]: false,
@@ -279,6 +282,7 @@ export default class TankManager extends EntityManager {
         event.on("botDead", (type, time) => {
             this.scores += getScores(type);
             this.total_scores += getScores(type);
+            this.best_scores = LocalStorage.setBestScore(this.start_difficulty, this.total_scores);
             if (this.scores > scoreToLevelup(this.difficulty)) {
                 this.difficulty = Math.min(this.difficulty + 1, 15);
                 this.scores = 0;
@@ -311,7 +315,8 @@ export default class TankManager extends EntityManager {
             this.items[ITEM.STAR],
             Math.max((this.endTime - time) / LEVEL_TIME, 0),
             ITEM.FIREBALL + this.difficulty + 1,
-            this.total_scores);
+            this.total_scores,
+            this.best_scores);
     }
     update(level, bullets, time) {
         if (this.end) return;
