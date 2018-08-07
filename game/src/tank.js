@@ -238,6 +238,7 @@ export default class TankManager extends EntityManager {
         this.event = event;
         this.life = 2;
         this.scores = 0;
+        this.total_scores = this.difficulty === 0 ? 0 : scoreToLevelup(this.difficulty - 1);
         this.items = {
             [ITEM.FIREBALL]: false,
             [ITEM.SPEED]: false,
@@ -277,6 +278,7 @@ export default class TankManager extends EntityManager {
         });
         event.on("botDead", (type, time) => {
             this.scores += getScores(type);
+            this.total_scores += getScores(type);
             if (this.scores > scoreToLevelup(this.difficulty)) {
                 this.difficulty = Math.min(this.difficulty + 1, 15);
                 this.scores = 0;
@@ -308,7 +310,8 @@ export default class TankManager extends EntityManager {
             this.items[ITEM.SPEED],
             this.items[ITEM.STAR],
             Math.max((this.endTime - time) / LEVEL_TIME, 0),
-            ITEM.FIREBALL + this.difficulty + 1);
+            ITEM.FIREBALL + this.difficulty + 1,
+            this.total_scores);
     }
     update(level, bullets, time) {
         if (this.end) return;

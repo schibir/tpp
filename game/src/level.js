@@ -253,7 +253,7 @@ export class Level {
     ready() {
         return !!this.context;
     }
-    drawInterface(life, fireball, speed, star, time, diff) {
+    drawInterface(life, fireball, speed, star, time, diff, scores) {
         this.context.fillStyle = "black";
         this.context.fillRect(
             2 * this.tileSize,
@@ -271,6 +271,9 @@ export class Level {
         this.context.fillStyle = "white";
         this.context.fillText(`x ${life}`,
             (x + 6) * this.tileSize,
+            (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
+        this.context.fillText(`Scores: ${scores}`,
+            (x - 8) * this.tileSize,
             (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
 
         // render indicator
