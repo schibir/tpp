@@ -28,6 +28,7 @@
             "error",
             { "ignoreEOLComments": true }
         ],
-        "max-len": "off"
+        "max-len": "off",
+        "linebreak-style": "off"
     }
 }
