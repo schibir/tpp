@@ -1,4 +1,18 @@
 
+let randomSeed = (Date.now() * Math.random()) & 0xffffffff;
+
+export class Random {
+    static setSeed(seed) {
+        randomSeed = seed;
+    }
+
+    static next() {
+        randomSeed = (randomSeed * 214013 + 2531011) & 0xffffffff;
+        const ret = (randomSeed >> 16) & 0x7fff;
+        return ret / 32767.0;
+    }
+}
+
 export function rand(m, radius) {
     return 2 * radius * Math.random() - radius + m;
 }
