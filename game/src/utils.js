@@ -5,7 +5,9 @@ export class Random {
     static setSeed(seed) {
         randomSeed = seed;
     }
-
+    static getSeed() {
+        return randomSeed;
+    }
     static next() {
         randomSeed = (randomSeed * 214013 + 2531011) & 0xffffffff;
         const ret = (randomSeed >> 16) & 0x7fff;

@@ -87,10 +87,11 @@ export default class Game {
         this.players = [tank1, tank2];
 
         this.event.on("levelCreated", () => {
+            this.startLevelTime = Date.now();
             this.particles.reset();
-            this.tanks.reset(Date.now());
+            this.tanks.reset(0);
             this.bullets.reset();
-            this.items.reset(Date.now());
+            this.items.reset(0);
             this.pauseTime = 0;
             this.startPauseTime = 0;
             this.drawLoading = false;
@@ -134,7 +135,7 @@ export default class Game {
         if (!this.level || !this.level.ready()) return;
 
         const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0;
-        const currentTime = Date.now() - this.pauseTime - timeOffset;
+        const currentTime = Date.now() - this.pauseTime - timeOffset - this.startLevelTime;
 
         // clearing
         if (this.menu) this.level.clearEntity(this.menu.entity);
