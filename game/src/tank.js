@@ -233,11 +233,12 @@ class Tank extends Entity {
 }
 
 export default class TankManager extends EntityManager {
-    constructor(difficulty, event) {
+    constructor(difficulty, event, mode) {
         super();
         this.difficulty = clamp(difficulty, 0, 15);
         this.start_difficulty = this.difficulty;
         this.event = event;
+        this.mode = mode;
         this.life = 2;
         this.scores = 0;
         this.total_scores = 0;
@@ -324,6 +325,8 @@ export default class TankManager extends EntityManager {
             this.timeRespawn = time + timeToRespawn(this.difficulty);
             this.create(TANK.RANDOM, time, level);
         }
+
+        if (this.mode === "bench") this.endTime = time + LEVEL_TIME;
 
         if (time > this.endTime) {
             let countBots = 0;

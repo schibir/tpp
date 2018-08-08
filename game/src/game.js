@@ -70,7 +70,7 @@ export default class Game {
 
         this.event = new Event();
         this.particles = new ParticleManager(this.event);
-        this.tanks = new TankManager(currentDifficulty, this.event);
+        this.tanks = new TankManager(currentDifficulty, this.event, this.mode);
         this.bullets = new BulletManager(this.event, this.mode);
         this.items = new ItemManager(currentDifficulty, this.event);
 
