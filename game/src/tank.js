@@ -15,7 +15,7 @@ import {
     getScores,
     scoreToLevelup,
 } from "./global";
-import { sin, cos, getMapSize, clamp } from "./utils";
+import { sin, cos, getMapSize, clamp, Random } from "./utils";
 import LocalStorage from "./local_storage";
 
 class Tank extends Entity {
@@ -62,7 +62,7 @@ class Tank extends Entity {
             this.angle = 2;
             this.cy = 1;
             do {
-                this.cx = Math.random() * (mapWidth - 4) + 1 | 0;
+                this.cx = Random.next() * (mapWidth - 4) + 1 | 0;
             } while (level.collideTankEx(this));
 
             this.weapon.setType(tankWeaponType(this.type));
@@ -104,7 +104,7 @@ class Tank extends Entity {
             }
 
             if (this.state === STATE.GOD) {
-                const ind = Math.random() * level.textures.shield.length | 0;
+                const ind = Random.next() * level.textures.shield.length | 0;
                 level.drawEntity(this.shield, level.textures.shield[ind]);
             } else {
                 level.drawEntityEnd(this);
@@ -138,7 +138,7 @@ class Tank extends Entity {
                 }
                 if (time > this.shootTime) {
                     this.shootTime = time + shootTime(this.difficulty);
-                    this.shoot = Math.random() < 0.5;
+                    this.shoot = Random.next() < 0.5;
                 }
             }
 

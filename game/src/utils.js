@@ -14,7 +14,7 @@ export class Random {
 }
 
 export function rand(m, radius) {
-    return 2 * radius * Math.random() - radius + m;
+    return 2 * radius * Random.next() - radius + m;
 }
 
 export function clamp(a, min, max) {
@@ -52,7 +52,7 @@ export function sin(angle) {
 
 export function getProbability(probabilities) {
     const sum = probabilities.reduce((acc, val) => acc + val);
-    let current = Math.random() * sum;
+    let current = Random.next() * sum;
     for (let i = 0; i < probabilities.length; i++) {
         current -= probabilities[i];
         if (current < 0) return i;
