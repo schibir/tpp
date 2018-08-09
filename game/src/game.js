@@ -8,6 +8,7 @@ import ParticleManager from "./particle";
 import { TANK, LEVEL_TIME } from "./global";
 import Event from "./event";
 import ItemManager from "./item";
+import Replay from "./replay";
 
 const keyToAngle = [{
     38: 0,  // UP
@@ -87,6 +88,12 @@ export default class Game {
         this.players = [tank1, tank2];
 
         this.event.on("levelCreated", () => {
+            // replay
+            if (this.mode === "level") {
+                this.replay = new Replay(this.currentLevel, this.tanks);
+            }
+
+            // game
             this.startLevelTime = Date.now();
             this.particles.reset();
             this.tanks.reset();
