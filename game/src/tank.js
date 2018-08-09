@@ -256,20 +256,15 @@ export default class TankManager extends EntityManager {
                 if (tank.type <= TANK.TANK2) this.life++;
                 else this.life = Math.max(this.life - 1, 0);
                 break;
-            case ITEM.KNUKLE:
-                if (tank.type <= TANK.TANK2) {
-                    this.objects.forEach((bot) => {
-                        if (bot.state > STATE.RESPAWN &&
-                            bot.type > TANK.TANK2 &&
-                            bot.type !== TANK.EAGLE) bot.damage(-1);
-                    });
-                } else {
-                    this.objects.forEach((bot) => {
-                        if (bot.state > STATE.RESPAWN &&
-                            bot.type <= TANK.TANK2) bot.damage(1);
-                    });
-                }
+            case ITEM.KNUKLE: {
+                const isEnemy = (t) => (t <= TANK.TANK2) !== (tank.type <= TANK.TANK2);
+                this.objects.forEach((bot) => {
+                    if (bot.state > STATE.RESPAWN &&
+                        isEnemy(bot.type) &&
+                        bot.type !== TANK.EAGLE) bot.damage(-1);
+                });
                 break;
+            }
             case ITEM.STAR:
             case ITEM.SPEED:
             case ITEM.FIREBALL: {
