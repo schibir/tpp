@@ -1,6 +1,6 @@
 
 import { Random } from "./utils";
-import { ITEM, TANK } from "./global";
+import { ITEM, TANK, LEVEL_TIME } from "./global";
 
 export default class Replay {
     constructor(level, tanks) {
@@ -28,5 +28,15 @@ export default class Replay {
                 };
             }
         });
+
+        this.last_time = -1;
+        this.frame_times = [];
+    }
+    addFrameTime(time) {
+        if (time >= LEVEL_TIME) return;
+        if (this.last_time === time) return; // detected pause
+
+        this.last_time = time;
+        this.frame_times.push(time);
     }
 }
