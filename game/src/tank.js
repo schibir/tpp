@@ -15,7 +15,7 @@ import {
     getScores,
     scoreToLevelup,
 } from "./global";
-import { sin, cos, getMapSize, clamp } from "./utils";
+import { sin, cos, getMapSize, clamp, floatToIndex } from "./utils";
 import LocalStorage from "./local_storage";
 
 class Tank extends Entity {
@@ -104,7 +104,7 @@ class Tank extends Entity {
             }
 
             if (this.state === STATE.GOD) {
-                const ind = Math.random() * level.textures.shield.length | 0;
+                const ind = floatToIndex(Math.random(), level.textures.shield.length);
                 level.drawEntity(this.shield, level.textures.shield[ind]);
             } else {
                 level.drawEntityEnd(this);

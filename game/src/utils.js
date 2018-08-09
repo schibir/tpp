@@ -45,3 +45,9 @@ export function getProbability(probabilities) {
     }
     return 0;
 }
+
+// uint safeIndex(float, uint)
+export function floatToIndex(float, maxIndex) {
+    const ret = (float * maxIndex | 0) % maxIndex | 0;
+    return ret < 0 ? ret + maxIndex : ret;
+}
