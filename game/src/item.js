@@ -1,7 +1,7 @@
 
 import { getMapSize, Random } from "./utils";
 import { Entity, EntityManager } from "./entity";
-import { LEVEL_TIME, STATE, TANK, tankRadius, getItem, itemRespawnTime } from "./global";
+import { STATE, TANK, tankRadius, getItem, itemRespawnTime } from "./global";
 
 class Item extends Entity {
     constructor(event) {
@@ -32,18 +32,22 @@ export default class ItemManager extends EntityManager {
         super();
         this.event = event;
         this.difficulty = difficulty;
+        this.end_of_time = false;
 
         event.on("levelup", (diff) => {
             this.difficulty = diff;
         });
+        event.on("endOfTime", () => {
+            this.end_of_time = true;
+        });
     }
-    reset(time) {
+    reset() {
         super.reset();
-        this.respawnTime = time + itemRespawnTime(this.difficulty);
-        this.endTime = time + LEVEL_TIME;
+        this.respawnTime = itemRespawnTime(this.difficulty);
+        this.end_of_time = false;
     }
     update(level, tanks, time) {
-        if (time > this.respawnTime && time < this.endTime) {
+        if (time > this.respawnTime && !this.end_of_time) {
             this.objects.push(new Item(this.event));
             this.respawnTime = time + itemRespawnTime(this.difficulty);
         }

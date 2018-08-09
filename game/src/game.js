@@ -5,7 +5,7 @@ import { Entity } from "./entity";
 import TankManager from "./tank";
 import { BulletManager } from "./bullet";
 import ParticleManager from "./particle";
-import { TANK } from "./global";
+import { TANK, LEVEL_TIME } from "./global";
 import Event from "./event";
 import ItemManager from "./item";
 
@@ -89,9 +89,9 @@ export default class Game {
         this.event.on("levelCreated", () => {
             this.startLevelTime = Date.now();
             this.particles.reset();
-            this.tanks.reset(0);
+            this.tanks.reset();
             this.bullets.reset();
-            this.items.reset(0);
+            this.items.reset();
             this.pauseTime = 0;
             this.startPauseTime = 0;
             this.drawLoading = false;
@@ -136,6 +136,8 @@ export default class Game {
 
         const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0;
         const currentTime = Date.now() - this.pauseTime - timeOffset - this.startLevelTime;
+
+        if (currentTime > LEVEL_TIME) this.event.emit("endOfTime");
 
         // clearing
         if (this.menu) this.level.clearEntity(this.menu.entity);

@@ -242,6 +242,7 @@ export default class TankManager extends EntityManager {
         this.scores = 0;
         this.total_scores = 0;
         this.best_scores = LocalStorage.getBestScore(this.start_difficulty);
+        this.end_of_time = false;
         this.items = {
             [ITEM.FIREBALL]: false,
             [ITEM.SPEED]: false,
@@ -292,19 +293,22 @@ export default class TankManager extends EntityManager {
                 event.emit("levelup", this.difficulty);
             }
         });
+        event.on("endOfTime", () => {
+            this.end_of_time = true;
+        });
     }
     create(type, time = 0, level = null) {
         const tank = new Tank(type, time, this.difficulty, this.event, level);
         this.objects.push(tank);
         return tank;
     }
-    reset(time) {
+    reset() {
         this.objects = this.objects.filter((tank) => tank.type <= TANK.TANK2);
-        this.objects.forEach((tank) => tank.respawn(time));
+        this.objects.forEach((tank) => tank.respawn(0));
         this.create(TANK.EAGLE);
 
         this.timeRespawn = 0;
-        this.endTime = time + LEVEL_TIME;
+        this.end_of_time = false;
         this.end = false;
     }
     draw(level, time) {
@@ -313,19 +317,19 @@ export default class TankManager extends EntityManager {
             this.items[ITEM.FIREBALL],
             this.items[ITEM.SPEED],
             this.items[ITEM.STAR],
-            Math.max((this.endTime - time) / LEVEL_TIME, 0),
+            Math.max((LEVEL_TIME - time) / LEVEL_TIME, 0),
             ITEM.FIREBALL + this.difficulty + 1,
             this.total_scores,
             this.best_scores);
     }
     update(level, bullets, time) {
         if (this.end) return;
-        if (time > this.timeRespawn && time < this.endTime) {
+        if (time > this.timeRespawn && !this.end_of_time) {
             this.timeRespawn = time + timeToRespawn(this.difficulty);
             this.create(TANK.RANDOM, time, level);
         }
 
-        if (time > this.endTime) {
+        if (this.end_of_time) {
             let countBots = 0;
             this.objects.forEach((tank) => {
                 if (tank.type > TANK.TANK2 && tank.type < TANK.RANDOM) countBots++;
