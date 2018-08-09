@@ -28,9 +28,10 @@ class Item extends Entity {
 }
 
 export default class ItemManager extends EntityManager {
-    constructor(difficulty, event) {
+    constructor(difficulty, event, mode) {
         super();
         this.event = event;
+        this.mode = mode;
         this.difficulty = difficulty;
 
         event.on("levelup", (diff) => {
@@ -47,6 +48,8 @@ export default class ItemManager extends EntityManager {
             this.objects.push(new Item(this.event));
             this.respawnTime = time + itemRespawnTime(this.difficulty);
         }
+
+        if (this.mode === "bench") this.endTime = time + LEVEL_TIME;
 
         this.objects.forEach((item) => item.update(tanks, time));
         this.splice();
