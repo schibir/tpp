@@ -16,12 +16,12 @@ class Item extends Entity {
     draw(level) {
         level.drawEntityBegin(this, level.textures.item[this.type]);
     }
-    update(tanks, time) {
+    update(tanks) {
         tanks.objects.forEach((tank) => {
             if (tank.state <= STATE.RESPAWN || tank.type === TANK.EAGLE || !this.alive) return;
             if (this.collide(tank, tankRadius(tank.type), 0.8)) {
                 this.alive = false;
-                this.event.emit("item", this.type, tank, time);
+                this.event.emit("item", this.type, tank);
             }
         });
     }
@@ -52,7 +52,7 @@ export default class ItemManager extends EntityManager {
             this.respawnTime = time + itemRespawnTime(this.difficulty);
         }
 
-        this.objects.forEach((item) => item.update(tanks, time));
+        this.objects.forEach((item) => item.update(tanks));
         this.splice();
     }
 }

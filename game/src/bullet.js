@@ -50,7 +50,7 @@ export class BulletManager extends EntityManager {
         bullet.setParticleCallback(this.particleCallback);
         this.objects.push(bullet);
     }
-    collideTank(tank, time) {
+    collideTank(tank) {
         if (tank.state <= STATE.RESPAWN) return;
         this.objects.forEach((bullet) => {
             if (!bullet.alive || bullet.owner === tank) return;
@@ -59,7 +59,7 @@ export class BulletManager extends EntityManager {
 
                 const table = [0, 0, 1, 1, 1, 1, 1, 1, 2];
                 if (table[bullet.owner.type] !== table[tank.type] || this.mode === "bench") {
-                    tank.damage(bulletDamage(bullet.type), time);
+                    tank.damage(bulletDamage(bullet.type));
                 }
             }
         });

@@ -3,7 +3,6 @@ import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import {
     TANK, STATE, PART, ITEM, BULLET,
-    LEVEL_TIME,
     tankLife,
     botTypeProbability,
     angleProbability,
@@ -163,22 +162,22 @@ class Tank extends Entity {
         this.shield.cy = this.cy;
         this.text.obj.cx = this.cx;
         this.text.obj.cy = this.cy - 1.5;
-        if (time > this.text.time) this.text.time = 0;
+        if (Date.now() > this.text.time) this.text.time = 0;
         this.animTurret *= 0.9;
     }
-    setText(time, itemType) {
-        this.text.time = time + 3000;
+    setText(itemType) {
+        this.text.time = Date.now() + 3000;
         if (itemType > ITEM.FIREBALL) this.text.time += 3000;
         this.text.tex = itemType;
     }
-    damage(value, time) {
+    damage(value) {
         if (value < 0) this.state = STATE.DEAD;
         else if (this.state !== STATE.GOD) {
             this.life -= value;
             for (let i = 0; i < value; i++) this.weapon.dec();
             if (this.life <= 0) {
                 this.state = STATE.DEAD;
-                this.event.emit("botDead", this.type, time);
+                this.event.emit("botDead", this.type);
             }
         } else if (value > 1) {
             this.state = STATE.NORMAL;
@@ -249,8 +248,8 @@ export default class TankManager extends EntityManager {
             [ITEM.STAR]: false,
         };
 
-        event.on("item", (type, tank, time) => {
-            tank.setText(time, type);
+        event.on("item", (type, tank) => {
+            tank.setText(type);
             switch (type) {
             case ITEM.LIFE:
                 if (tank.type <= TANK.TANK2) this.life++;
@@ -280,7 +279,7 @@ export default class TankManager extends EntityManager {
             default: break;
             }
         });
-        event.on("botDead", (type, time) => {
+        event.on("botDead", (type) => {
             this.scores += getScores(type);
             this.total_scores += getScores(type);
             this.best_scores = LocalStorage.setBestScore(this.start_difficulty, this.total_scores);
@@ -288,7 +287,7 @@ export default class TankManager extends EntityManager {
                 this.difficulty = Math.min(this.difficulty + 1, 15);
                 this.scores = 0;
                 this.objects.forEach((tank) => {
-                    if (tank.type <= TANK.TANK2) tank.setText(time, ITEM.FIREBALL + this.difficulty + 1);
+                    if (tank.type <= TANK.TANK2) tank.setText(ITEM.FIREBALL + this.difficulty + 1);
                 });
                 event.emit("levelup", this.difficulty);
             }
@@ -311,13 +310,13 @@ export default class TankManager extends EntityManager {
         this.end_of_time = false;
         this.end = false;
     }
-    draw(level, time) {
+    draw(level, progress) {
         super.draw(level);
         level.drawInterface(this.life,
             this.items[ITEM.FIREBALL],
             this.items[ITEM.SPEED],
             this.items[ITEM.STAR],
-            Math.max((LEVEL_TIME - time) / LEVEL_TIME, 0),
+            progress,
             ITEM.FIREBALL + this.difficulty + 1,
             this.total_scores,
             this.best_scores);
@@ -371,7 +370,7 @@ export default class TankManager extends EntityManager {
                 bullets.add(bullet);
             }
 
-            bullets.collideTank(tank, time);
+            bullets.collideTank(tank);
 
             // smoke
             if (tank.state !== STATE.DEAD && tank.life < tank.maxlife) {
