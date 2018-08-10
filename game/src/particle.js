@@ -1,7 +1,7 @@
 
 import { Entity, EntityManager } from "./entity";
 import { PART } from "./global";
-import { rand } from "./utils";
+import { rand, floatToIndex } from "./utils";
 
 class Particle extends Entity {
     constructor(cx, cy, type) {
@@ -35,7 +35,7 @@ class Particle extends Entity {
     }
     getBrickTexture(level) {
         const textures = this.type === PART.BRICK ? level.textures.sparksBrick : level.textures.sparksBeton;
-        const id = this.random * textures.length | 0;
+        const id = floatToIndex(this.random, textures.length);
         let ind = (this.deltatime * this.omega + textures[id].length * this.startAngle | 0) % textures[id].length | 0;
         if (ind < 0) ind += textures[id].length;
         return textures[id][ind];
@@ -44,13 +44,13 @@ class Particle extends Entity {
         if (this.alive) {
             switch (this.type) {
             case PART.SPARK: {
-                const ind = this.deltatime / this.lifetime * level.textures.sparksBullet.length | 0;
+                const ind = floatToIndex(this.deltatime / this.lifetime, level.textures.sparksBullet.length);
                 level.drawEntity(this, level.textures.sparksBullet[ind]);
                 break;
             }
             case PART.FIRE: {
-                const id = this.random * level.textures.sparksFire.length | 0;
-                const ind = this.deltatime / this.lifetime * level.textures.sparksFire[id].length | 0;
+                const id = floatToIndex(this.random, level.textures.sparksFire.length);
+                const ind = floatToIndex(this.deltatime / this.lifetime, level.textures.sparksFire[id].length);
                 level.drawEntity(this, level.textures.sparksFire[id][ind]);
                 break;
             }
@@ -61,11 +61,11 @@ class Particle extends Entity {
                 break;
             }
             case PART.EXPLODE: {
-                const id = this.random * level.textures.explode.length | 0;
-                const ind = this.deltatime / this.lifetime * level.textures.explode[id].length | 0;
+                const id = floatToIndex(this.random, level.textures.explode.length);
+                const ind = floatToIndex(this.deltatime / this.lifetime, level.textures.explode[id].length);
                 level.drawEntity(this, level.textures.explode[id][ind]);
                 if (this.decal) {
-                    const index = Math.random() * level.textures.decals.length | 0;
+                    const index = floatToIndex(Math.random(), level.textures.decals.length);
                     level.drawEntityToAllLayers(this.decal, level.textures.decals[index]);
                     this.decal = null;
                 }
@@ -75,7 +75,7 @@ class Particle extends Entity {
             case PART.SMOKE1:
             case PART.SMOKE2:
             case PART.SMOKE3: {
-                const ind = this.deltatime / this.lifetime * level.textures.smokes[this.type].length | 0;
+                const ind = floatToIndex(this.deltatime / this.lifetime, level.textures.smokes[this.type].length);
                 level.drawEntity(this, level.textures.smokes[this.type][ind]);
                 break;
             }

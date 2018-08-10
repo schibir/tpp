@@ -28,9 +28,10 @@ class Item extends Entity {
 }
 
 export default class ItemManager extends EntityManager {
-    constructor(difficulty, event) {
+    constructor(difficulty, event, mode) {
         super();
         this.event = event;
+        this.mode = mode;
         this.difficulty = difficulty;
         this.end_of_time = false;
 
@@ -38,7 +39,7 @@ export default class ItemManager extends EntityManager {
             this.difficulty = diff;
         });
         event.on("endOfTime", () => {
-            this.end_of_time = true;
+            this.end_of_time = this.mode !== "bench";
         });
     }
     reset() {

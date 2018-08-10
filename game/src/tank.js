@@ -14,7 +14,7 @@ import {
     getScores,
     scoreToLevelup,
 } from "./global";
-import { sin, cos, getMapSize, clamp, Random } from "./utils";
+import { sin, cos, getMapSize, clamp, Random, floatToIndex } from "./utils";
 import LocalStorage from "./local_storage";
 
 class Tank extends Entity {
@@ -103,7 +103,7 @@ class Tank extends Entity {
             }
 
             if (this.state === STATE.GOD) {
-                const ind = Random.next() * level.textures.shield.length | 0;
+                const ind = floatToIndex(Random.next(), level.textures.shield.length);
                 level.drawEntity(this.shield, level.textures.shield[ind]);
             } else {
                 level.drawEntityEnd(this);
@@ -232,11 +232,12 @@ class Tank extends Entity {
 }
 
 export default class TankManager extends EntityManager {
-    constructor(difficulty, event) {
+    constructor(difficulty, event, mode) {
         super();
         this.difficulty = clamp(difficulty, 0, 15);
         this.start_difficulty = this.difficulty;
         this.event = event;
+        this.mode = mode;
         this.life = 2;
         this.scores = 0;
         this.total_scores = 0;
@@ -255,20 +256,16 @@ export default class TankManager extends EntityManager {
                 if (tank.type <= TANK.TANK2) this.life++;
                 else this.life = Math.max(this.life - 1, 0);
                 break;
-            case ITEM.KNUKLE:
-                if (tank.type <= TANK.TANK2) {
-                    this.objects.forEach((bot) => {
-                        if (bot.state > STATE.RESPAWN &&
-                            bot.type > TANK.TANK2 &&
-                            bot.type !== TANK.EAGLE) bot.damage(-1);
-                    });
-                } else {
-                    this.objects.forEach((bot) => {
-                        if (bot.state > STATE.RESPAWN &&
-                            bot.type <= TANK.TANK2) bot.damage(1);
-                    });
-                }
+            case ITEM.KNUKLE: {
+                const isEnemy = (t) => ((t <= TANK.TANK2) !== (tank.type <= TANK.TANK2)) || (this.mode === "bench");
+                const damageVal = (tank.type <= TANK.TANK2) || (this.mode === "bench") ? -1 : 1;
+                this.objects.forEach((bot) => {
+                    if (bot.state > STATE.RESPAWN &&
+                        isEnemy(bot.type) &&
+                        bot.type !== TANK.EAGLE) bot.damage(damageVal);
+                });
                 break;
+            }
             case ITEM.STAR:
             case ITEM.SPEED:
             case ITEM.FIREBALL: {
@@ -293,7 +290,7 @@ export default class TankManager extends EntityManager {
             }
         });
         event.on("endOfTime", () => {
-            this.end_of_time = true;
+            this.end_of_time = this.mode !== "bench";
         });
     }
     create(type, time = 0, level = null) {
