@@ -80,6 +80,7 @@ export default class Game {
         this.gameoverMenu = new Menu("Game Over", canvas.width, canvas.height);
         this.menu = null;
         this.level = null;
+        this.replay = null;
         this.drawLoading = false;
         this.gameover = false;
 
@@ -114,8 +115,10 @@ export default class Game {
         this.event.on("gameOver", () => {
             this.pause();
             this.gameover = true;
+            if (this.replay) this.replay.save();
         });
         this.event.on("levelComplete", () => {
+            if (this.replay) this.replay.save();
             setTimeout(() => {
                 this.currentLevel = (this.currentLevel + 1) % 6 | 0;
                 this.level = null;
