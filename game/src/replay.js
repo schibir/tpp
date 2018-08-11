@@ -1,7 +1,6 @@
 
 import { Random } from "./utils";
 import { ITEM, TANK } from "./global";
-import LZW from "./lzw";
 
 export default class Replay {
     constructor(level, tanks) {
@@ -40,21 +39,6 @@ export default class Replay {
         this.frame_times.push(time);
     }
     save() {
-        const convertToDelta = (data) => {
-            const res = [];
-            let last = 0;
-            data.forEach((elem) => {
-                const delta = elem - last;
-                last = elem;
-                res.push(delta);
-            });
-            return res;
-        };
-
-        const deltas = convertToDelta(this.frame_times);
-        const lzw = LZW.compress(deltas);
-        console.log(`Raw size = ${this.frame_times.length}`);
-        console.log(`LZW size = ${lzw.length}`);
-        console.log(`LZW data = ${lzw}`);
+        console.log(`Replay size = ${this.frame_times.length * 2} B`);
     }
 }

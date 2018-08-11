@@ -102,8 +102,6 @@ export default class Game {
             this.items.reset();
             this.pauseTime = 0;
             this.startPauseTime = 0;
-            this.lastTime = 0;
-            this.adaptiveTime = 0;
             this.drawLoading = false;
 
             // player settings
@@ -146,18 +144,10 @@ export default class Game {
         }
         if (!this.level || !this.level.ready()) return;
 
-        // calculate times
         const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0;
         const currentTime = Date.now() - this.pauseTime - timeOffset - this.startLevelTime;
-        const deltaTime = currentTime - this.lastTime;
-        this.lastTime = currentTime;
 
-        // if delta = 13 14 15 16 17 18 19 20 21 then
-        // adaptive = 14 14 14 17 17 17 20 20 20
-        const adaptiveDelta = deltaTime ? ((deltaTime - 1) / 3 | 0) * 3 + 2 : 0;
-        this.adaptiveTime += adaptiveDelta;
-
-        if (this.adaptiveTime > LEVEL_TIME) this.event.emit("endOfTime");
+        if (currentTime > LEVEL_TIME) this.event.emit("endOfTime");
 
         // clearing
         if (this.menu) this.level.clearEntity(this.menu.entity);
@@ -167,13 +157,13 @@ export default class Game {
         this.items.clear(this.level);
 
         // updating
-        this.tanks.update(this.level, this.bullets, this.adaptiveTime);
-        this.bullets.update(this.level, this.adaptiveTime);
-        this.particles.update(this.level);
-        this.items.update(this.level, this.tanks, this.adaptiveTime);
+        this.tanks.update(this.level, this.bullets, currentTime);
+        this.bullets.update(this.level, currentTime);
+        this.particles.update(this.level, currentTime);
+        this.items.update(this.level, this.tanks, currentTime);
 
         // replay
-        if (this.replay) this.replay.addFrameTime(this.adaptiveTime);
+        if (this.replay) this.replay.addFrameTime(currentTime);
 
         if (this.startPauseTime) this.menu = this.pauseMenu;
         else this.menu = null;
@@ -181,7 +171,7 @@ export default class Game {
 
         // drawing
         this.particles.draw(this.level, 0);
-        this.tanks.draw(this.level, Math.max((LEVEL_TIME - this.adaptiveTime) / LEVEL_TIME, 0));
+        this.tanks.draw(this.level, Math.max((LEVEL_TIME - currentTime) / LEVEL_TIME, 0));
         this.bullets.draw(this.level);
         this.particles.draw(this.level, 1);
         this.items.draw(this.level);
