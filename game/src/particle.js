@@ -115,7 +115,13 @@ export default class ParticleManager extends EntityManager {
         };
 
         event.on("particle", (cx, cy, type) => emit(cx, cy, type));
-        event.on("tankDead", (tank) => emit(tank.cx, tank.cy, PART.EXPLODE));
+        event.on("tankDead", (tank) => {
+            const r = tank.size * 0.25;
+            for (let i = 0; i < 8; i++) {
+                emit(rand(tank.cx, r), rand(tank.cy, r), PART.SMOKE2);
+            }
+            emit(tank.cx, tank.cy, PART.EXPLODE);
+        });
     }
     draw(level, layer) {
         const layer0 = PART.BRICK | PART.BETON;
