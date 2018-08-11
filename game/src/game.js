@@ -96,6 +96,7 @@ export default class Game {
 
             // game
             this.startLevelTime = Date.now();
+            this.updateTime = 0;
             this.particles.reset();
             this.tanks.reset();
             this.bullets.reset();
@@ -157,10 +158,14 @@ export default class Game {
         this.items.clear(this.level);
 
         // updating
-        this.tanks.update(this.level, this.bullets, currentTime);
-        this.bullets.update(this.level, currentTime);
-        this.particles.update(this.level, currentTime);
-        this.items.update(this.level, this.tanks, currentTime);
+        while (currentTime >= this.updateTime) {
+            this.tanks.update(this.level, this.bullets, this.updateTime);
+            this.bullets.update(this.level, this.updateTime);
+            this.items.update(this.level, this.tanks, this.updateTime);
+            this.updateTime += 16;
+        }
+
+        this.particles.update(this.level);
 
         if (this.startPauseTime) this.menu = this.pauseMenu;
         else this.menu = null;

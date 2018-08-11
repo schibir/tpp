@@ -103,7 +103,7 @@ class Tank extends Entity {
             }
 
             if (this.state === STATE.GOD) {
-                const ind = floatToIndex(Random.next(), level.textures.shield.length);
+                const ind = floatToIndex(Math.random(), level.textures.shield.length);
                 level.drawEntity(this.shield, level.textures.shield[ind]);
             } else {
                 level.drawEntityEnd(this);
