@@ -11,6 +11,7 @@ export default class Replay {
         this.difficulty = tanks.difficulty;
         this.life = tanks.life;
         this.scores = tanks.scores;
+        this.total_scores = tanks.total_scores;
         this.items = {
             [ITEM.FIREBALL]: tanks.items[ITEM.FIREBALL],
             [ITEM.SPEED]: tanks.items[ITEM.SPEED],
@@ -28,17 +29,8 @@ export default class Replay {
                 };
             }
         });
-
-        this.last_time = -1;
-        this.frame_times = [];
-    }
-    addFrameTime(time) {
-        if (this.last_time === time) return; // detected pause
-
-        this.last_time = time;
-        this.frame_times.push(time);
     }
     save() {
-        console.log(`Replay size = ${this.frame_times.length * 2} B`);
+        console.log(`Save replay with seed = ${this.random_seed}`);
     }
 }

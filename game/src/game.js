@@ -162,9 +162,6 @@ export default class Game {
         this.particles.update(this.level, currentTime);
         this.items.update(this.level, this.tanks, currentTime);
 
-        // replay
-        if (this.replay) this.replay.addFrameTime(currentTime);
-
         if (this.startPauseTime) this.menu = this.pauseMenu;
         else this.menu = null;
         if (this.gameover) this.menu = this.gameoverMenu;
