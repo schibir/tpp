@@ -86,7 +86,6 @@ class Particle extends Entity {
     update(level) {
         const time = Date.now();
         if (!this.creationTime) this.creationTime = time;
-        const delta = this.getDelta(time);
         this.deltatime = time - this.creationTime;
         if (this.deltatime >= this.lifetime) {
             this.alive = false;
@@ -96,6 +95,7 @@ class Particle extends Entity {
         }
 
         if (this.type & (PART.SPARK | PART.BRICK | PART.BETON | PART.SMOKE)) {
+            const delta = this.getDelta(time);
             this.moveEx(delta);
         }
     }
@@ -118,7 +118,7 @@ export default class ParticleManager extends EntityManager {
         event.on("tankDead", (tank) => {
             const r = tank.size * 0.25;
             for (let i = 0; i < 8; i++) {
-                emit(rand(tank.cx, r), rand(tank.cy, r), PART.SMOKE2);
+                emit(rand(tank.cx, r, Math.random), rand(tank.cy, r, Math.random), PART.SMOKE2);
             }
             emit(tank.cx, tank.cy, PART.EXPLODE);
         });
