@@ -80,7 +80,7 @@ export class BulletManager extends EntityManager {
             }
         };
 
-        this.objects.forEach((bullet) => collide(bullet));
+        this.objects.forEach(collide);
         super.update(level, time);
     }
 }

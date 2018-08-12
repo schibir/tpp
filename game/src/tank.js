@@ -195,7 +195,7 @@ class Tank extends Entity {
         case ITEM.SPEED: {
             const old = this.velocity;
             this.velocity = tankVelocity(TANK.BMP);
-            this.vel = this.velocity;
+            if (this.type > TANK.TANK2) this.vel = this.velocity;
             return old < 2;
         }
         case ITEM.FIREBALL: {
