@@ -108,6 +108,9 @@ class PlayerState {
     }
     toBuffer(buffer) {
         const saveArray = (array) => {
+            buffer.addUint16(array.length);
+            console.log(`Array length = ${array.length}`);
+            if (array.length === 0) return;
             const lastFrame = array[array.length - 1].frame;
             let avgDelta = lastFrame / array.length | 0;
             let log2 = 0;
@@ -115,20 +118,36 @@ class PlayerState {
                 avgDelta >>= 1;
                 log2++;
             }
-            buffer.addUint16(array.length);
-            buffer.addBits(4, log2);
 
-            const ffff = (1 << log2) - 1;
-            let last = 0;
-            array.forEach((elem) => {
-                let delta = elem.frame - last;
-                last = elem.frame;
-                while (delta >= ffff) {
-                    buffer.addBits(log2, ffff);
-                    delta -= ffff;
+            const saveToBuffer = (buf, log) => {
+                buf.addBits(4, log);
+                const ffff = (1 << log) - 1;
+                let last = 0;
+                array.forEach((elem) => {
+                    let delta = elem.frame - last;
+                    last = elem.frame;
+                    while (delta >= ffff) {
+                        buf.addBits(log, ffff);
+                        delta -= ffff;
+                    }
+                    buf.addBits(log, delta);
+                });
+            };
+
+            let minSize = buffer.length * 2; // because uint16_t
+            let minLog = log2;
+            for (let i = log2 - 1; i <= log2 + 1; i++) {
+                const testBuf = new RawBuffer();
+                saveToBuffer(testBuf, i);
+                testBuf.done();
+                console.log(`For log = ${i}, size = ${testBuf.data.length}`);
+                if (testBuf.data.length < minSize) {
+                    minSize = testBuf.data.length;
+                    minLog = i;
                 }
-                buffer.addBits(log2, delta);
-            });
+            }
+
+            saveToBuffer(buffer, minLog);
         };
 
         saveArray(this.angles);
@@ -211,9 +230,6 @@ export default class Replay {
         LocalStorage.saveReplay(key, base64);
         console.log(`Replay = ${base64}`);
         console.log(`Replay size = ${base64.length}`);
-        console.log(`Player one: angles = ${this.playersState[TANK.TANK1].angles.length}`);
-        console.log(`Player one: moves = ${this.playersState[TANK.TANK1].moves.length}`);
-        console.log(`Player one: shootes = ${this.playersState[TANK.TANK1].shootes.length}`);
 
         // test
         const load = new RawBuffer();
