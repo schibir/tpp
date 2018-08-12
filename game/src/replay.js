@@ -7,6 +7,7 @@ class RawBuffer {
         this.currentOffset = 0;
         this.currentByte = 0;
         this.data = [];
+        this.base64 = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]";
     }
     saveByte() {
         console.assert(this.currentByte >= 0 && this.currentByte < 256);
@@ -65,16 +66,21 @@ class RawBuffer {
         return (this.currentOffset >> 3) >= this.data.length;
     }
     toBase64() {
-        const base64 = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]";
-        console.assert(base64.length === 64);
-        this.done();
-
         let res = "";
+        this.done();
         while (!this.eof()) {
             const elem = this.getBits(6);
-            res += base64[elem];
+            res += this.base64[elem];
         }
         return res;
+    }
+    fromBase64(str) {
+        for (let i = 0; i < str.length; i++) {
+            const char = str[i];
+            const index = this.base64.indexOf(char);
+            this.addBits(6, index);
+        }
+        this.done();
     }
 }
 
@@ -134,29 +140,30 @@ export default class Replay {
         console.log(`Replay = ${base64}`);
 
         // test
-        buffer.currentOffset = 0;
-        console.assert(buffer.getUint32() === this.random_seed);
-        console.assert(buffer.getBits(3) === this.level);
-        console.assert(buffer.getBits(4) === this.difficulty);
-        console.assert(buffer.getBits(4) === this.life);
-        console.assert(buffer.getBits(9) === this.scores);
-        console.assert(buffer.getUint16() === this.total_scores);
-        console.assert(buffer.getBool() === this.items[ITEM.FIREBALL]);
-        console.assert(buffer.getBool() === this.items[ITEM.SPEED]);
-        console.assert(buffer.getBool() === this.items[ITEM.STAR]);
-        const pl1 = buffer.getBool();
+        const load = new RawBuffer();
+        load.fromBase64(base64);
+        console.assert(load.getUint32() === this.random_seed);
+        console.assert(load.getBits(3) === this.level);
+        console.assert(load.getBits(4) === this.difficulty);
+        console.assert(load.getBits(4) === this.life);
+        console.assert(load.getBits(9) === this.scores);
+        console.assert(load.getUint16() === this.total_scores);
+        console.assert(load.getBool() === this.items[ITEM.FIREBALL]);
+        console.assert(load.getBool() === this.items[ITEM.SPEED]);
+        console.assert(load.getBool() === this.items[ITEM.STAR]);
+        const pl1 = load.getBool();
         console.assert(pl1 === !!this.players[TANK.TANK1]);
-        const pl2 = buffer.getBool();
+        const pl2 = load.getBool();
         console.assert(pl2 === !!this.players[TANK.TANK2]);
         if (pl1) {
-            console.assert(buffer.getBits(3) === this.players[TANK.TANK1].weaponType);
-            console.assert(buffer.getBits(3) === this.players[TANK.TANK1].life);
-            console.assert(buffer.getBool() === this.players[TANK.TANK1].velocity > 2);
+            console.assert(load.getBits(3) === this.players[TANK.TANK1].weaponType);
+            console.assert(load.getBits(3) === this.players[TANK.TANK1].life);
+            console.assert(load.getBool() === this.players[TANK.TANK1].velocity > 2);
         }
         if (pl2) {
-            console.assert(buffer.getBits(3) === this.players[TANK.TANK2].weaponType);
-            console.assert(buffer.getBits(3) === this.players[TANK.TANK2].life);
-            console.assert(buffer.getBool() === this.players[TANK.TANK2].velocity > 2);
+            console.assert(load.getBits(3) === this.players[TANK.TANK2].weaponType);
+            console.assert(load.getBits(3) === this.players[TANK.TANK2].life);
+            console.assert(load.getBool() === this.players[TANK.TANK2].velocity > 2);
         }
     }
 }
