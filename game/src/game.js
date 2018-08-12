@@ -173,7 +173,8 @@ export default class Game {
 
         // drawing
         this.particles.draw(this.level, 0);
-        this.tanks.draw(this.level, Math.max((LEVEL_TIME - currentTime) / LEVEL_TIME, 0));
+        const progress = this.mode === "bench" ? 1 : Math.max((LEVEL_TIME - currentTime) / LEVEL_TIME, 0);
+        this.tanks.draw(this.level, progress);
         this.bullets.draw(this.level);
         this.particles.draw(this.level, 1);
         this.items.draw(this.level);
