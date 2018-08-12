@@ -2,21 +2,28 @@
 import { Random } from "./utils";
 import { ITEM, TANK } from "./global";
 
-class MocView {
-    constructor() {
+class RawBuffer {
+    constructor(size) {
         this.currentOffset = 0;
+        if (size) {
+            this.data = new ArrayBuffer(size);
+            this.view = new DataView(this.data);
+        }
     }
-    addUint16() {
-        this.currentOffset += 2 * 8;
+    addUint16(val) {
+        this.addBits(2 * 8, val);
     }
-    addUint32() {
-        this.currentOffset += 4 * 8;
+    addUint32(val) {
+        this.addBits(4 * 8, val);
     }
-    addBits(bits) {
+    addBits(bits, val) {
         this.currentOffset += bits;
     }
-    addBool() {
-        this.currentOffset++;
+    addBool(val) {
+        this.addBits(1, val);
+    }
+    getSizeInBytes() {
+        return (this.currentOffset + 7) / 8 | 0;
     }
 }
 
@@ -49,29 +56,30 @@ export default class Replay {
         });
     }
     save() {
-        const mocView = new MocView();
-        mocView.addUint32(this.random_seed);
-        mocView.addBits(3, this.level);         // 0 - 5
-        mocView.addBits(4, this.difficulty);    // 0 - 15
-        mocView.addBits(4, this.life);          // 0 - inf, but 15 impossible
-        mocView.addBits(9, this.scores);        // max scores for levelup = 400
-        mocView.addUint16(this.total_scores);
-        mocView.addBool(this.items[ITEM.FIREBALL]);
-        mocView.addBool(this.items[ITEM.SPEED]);
-        mocView.addBool(this.items[ITEM.STAR]);
-        mocView.addBool(this.players[TANK.TANK1]);
-        mocView.addBool(this.players[TANK.TANK2]);
+        const buffer = new RawBuffer(0);
+        buffer.addUint32(this.random_seed);
+        buffer.addBits(3, this.level);         // 0 - 5
+        buffer.addBits(4, this.difficulty);    // 0 - 15
+        buffer.addBits(4, this.life);          // 0 - inf, but 15 impossible
+        buffer.addBits(9, this.scores);        // max scores for levelup = 400
+        buffer.addUint16(this.total_scores);
+        buffer.addBool(this.items[ITEM.FIREBALL]);
+        buffer.addBool(this.items[ITEM.SPEED]);
+        buffer.addBool(this.items[ITEM.STAR]);
+        buffer.addBool(this.players[TANK.TANK1]);
+        buffer.addBool(this.players[TANK.TANK2]);
         if (this.players[TANK.TANK1]) {
-            mocView.addBits(3, this.players[TANK.TANK1].weaponType);    // 0 - 7
-            mocView.addBits(3, this.players[TANK.TANK1].life);          // 1 - 6
-            mocView.addBool(this.players[TANK.TANK1].velocity > 2);     // super speed = 2.4
+            buffer.addBits(3, this.players[TANK.TANK1].weaponType);    // 0 - 7
+            buffer.addBits(3, this.players[TANK.TANK1].life);          // 1 - 6
+            buffer.addBool(this.players[TANK.TANK1].velocity > 2);     // super speed = 2.4
         }
         if (this.players[TANK.TANK2]) {
-            mocView.addBits(3, this.players[TANK.TANK2].weaponType);    // 0 - 7
-            mocView.addBits(3, this.players[TANK.TANK2].life);          // 1 - 6
-            mocView.addBool(this.players[TANK.TANK2].velocity > 2);     // super speed = 2.4
+            buffer.addBits(3, this.players[TANK.TANK2].weaponType);    // 0 - 7
+            buffer.addBits(3, this.players[TANK.TANK2].life);          // 1 - 6
+            buffer.addBool(this.players[TANK.TANK2].velocity > 2);     // super speed = 2.4
         }
 
-        console.log(`Size replay = ${mocView.currentOffset} bits`);
+        console.log(`Size replay = ${buffer.currentOffset} bits`);
+        console.log(`Size replay = ${buffer.getSizeInBytes()} bytes`);
     }
 }
