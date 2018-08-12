@@ -114,7 +114,7 @@ export default class ParticleManager extends EntityManager {
             }
         };
 
-        event.on("particle", (cx, cy, type) => emit(cx, cy, type));
+        event.on("particle", emit);
         event.on("tankDead", (tank) => {
             const r = tank.size * 0.25;
             for (let i = 0; i < 8; i++) {
