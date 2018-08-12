@@ -107,15 +107,35 @@ class PlayerState {
         if (player.shoot) this.shootes.push(new PlayerStateElem(frame, player.shoot));
     }
     toBuffer(buffer) {
-        buffer.addUint16(this.angles.length);
-        this.angles.forEach((elem) => {
-            buffer.addBits(14, elem.frame);     // 80 sec * 60 FPS ~ 5000 frames
-            buffer.addBits(2, elem.value);
-        });
-        buffer.addUint16(this.moves.length);
-        this.moves.forEach((elem) => buffer.addUint16(elem.frame));
-        buffer.addUint16(this.shootes.length);
-        this.shootes.forEach((elem) => buffer.addUint16(elem.frame));
+        const saveArray = (array) => {
+            const lastFrame = array[array.length - 1].frame;
+            let avgDelta = lastFrame / array.length | 0;
+            let log2 = 0;
+            while (avgDelta) {
+                avgDelta >>= 1;
+                log2++;
+            }
+            buffer.addUint16(array.length);
+            buffer.addBits(4, log2);
+
+            const ffff = (1 << log2) - 1;
+            let last = 0;
+            array.forEach((elem) => {
+                let delta = elem.frame - last;
+                last = elem.frame;
+                while (delta >= ffff) {
+                    buffer.addBits(log2, ffff);
+                    delta -= ffff;
+                }
+                buffer.addBits(log2, delta);
+            });
+        };
+
+        saveArray(this.angles);
+        saveArray(this.moves);
+        saveArray(this.shootes);
+
+        this.angles.forEach((elem) => buffer.addBits(2, elem.value));
     }
 }
 
@@ -190,6 +210,7 @@ export default class Replay {
         const key = "replay1";
         LocalStorage.saveReplay(key, base64);
         console.log(`Replay = ${base64}`);
+        console.log(`Replay size = ${base64.length}`);
         console.log(`Player one: angles = ${this.playersState[TANK.TANK1].angles.length}`);
         console.log(`Player one: moves = ${this.playersState[TANK.TANK1].moves.length}`);
         console.log(`Player one: shootes = ${this.playersState[TANK.TANK1].shootes.length}`);
