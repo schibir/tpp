@@ -52,7 +52,7 @@ class RawBuffer {
         const offsetInCurrentByte = this.currentOffset & 7;
         const padding = 8 - offsetInCurrentByte;
         const currentIndex = this.currentOffset >> 3;
-        console.assert(currentIndex < this.data.length);
+        if (currentIndex >= this.data.length) return 0;
         const val = this.data[currentIndex] >> offsetInCurrentByte;
         if (padding >= bits) {
             this.currentOffset += bits;
@@ -60,6 +60,21 @@ class RawBuffer {
         }
         this.currentOffset += padding;
         return val | (this.getBits(bits - padding) << padding);
+    }
+    eof() {
+        return (this.currentOffset >> 3) >= this.data.length;
+    }
+    toBase64() {
+        const base64 = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]";
+        console.assert(base64.length === 64);
+        this.done();
+
+        let res = "";
+        while (!this.eof()) {
+            const elem = this.getBits(6);
+            res += base64[elem];
+        }
+        return res;
     }
 }
 
@@ -114,11 +129,12 @@ export default class Replay {
             buffer.addBits(3, this.players[TANK.TANK2].life);          // 1 - 6
             buffer.addBool(this.players[TANK.TANK2].velocity > 2);     // super speed = 2.4
         }
-        buffer.done();
 
-        console.log(`Size replay = ${buffer.currentOffset} bits`);
+        const base64 = buffer.toBase64();
+        console.log(`Replay = ${base64}`);
 
         // test
+        buffer.currentOffset = 0;
         console.assert(buffer.getUint32() === this.random_seed);
         console.assert(buffer.getBits(3) === this.level);
         console.assert(buffer.getBits(4) === this.difficulty);
