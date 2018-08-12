@@ -5,7 +5,7 @@ import { rand, floatToIndex } from "./utils";
 
 class Particle extends Entity {
     constructor(cx, cy, type) {
-        super(cx, cy, 0.5, Math.random() * 2 * Math.PI, rand(1, 0.5));
+        super(cx, cy, 0.5, Math.random() * 2 * Math.PI, rand(1, 0.5, Math.random));
         this.type = type;
         this.creationTime = 0;
         this.random = Math.random();
@@ -20,17 +20,17 @@ class Particle extends Entity {
         } else if (type & (PART.BRICK | PART.BETON)) {
             this.cx += Math.cos(this.angle) * 0.5 * Math.random();
             this.cy += Math.sin(this.angle) * 0.5 * Math.random();
-            this.lifetime += rand(100, 100);
+            this.lifetime += rand(100, 100, Math.random);
             this.maxvel = this.vel;
             this.startAngle = Math.random();
-            this.omega = rand(0, 1 / 30);
+            this.omega = rand(0, 1 / 30, Math.random);
         } else if (type & PART.SMOKE) {
             this.size = 1;
-            this.lifetime = rand(1000, 500);
-            this.angle = rand(-1, 0.2);
-            this.vel = rand(0.5, 0.2);
-            this.cx = rand(cx, 0.1);
-            this.cy = rand(cy, 0.1);
+            this.lifetime = rand(1000, 500, Math.random);
+            this.angle = rand(-1, 0.2, Math.random);
+            this.vel = rand(0.5, 0.2, Math.random);
+            this.cx = rand(cx, 0.1, Math.random);
+            this.cy = rand(cy, 0.1, Math.random);
         }
     }
     getBrickTexture(level) {

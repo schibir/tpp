@@ -15,8 +15,8 @@ export class Random {
     }
 }
 
-export function rand(m, radius) {
-    return 2 * radius * Random.next() - radius + m;
+export function rand(m, radius, randomFun = Random.next) {
+    return 2 * radius * randomFun() - radius + m;
 }
 
 export function clamp(a, min, max) {
