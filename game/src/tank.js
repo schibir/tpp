@@ -313,7 +313,7 @@ export default class TankManager extends EntityManager {
             this.items[ITEM.FIREBALL],
             this.items[ITEM.SPEED],
             this.items[ITEM.STAR],
-            progress,
+            this.mode === "bench" ? 1 : progress,
             ITEM.FIREBALL + this.difficulty + 1,
             this.total_scores,
             this.best_scores);
