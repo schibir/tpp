@@ -96,16 +96,26 @@ class PlayerState {
     constructor() {
         this.angles = [new PlayerStateElem(0, 0)];
         this.moves = [new PlayerStateElem(0, false)];
-        this.shootes = [new PlayerStateElem(0, false)];
+        this.shootes = [];
     }
     checkPlayer(player, frame) {
         const angle = this.angles[this.angles.length - 1].value;
         const move = this.moves[this.moves.length - 1].value;
-        const shoot = this.shootes[this.shootes.length - 1].value;
 
         if (angle !== player.angle) this.angles.push(new PlayerStateElem(frame, player.angle));
         if (move !== player.vel > 0.5) this.moves.push(new PlayerStateElem(frame, player.vel > 0.5));
-        if (shoot !== player.shoot) this.shootes.push(new PlayerStateElem(frame, player.shoot));
+        if (player.shoot) this.shootes.push(new PlayerStateElem(frame, player.shoot));
+    }
+    toBuffer(buffer) {
+        buffer.addUint16(this.angles.length);
+        this.angles.forEach((elem) => {
+            buffer.addBits(14, elem.frame);     // 80 sec * 60 FPS ~ 5000 frames
+            buffer.addBits(2, elem.value);
+        });
+        buffer.addUint16(this.moves.length);
+        this.moves.forEach((elem) => buffer.addUint16(elem.frame));
+        buffer.addUint16(this.shootes.length);
+        this.shootes.forEach((elem) => buffer.addUint16(elem.frame));
     }
 }
 
@@ -167,17 +177,22 @@ export default class Replay {
             buffer.addBits(3, this.players[TANK.TANK1].weaponType);    // 0 - 7
             buffer.addBits(3, this.players[TANK.TANK1].life);          // 1 - 6
             buffer.addBool(this.players[TANK.TANK1].velocity > 2);     // super speed = 2.4
+            this.playersState[TANK.TANK1].toBuffer(buffer);
         }
         if (this.players[TANK.TANK2]) {
             buffer.addBits(3, this.players[TANK.TANK2].weaponType);    // 0 - 7
             buffer.addBits(3, this.players[TANK.TANK2].life);          // 1 - 6
             buffer.addBool(this.players[TANK.TANK2].velocity > 2);     // super speed = 2.4
+            this.playersState[TANK.TANK2].toBuffer(buffer);
         }
 
         const base64 = buffer.toBase64();
         const key = "replay1";
         LocalStorage.saveReplay(key, base64);
         console.log(`Replay = ${base64}`);
+        console.log(`Player one: angles = ${this.playersState[TANK.TANK1].angles.length}`);
+        console.log(`Player one: moves = ${this.playersState[TANK.TANK1].moves.length}`);
+        console.log(`Player one: shootes = ${this.playersState[TANK.TANK1].shootes.length}`);
 
         // test
         const load = new RawBuffer();
