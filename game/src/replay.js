@@ -3,18 +3,14 @@ import { Random } from "./utils";
 import { ITEM, TANK } from "./global";
 
 class RawBuffer {
-    constructor(size) {
+    constructor() {
         this.currentOffset = 0;
-        if (size) {
-            this.data = new ArrayBuffer(size);
-            this.view = new DataView(this.data);
-            this.currentByte = 0;
-            this.currentByteOffset = 0;
-        }
+        this.currentByte = 0;
+        this.data = [];
     }
     saveByte() {
-        this.view.setUint8(this.currentByteOffset, this.currentByte);
-        this.currentByteOffset++;
+        console.assert(this.currentByte >= 0 && this.currentByte < 256);
+        this.data.push(this.currentByte);
         this.currentByte = 0;
     }
     addUint16(val) {
@@ -23,26 +19,34 @@ class RawBuffer {
     addUint32(val) {
         this.addBits(4 * 8, val);
     }
-    addBits(bits, val) {
-        console.assert(bits === 32 || (val < 1 << bits));
-        if (this.view) {
-            const offsetInCurrentByte = this.currentOffset % 8 | 0;
-            const padding = 8 - offsetInCurrentByte;
-            this.currentByte |= ((val & 0xff) << offsetInCurrentByte) & 0xff;
-            if (padding <= bits) this.saveByte();
-            if (padding < bits) {
-                this.currentOffset += padding;
-                this.addBits(bits - padding, val >> padding);
-                return;
-            }
-        }
-        this.currentOffset += bits;
-    }
     addBool(val) {
         this.addBits(1, val ? 1 : 0);
     }
-    getSizeInBytes() {
-        return (this.currentOffset + 7) / 8 | 0;
+    addBits(bits, val) {
+        console.assert(bits === 32 || (val < 1 << bits));
+        const offsetInCurrentByte = this.currentOffset % 8 | 0;
+        const padding = 8 - offsetInCurrentByte;
+        this.currentByte |= ((val & 0xff) << offsetInCurrentByte) & 0xff;
+        if (padding <= bits) this.saveByte();
+        if (padding < bits) {
+            this.currentOffset += padding;
+            this.addBits(bits - padding, val >> padding);
+            return;
+        }
+        this.currentOffset += bits;
+    }
+    getBits(bits) {
+        const offsetInCurrentByte = this.currentOffset % 8 | 0;
+        const padding = 8 - offsetInCurrentByte;
+        const currentIndex = this.currentOffset / 8 | 0;
+        console.assert(currentIndex < this.data.length);
+        const val = this.data[currentIndex] >> offsetInCurrentByte;
+        if (padding >= bits) {
+            this.currentOffset += bits;
+            return val & ((1 << bits) - 1);
+        }
+        this.currentOffset += padding;
+        return val | (this.getBits(bits - padding) << padding);
     }
 }
 
@@ -74,8 +78,8 @@ export default class Replay {
             }
         });
     }
-    save(size = 0) {
-        const buffer = new RawBuffer(size);
+    save() {
+        const buffer = new RawBuffer();
         buffer.addUint32(this.random_seed);
         buffer.addBits(3, this.level);         // 0 - 5
         buffer.addBits(4, this.difficulty);    // 0 - 15
@@ -99,8 +103,5 @@ export default class Replay {
         }
 
         console.log(`Size replay = ${buffer.currentOffset} bits`);
-        console.log(`Size replay = ${buffer.getSizeInBytes()} bytes`);
-
-        if (size === 0) this.save(buffer.getSizeInBytes());
     }
 }
