@@ -13,6 +13,10 @@ class RawBuffer {
         this.data.push(this.currentByte);
         this.currentByte = 0;
     }
+    done() {
+        if (this.currentOffset & 7) this.saveByte();
+        this.currentOffset = 0;
+    }
     addUint16(val) {
         this.addBits(2 * 8, val);
     }
@@ -22,9 +26,18 @@ class RawBuffer {
     addBool(val) {
         this.addBits(1, val ? 1 : 0);
     }
+    getUint16() {
+        return this.getBits(2 * 8);
+    }
+    getUint32() {
+        return this.getBits(4 * 8);
+    }
+    getBool() {
+        return !!this.getBits(1);
+    }
     addBits(bits, val) {
         console.assert(bits === 32 || (val < 1 << bits));
-        const offsetInCurrentByte = this.currentOffset % 8 | 0;
+        const offsetInCurrentByte = this.currentOffset & 7;
         const padding = 8 - offsetInCurrentByte;
         this.currentByte |= ((val & 0xff) << offsetInCurrentByte) & 0xff;
         if (padding <= bits) this.saveByte();
@@ -36,9 +49,9 @@ class RawBuffer {
         this.currentOffset += bits;
     }
     getBits(bits) {
-        const offsetInCurrentByte = this.currentOffset % 8 | 0;
+        const offsetInCurrentByte = this.currentOffset & 7;
         const padding = 8 - offsetInCurrentByte;
-        const currentIndex = this.currentOffset / 8 | 0;
+        const currentIndex = this.currentOffset >> 3;
         console.assert(currentIndex < this.data.length);
         const val = this.data[currentIndex] >> offsetInCurrentByte;
         if (padding >= bits) {
@@ -101,7 +114,33 @@ export default class Replay {
             buffer.addBits(3, this.players[TANK.TANK2].life);          // 1 - 6
             buffer.addBool(this.players[TANK.TANK2].velocity > 2);     // super speed = 2.4
         }
+        buffer.done();
 
         console.log(`Size replay = ${buffer.currentOffset} bits`);
+
+        // test
+        console.assert(buffer.getUint32() === this.random_seed);
+        console.assert(buffer.getBits(3) === this.level);
+        console.assert(buffer.getBits(4) === this.difficulty);
+        console.assert(buffer.getBits(4) === this.life);
+        console.assert(buffer.getBits(9) === this.scores);
+        console.assert(buffer.getUint16() === this.total_scores);
+        console.assert(buffer.getBool() === this.items[ITEM.FIREBALL]);
+        console.assert(buffer.getBool() === this.items[ITEM.SPEED]);
+        console.assert(buffer.getBool() === this.items[ITEM.STAR]);
+        const pl1 = buffer.getBool();
+        console.assert(pl1 === !!this.players[TANK.TANK1]);
+        const pl2 = buffer.getBool();
+        console.assert(pl2 === !!this.players[TANK.TANK2]);
+        if (pl1) {
+            console.assert(buffer.getBits(3) === this.players[TANK.TANK1].weaponType);
+            console.assert(buffer.getBits(3) === this.players[TANK.TANK1].life);
+            console.assert(buffer.getBool() === this.players[TANK.TANK1].velocity > 2);
+        }
+        if (pl2) {
+            console.assert(buffer.getBits(3) === this.players[TANK.TANK2].weaponType);
+            console.assert(buffer.getBits(3) === this.players[TANK.TANK2].life);
+            console.assert(buffer.getBool() === this.players[TANK.TANK2].velocity > 2);
+        }
     }
 }
