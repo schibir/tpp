@@ -159,6 +159,7 @@ export default class Game {
 
         // updating
         while (currentTime >= this.updateTime) {
+            if (this.replay) this.replay.processPlayers(this.players);
             this.tanks.update(this.level, this.bullets, this.updateTime);
             this.bullets.update(this.level, this.updateTime);
             this.items.update(this.level, this.tanks, this.updateTime);

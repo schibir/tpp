@@ -85,6 +85,30 @@ class RawBuffer {
     }
 }
 
+class PlayerStateElem {
+    constructor(frame, value) {
+        this.frame = frame;
+        this.value = value;
+    }
+}
+
+class PlayerState {
+    constructor() {
+        this.angles = [new PlayerStateElem(0, 0)];
+        this.moves = [new PlayerStateElem(0, false)];
+        this.shootes = [new PlayerStateElem(0, false)];
+    }
+    checkPlayer(player, frame) {
+        const angle = this.angles[this.angles.length - 1].value;
+        const move = this.moves[this.moves.length - 1].value;
+        const shoot = this.shootes[this.shootes.length - 1].value;
+
+        if (angle !== player.angle) this.angles.push(new PlayerStateElem(frame, player.angle));
+        if (move !== player.vel > 0.5) this.moves.push(new PlayerStateElem(frame, player.vel > 0.5));
+        if (shoot !== player.shoot) this.shootes.push(new PlayerStateElem(frame, player.shoot));
+    }
+}
+
 export default class Replay {
     constructor(level, tanks) {
         this.random_seed = Random.getSeed();
@@ -112,6 +136,19 @@ export default class Replay {
                 };
             }
         });
+
+        this.frameNumber = 0;
+        this.playersState = {
+            [TANK.TANK1]: new PlayerState(),
+            [TANK.TANK2]: new PlayerState(),
+        };
+    }
+    processPlayers(players) {
+        players.forEach((pl) => {
+            if (!pl) return;
+            this.playersState[pl.type].checkPlayer(pl, this.frameNumber);
+        });
+        this.frameNumber++;
     }
     save() {
         const buffer = new RawBuffer();
