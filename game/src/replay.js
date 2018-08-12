@@ -1,6 +1,7 @@
 
 import { Random } from "./utils";
 import { ITEM, TANK } from "./global";
+import LocalStorage from "./local_storage";
 
 class RawBuffer {
     constructor() {
@@ -137,11 +138,14 @@ export default class Replay {
         }
 
         const base64 = buffer.toBase64();
+        const key = "replay1";
+        LocalStorage.saveReplay(key, base64);
         console.log(`Replay = ${base64}`);
 
         // test
         const load = new RawBuffer();
-        load.fromBase64(base64);
+        const loadReplay = LocalStorage.loadReplay(key);
+        load.fromBase64(loadReplay);
         console.assert(load.getUint32() === this.random_seed);
         console.assert(load.getBits(3) === this.level);
         console.assert(load.getBits(4) === this.difficulty);
