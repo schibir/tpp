@@ -27,6 +27,7 @@ class Tank extends Entity {
         this.velocity = tankVelocity(type);
         this.difficulty = difficulty;
         this.event = event;
+        this.smokeTime = 0;
         this.respawn(time, level);
     }
     respawn(time, level = null) {
@@ -369,7 +370,8 @@ export default class TankManager extends EntityManager {
             bullets.collideTank(tank, time);
 
             // smoke
-            if (tank.state !== STATE.DEAD && tank.life < tank.maxlife) {
+            if (tank.state !== STATE.DEAD && tank.life < tank.maxlife && (Date.now() > tank.smokeTime)) {
+                tank.smokeTime = Date.now() + 16;
                 let smoke = PART.SMOKE0;
                 if (tank.life === 1) smoke = PART.SMOKE3;
                 else if (tank.maxlife - tank.life === 1) smoke = PART.SMOKE0;
