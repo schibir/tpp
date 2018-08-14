@@ -163,7 +163,7 @@ export default class Game {
             this.tanks.update(this.level, this.bullets, this.updateTime);
             this.bullets.update(this.level, this.updateTime);
             this.items.update(this.level, this.tanks, this.updateTime);
-            this.updateTime += 16;
+            this.updateTime++;
         }
 
         this.particles.update(this.level);

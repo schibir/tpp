@@ -87,10 +87,11 @@ class Tank extends Entity {
             if (this.type === TANK.EAGLE) {
                 level.drawEntityBegin(this, level.textures.eagle);
             } else {
+                const trackIndex = (this.animTrack / 16 | 0) % level.textures.tankTrack[this.angle][TANK.BMP].length | 0;
                 if (this.type <= TANK.TANK2 && this.velocity > 2) {
-                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][TANK.BMP][this.animTrack]);
+                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][TANK.BMP][trackIndex]);
                 } else {
-                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
+                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][trackIndex]);
                 }
                 level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
                 if (this.type <= TANK.TANK2 && this.weapon.type & BULLET.POWER) {
@@ -154,8 +155,9 @@ class Tank extends Entity {
                     this.changedDir = false;
                 }
             } else if (this.vel > 0.01) {
-                this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
+                this.animTrack += delta;
             }
+            this.animTurret *= 0.99;
         }
         this.turret.cx = this.cx + cos(this.angle) * this.animTurret;
         this.turret.cy = this.cy + sin(this.angle) * this.animTurret;
@@ -164,7 +166,6 @@ class Tank extends Entity {
         this.text.obj.cx = this.cx;
         this.text.obj.cy = this.cy - 1.5;
         if (Date.now() > this.text.time) this.text.time = 0;
-        this.animTurret *= 0.9;
     }
     setText(itemType) {
         this.text.time = Date.now() + 3000;
@@ -212,7 +213,7 @@ class Tank extends Entity {
         this.shoot = false;
 
         if (bullet) {
-            this.animTurret = -0.3;
+            this.animTurret = -0.5;
         }
         return bullet;
     }
