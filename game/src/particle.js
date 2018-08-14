@@ -26,7 +26,7 @@ class Particle extends Entity {
             this.omega = rand(0, 1 / 30, Math.random);
         } else if (type & PART.SMOKE) {
             this.size = 1;
-            this.lifetime = rand(1000, 500, Math.random);
+            this.lifetime = rand(750, 250, Math.random);
             this.angle = rand(-1, 0.2, Math.random);
             this.vel = rand(0.5, 0.2, Math.random);
             this.cx = rand(cx, 0.1, Math.random);

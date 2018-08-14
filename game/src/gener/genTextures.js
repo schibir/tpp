@@ -926,7 +926,7 @@ export default class GenTextures {
                     .normDist(1.5)
                     .normalize(0, 1)
                     .forBuf(smokeNoise, (a, b) => a * b)
-                    .normalize(0, koef * (1 - factor));
+                    .normalize(0, koef * clamp(1.5 - 1.5 * factor, 0, 1));
 
                 if (i === 0 && lvl === 3) {
                     ret[i] = smoke.getColor2([255, 0, 0], [255, 255, 127], smoke);
