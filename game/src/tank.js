@@ -357,7 +357,7 @@ export default class TankManager extends EntityManager {
                                 }
                             }
                         }
-                    } else {
+                    } else if (this.mode !== "bench"){
                         this.event.emit("gameOver");
                     }
                 } else if (tank.type === TANK.EAGLE) {
