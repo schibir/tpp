@@ -1,7 +1,7 @@
 
 import { Entity, EntityManager } from "./entity";
 import { sin, cos } from "./utils";
-import { bulletDamage, bulletVelocity, tankRadius, BULLET, PART, STATE } from "./global";
+import { bulletDamage, bulletVelocity, tankRadius, BULLET, PART, STATE, TANK } from "./global";
 
 export class Bullet extends Entity {
     constructor(owner, type, callback) {
@@ -58,8 +58,8 @@ export class BulletManager extends EntityManager {
                 bullet.died();
 
                 const table = [0, 0, 1, 1, 1, 1, 1, 1, 2];
-                if (table[bullet.owner.type] !== table[tank.type] || this.mode === "bench") {
-                    tank.damage(bulletDamage(bullet.type), time);
+                if (table[bullet.owner.type] !== table[tank.type] || bullet.owner.zombie || this.mode === "bench") {
+                    tank.damage(bulletDamage(bullet.type), time, bullet.owner.type <= TANK.TANK2);
                 }
             }
         });

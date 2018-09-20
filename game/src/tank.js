@@ -176,14 +176,14 @@ class Tank extends Entity {
     setZombie() {
         this.zombie = true;
     }
-    damage(value, time) {
+    damage(value, time, notify) {
         if (value < 0) this.state = STATE.DEAD;
         else if (this.state !== STATE.GOD) {
             this.life -= value;
             for (let i = 0; i < value; i++) this.weapon.dec();
             if (this.life <= 0) {
                 this.state = STATE.DEAD;
-                this.event.emit("botDead", this.type, time);
+                if (notify) this.event.emit("botDead", this.type, time);
             }
         } else if (value > 1) {
             this.state = STATE.NORMAL;
