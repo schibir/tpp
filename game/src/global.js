@@ -107,7 +107,7 @@ export const ITEM = {
 };
 
 export function getItem() {
-    const probs = [1, 2, 0, 2, 2, 2];
+    const probs = [1, 2, 2, 2, 2, 2];
     const ind = getProbability(probs);
     return ind;
 }
