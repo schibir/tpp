@@ -594,7 +594,22 @@ export default class GenTextures {
         itemFire.getContext("2d").drawImage(this.fireSmall[0], tileSize * 0.5, tileSize * 0.5);
 
         // zombie
+        const zombie = new SimpleBuffer(tileSize * 2);
+        for (let i = 0; i < zombie.size / 8 | 0; i++) {
+            const x1 = zombie.size / 4 | 0;
+            const x2 = zombie.size - x1;
+            const y1 = x1;
+            const y2 = zombie.size - y1 - zombie.size / 8 | 0;
+            zombie.bresenham(x1, y1 + i, x2, y1 + i, 1);
+            zombie.bresenham(x1, y2 + i, x2, y2 + i, 1);
+            zombie.bresenham(x1, y2 + i, x2, y1 + i, 1);
+        }
+        zombie
+            .gaussian(2)
+            .normalize(0, 1);
+
         const itemZombie = getItemTemplateImg();
+        itemZombie.getContext("2d").drawImage(zombie.getColor([146, 192, 139], zombie), 0, 0);
 
         // speed
         const speed = new SimpleBuffer(tileSize * 2);
@@ -608,7 +623,7 @@ export default class GenTextures {
                 const factorY = y >= 0 && y < 0.5 ? 1 : 0;
                 return arrow + factorX * factorY;
             })
-            .gaussian(1)
+            .gaussian(2)
             .normalize(0, 1)
             .getColor([127, 174, 249], speed);
 
