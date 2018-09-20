@@ -372,10 +372,12 @@ export default class GenTextures {
             [TANK.STRONG]:  [100, 200, 180],
             [TANK.PANZER]:  [211, 229, 224],
         };
+        const zombieColor = [238, 30, 30];
 
         this.tankBodies = new Array(4);
         this.tankTurret = new Array(4);
         this.tankTurretEx = new Array(4);
+        this.tankTurretZ = new Array(4);
         this.tankTrack = new Array(4);
 
         this.tankBodies[0] = {
@@ -401,6 +403,7 @@ export default class GenTextures {
             [TANK.TANK1]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK2]),
             [TANK.TANK2]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK1]),
         };
+        this.tankTurretZ[0] = createTurret(0.7, 0.1, 0.7, zombieColor);
 
         const countAnimTrack = 8;
         const trackSimple = new Array(countAnimTrack);
@@ -428,6 +431,7 @@ export default class GenTextures {
             this.tankBodies[i] = {};
             this.tankTurret[i] = {};
             this.tankTurretEx[i] = {};
+            this.tankTurretZ[i] = {};
             this.tankTrack[i] = {};
 
             for (let type = TANK.TANK1; type < TANK.RANDOM; type++) {
@@ -440,6 +444,7 @@ export default class GenTextures {
             }
             this.tankTurretEx[i][TANK.TANK1] = rotateImage(this.tankTurretEx[0][TANK.TANK1], i);
             this.tankTurretEx[i][TANK.TANK2] = rotateImage(this.tankTurretEx[0][TANK.TANK2], i);
+            this.tankTurretZ[i] = rotateImage(this.tankTurretZ[0], i);
         }
 
         // bullet
@@ -609,7 +614,7 @@ export default class GenTextures {
             .normalize(0, 1);
 
         const itemZombie = getItemTemplateImg();
-        itemZombie.getContext("2d").drawImage(zombie.getColor([146, 192, 139], zombie), 0, 0);
+        itemZombie.getContext("2d").drawImage(zombie.getColor(zombieColor, zombie), 0, 0);
 
         // speed
         const speed = new SimpleBuffer(tileSize * 2);
