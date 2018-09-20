@@ -100,13 +100,14 @@ export function bulletsCount(type) {
 export const ITEM = {
     LIFE: 0,
     KNUKLE: 1,
-    STAR: 2,
-    SPEED: 3,
-    FIREBALL: 4,
+    ZOMBIE: 2,
+    STAR: 3,
+    SPEED: 4,
+    FIREBALL: 5,
 };
 
 export function getItem() {
-    const probs = [1, 2, 2, 2, 2];
+    const probs = [1, 2, 0, 2, 2, 2];
     const ind = getProbability(probs);
     return ind;
 }

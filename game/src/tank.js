@@ -267,6 +267,8 @@ export default class TankManager extends EntityManager {
                 });
                 break;
             }
+            case ITEM.ZOMBIE:
+                break;
             case ITEM.STAR:
             case ITEM.SPEED:
             case ITEM.FIREBALL: {

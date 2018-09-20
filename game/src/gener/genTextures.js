@@ -593,6 +593,9 @@ export default class GenTextures {
         const itemFire = getItemTemplateImg();
         itemFire.getContext("2d").drawImage(this.fireSmall[0], tileSize * 0.5, tileSize * 0.5);
 
+        // zombie
+        const itemZombie = getItemTemplateImg();
+
         // speed
         const speed = new SimpleBuffer(tileSize * 2);
         this.speedImg = speed
@@ -733,6 +736,7 @@ export default class GenTextures {
         this.item = {
             [ITEM.LIFE]: itemLife,
             [ITEM.KNUKLE]: itemKnukle,
+            [ITEM.ZOMBIE]: itemZombie,
             [ITEM.STAR]: itemStar,
             [ITEM.SPEED]: itemSpeed,
             [ITEM.FIREBALL]: itemFire,
@@ -970,6 +974,7 @@ export default class GenTextures {
         const itemText = {
             [ITEM.LIFE]: "Жизняга",
             [ITEM.KNUKLE]: "Кулак",
+            [ITEM.ZOMBIE]: "Зомби",
             [ITEM.STAR]: "Звезда",
             [ITEM.SPEED]: "Скорость",
             [ITEM.FIREBALL]: "Фаерболл",
