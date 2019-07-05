@@ -39,7 +39,6 @@ export default class ItemManager extends EntityManager {
         });
     }
     reset(time) {
-        super.reset();
         this.respawnTime = time + itemRespawnTime(this.difficulty);
         this.endTime = time + LEVEL_TIME;
     }
