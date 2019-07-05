@@ -172,6 +172,10 @@ export default class Game {
             this.startPauseTime = 0;
         } else this.startPauseTime = Date.now();
     }
+    forcepause() {
+        if (this.startPauseTime) return;
+        this.pause();
+    }
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {
             if (this.players[p] && key in keyToAngle[p]) {

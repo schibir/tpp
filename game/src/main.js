@@ -139,5 +139,10 @@ function main() {
         game.onkeyup(event.keyCode);
         event.preventDefault();
     };
+    document.onvisibilitychange = () => {
+        if (document.visibilityState === "hidden") {
+            game.forcepause();
+        }
+    };
 }
 window.addEventListener("load", main);
