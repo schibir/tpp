@@ -298,11 +298,13 @@ export class Level {
             (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
 
         // render indicator
-        this.context.drawImage(this.textures.indicator,
-            0 * this.tileSize, 0 * this.tileSize,
-            time * this.tileSize, 1 * this.tileSize,
-            (x + 10) * this.tileSize, (this.mapHeight + 2) * this.tileSize,
-            time * 13 * this.tileSize, 1 * this.tileSize);
+        if (time > 0) {
+            this.context.drawImage(this.textures.indicator,
+                0 * this.tileSize, 0 * this.tileSize,
+                time * this.tileSize, 1 * this.tileSize,
+                (x + 10) * this.tileSize, (this.mapHeight + 2) * this.tileSize,
+                time * 13 * this.tileSize, 1 * this.tileSize);
+        }
     }
     drawTile(texture, srcx, srcy, dstx, dsty, size, destContext = this.context) {
         destContext.drawImage(texture,

@@ -372,10 +372,12 @@ export default class GenTextures {
             [TANK.STRONG]:  [100, 200, 180],
             [TANK.PANZER]:  [211, 229, 224],
         };
+        const zombieColor = [238, 30, 30];
 
         this.tankBodies = new Array(4);
         this.tankTurret = new Array(4);
         this.tankTurretEx = new Array(4);
+        this.tankTurretZ = new Array(4);
         this.tankTrack = new Array(4);
 
         this.tankBodies[0] = {
@@ -401,6 +403,7 @@ export default class GenTextures {
             [TANK.TANK1]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK2]),
             [TANK.TANK2]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK1]),
         };
+        this.tankTurretZ[0] = createTurret(0.7, 0.1, 0.7, zombieColor);
 
         const countAnimTrack = 8;
         const trackSimple = new Array(countAnimTrack);
@@ -428,6 +431,7 @@ export default class GenTextures {
             this.tankBodies[i] = {};
             this.tankTurret[i] = {};
             this.tankTurretEx[i] = {};
+            this.tankTurretZ[i] = {};
             this.tankTrack[i] = {};
 
             for (let type = TANK.TANK1; type < TANK.RANDOM; type++) {
@@ -440,6 +444,7 @@ export default class GenTextures {
             }
             this.tankTurretEx[i][TANK.TANK1] = rotateImage(this.tankTurretEx[0][TANK.TANK1], i);
             this.tankTurretEx[i][TANK.TANK2] = rotateImage(this.tankTurretEx[0][TANK.TANK2], i);
+            this.tankTurretZ[i] = rotateImage(this.tankTurretZ[0], i);
         }
 
         // bullet
@@ -593,6 +598,24 @@ export default class GenTextures {
         const itemFire = getItemTemplateImg();
         itemFire.getContext("2d").drawImage(this.fireSmall[0], tileSize * 0.5, tileSize * 0.5);
 
+        // zombie
+        const zombie = new SimpleBuffer(tileSize * 2);
+        for (let i = 0; i < zombie.size / 8 | 0; i++) {
+            const x1 = zombie.size / 4 | 0;
+            const x2 = zombie.size - x1;
+            const y1 = x1;
+            const y2 = zombie.size - y1 - zombie.size / 8 | 0;
+            zombie.bresenham(x1, y1 + i, x2, y1 + i, 1);
+            zombie.bresenham(x1, y2 + i, x2, y2 + i, 1);
+            zombie.bresenham(x1, y2 + i, x2, y1 + i, 1);
+        }
+        zombie
+            .gaussian(2)
+            .normalize(0, 1);
+
+        const itemZombie = getItemTemplateImg();
+        itemZombie.getContext("2d").drawImage(zombie.getColor(zombieColor, zombie), 0, 0);
+
         // speed
         const speed = new SimpleBuffer(tileSize * 2);
         this.speedImg = speed
@@ -605,7 +628,7 @@ export default class GenTextures {
                 const factorY = y >= 0 && y < 0.5 ? 1 : 0;
                 return arrow + factorX * factorY;
             })
-            .gaussian(1)
+            .gaussian(2)
             .normalize(0, 1)
             .getColor([127, 174, 249], speed);
 
@@ -733,6 +756,7 @@ export default class GenTextures {
         this.item = {
             [ITEM.LIFE]: itemLife,
             [ITEM.KNUKLE]: itemKnukle,
+            [ITEM.ZOMBIE]: itemZombie,
             [ITEM.STAR]: itemStar,
             [ITEM.SPEED]: itemSpeed,
             [ITEM.FIREBALL]: itemFire,
@@ -970,6 +994,7 @@ export default class GenTextures {
         const itemText = {
             [ITEM.LIFE]: "Жизняга",
             [ITEM.KNUKLE]: "Кулак",
+            [ITEM.ZOMBIE]: "Зомби",
             [ITEM.STAR]: "Звезда",
             [ITEM.SPEED]: "Скорость",
             [ITEM.FIREBALL]: "Фаерболл",

@@ -33,6 +33,7 @@ class Tank extends Entity {
         this.animTrack = 0;
         this.animTurret = 0;
         this.shoot = false;
+        this.zombie = false;
         this.turret = new Entity(0, 0);
         this.shield = new Entity(0, 0, 3);
         this.text = {
@@ -94,7 +95,9 @@ class Tank extends Entity {
                     level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][trackIndex]);
                 }
                 level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
-                if (this.type <= TANK.TANK2 && this.weapon.type & BULLET.POWER) {
+                if (this.zombie) {
+                    level.drawEntityBegin(this.turret, level.textures.tankTurretZ[this.angle]);
+                } else if (this.type <= TANK.TANK2 && this.weapon.type & BULLET.POWER) {
                     level.drawEntityBegin(this.turret, level.textures.tankTurretEx[this.angle][this.type]);
                 } else {
                     level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
@@ -172,14 +175,17 @@ class Tank extends Entity {
         if (itemType > ITEM.FIREBALL) this.text.time += 3000;
         this.text.tex = itemType;
     }
-    damage(value) {
+    setZombie() {
+        this.zombie = true;
+    }
+    damage(value, notify) {
         if (value < 0) this.state = STATE.DEAD;
         else if (this.state !== STATE.GOD) {
             this.life -= value;
             for (let i = 0; i < value; i++) this.weapon.dec();
             if (this.life <= 0) {
                 this.state = STATE.DEAD;
-                this.event.emit("botDead", this.type);
+                if (notify) this.event.emit("botDead", this.type);
             }
         } else if (value > 1) {
             this.state = STATE.NORMAL;
@@ -258,13 +264,17 @@ export default class TankManager extends EntityManager {
                 if (tank.type <= TANK.TANK2) this.life++;
                 else this.life = Math.max(this.life - 1, 0);
                 break;
-            case ITEM.KNUKLE: {
+            case ITEM.KNUKLE:
+            case ITEM.ZOMBIE: {
                 const isEnemy = (t) => ((t <= TANK.TANK2) !== (tank.type <= TANK.TANK2)) || (this.mode === "bench");
                 const damageVal = (tank.type <= TANK.TANK2) || (this.mode === "bench") ? -1 : 1;
                 this.objects.forEach((bot) => {
                     if (bot.state > STATE.RESPAWN &&
                         isEnemy(bot.type) &&
-                        bot.type !== TANK.EAGLE) bot.damage(damageVal);
+                        bot.type !== TANK.EAGLE) {
+                        if (type === ITEM.KNUKLE) bot.damage(damageVal);
+                        else bot.setZombie();
+                    }
                 });
                 break;
             }
