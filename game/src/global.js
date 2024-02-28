@@ -162,4 +162,4 @@ export function scoreToLevelup(difficulty) {
     return 25 * (difficulty + 1);
 }
 
-export const LEVEL_TIME = 80000;
+export const LEVEL_TIME = 60000;

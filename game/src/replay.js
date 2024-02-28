@@ -8,16 +8,19 @@ class RawBuffer {
         this.currentOffset = 0;
         this.currentByte = 0;
         this.data = [];
-        this.base64 = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890[]";
+        this.base64 = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890*-";
     }
     saveByte() {
         console.assert(this.currentByte >= 0 && this.currentByte < 256);
         this.data.push(this.currentByte);
         this.currentByte = 0;
     }
+    reset() {
+        this.currentOffset = 0;
+    }
     done() {
         if (this.currentOffset & 7) this.saveByte();
-        this.currentOffset = 0;
+        this.reset();
     }
     addUint16(val) {
         this.addBits(2 * 8, val);
@@ -68,7 +71,7 @@ class RawBuffer {
     }
     toBase64() {
         let res = "";
-        this.done();
+        this.reset();
         while (!this.eof()) {
             const elem = this.getBits(6);
             res += this.base64[elem];
@@ -126,11 +129,18 @@ class PlayerState {
                 array.forEach((elem) => {
                     let delta = elem.frame - last;
                     last = elem.frame;
-                    while (delta >= ffff) {
-                        buf.addBits(log, ffff);
-                        delta -= ffff;
+                    if (delta < ffff) {
+                        buf.addBits(log, delta);
+                        return;
                     }
-                    buf.addBits(log, delta);
+                    buf.addBits(log, ffff);
+                    if (delta == ffff) {
+                        buf.addBits(log, ffff);
+                    } else {
+                        let count = delta / ffff | 0;
+                        buf.addBits(8, count);
+                        buf.addBits(log, delta % ffff | 0);
+                    }
                 });
             };
 
@@ -224,6 +234,8 @@ export default class Replay {
             buffer.addBool(this.players[TANK.TANK2].velocity > 2);     // super speed = 2.4
             this.playersState[TANK.TANK2].toBuffer(buffer);
         }
+
+        buffer.done();
 
         const base64 = buffer.toBase64();
         const key = "replay1";
