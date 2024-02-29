@@ -6,8 +6,8 @@ import { STATE, TANK, tankRadius, getItem, itemRespawnTime } from "./global";
 class Item extends Entity {
     constructor(event) {
         const { mapWidth, mapHeight } = getMapSize();
-        const cx = Random.next() * (mapWidth - 4) + 1 | 0;
-        const cy = Random.next() * (mapHeight - 4) + 1 | 0;
+        const cx = Random.next((mapWidth - 4)) + 1 | 0;
+        const cy = Random.next((mapHeight - 4)) + 1 | 0;
         super(cx, cy);
 
         this.type = getItem();

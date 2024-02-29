@@ -1,6 +1,6 @@
 
 import SimpleBuffer from "./buffer";
-import { randColor, clamp, rand } from "../utils";
+import { randColor, clamp, mathRand } from "../utils";
 import { TANK, ITEM, PART } from "../global";
 
 export default class GenTextures {
@@ -769,8 +769,8 @@ export default class GenTextures {
             decal.normDist(1);
 
             for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 30) {
-                const x = halfSize + Math.cos(angle) * rand(halfSize * 0.75, halfSize * 0.25) | 0;
-                const y = halfSize + Math.sin(angle) * rand(halfSize * 0.75, halfSize * 0.25) | 0;
+                const x = halfSize + Math.cos(angle) * mathRand(halfSize * 0.75, halfSize * 0.25) | 0;
+                const y = halfSize + Math.sin(angle) * mathRand(halfSize * 0.75, halfSize * 0.25) | 0;
                 decal.bresenham(halfSize, halfSize, x, y, 1);
             }
 
@@ -803,10 +803,10 @@ export default class GenTextures {
             const vel = new Array(COUNT_PART);
 
             for (let i = 0; i < COUNT_PART; i++) {
-                const sx = rand(0, 1 / COUNT_FRAMES);
-                const sy = rand(0, 1 / COUNT_FRAMES);
-                const px = fireball ? 0 : rand(0, 0.25);
-                const py = fireball ? 0 : rand(0, 0.25);
+                const sx = mathRand(0, 1 / COUNT_FRAMES);
+                const sy = mathRand(0, 1 / COUNT_FRAMES);
+                const px = fireball ? 0 : mathRand(0, 0.25);
+                const py = fireball ? 0 : mathRand(0, 0.25);
                 pos[i] = [px, py];
                 vel[i] = [sx, sy];
             }
@@ -898,7 +898,7 @@ export default class GenTextures {
                     .diff([1, 0.5])
                     .normalize(0.6, 1.4);
 
-                const random = rand(0.8, 0.2);
+                const random = mathRand(0.8, 0.2);
 
                 const spark = new SimpleBuffer(tileSize * 0.5 | 0);
                 spark

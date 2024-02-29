@@ -1,5 +1,5 @@
 
-import { rand, clamp } from "../utils";
+import { mathRand, clamp } from "../utils";
 
 function lerp(a, b, t) {
     return a * (1 - t) + b * t;
@@ -71,7 +71,7 @@ export default class SimpleBuffer {
     perlin(startFreq, koef) {
         const time = Date.now();
         const extrem = (freq, ampl) => {
-            const dispersion = (rad) => rand(0, rad);
+            const dispersion = (rad) => mathRand(0, rad);
 
             const ret = new Array(freq * freq);
             for (let i = 0; i < freq * freq; i++) {

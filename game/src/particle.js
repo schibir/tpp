@@ -1,11 +1,11 @@
 
 import { Entity, EntityManager } from "./entity";
 import { PART } from "./global";
-import { rand, floatToIndex } from "./utils";
+import { mathRand, floatToIndex } from "./utils";
 
 class Particle extends Entity {
     constructor(cx, cy, type) {
-        super(cx, cy, 0.5, Math.random() * 2 * Math.PI, rand(1, 0.5, Math.random));
+        super(cx, cy, 0.5, Math.random() * 2 * Math.PI, mathRand(1, 0.5));
         this.type = type;
         this.creationTime = 0;
         this.random = Math.random();
@@ -20,17 +20,17 @@ class Particle extends Entity {
         } else if (type & (PART.BRICK | PART.BETON)) {
             this.cx += Math.cos(this.angle) * 0.5 * Math.random();
             this.cy += Math.sin(this.angle) * 0.5 * Math.random();
-            this.lifetime += rand(100, 100, Math.random);
+            this.lifetime += mathRand(100, 100);
             this.maxvel = this.vel;
             this.startAngle = Math.random();
-            this.omega = rand(0, 1 / 30, Math.random);
+            this.omega = mathRand(0, 1 / 30);
         } else if (type & PART.SMOKE) {
             this.size = 1;
-            this.lifetime = rand(750, 250, Math.random);
-            this.angle = rand(-1, 0.2, Math.random);
-            this.vel = rand(0.5, 0.2, Math.random);
-            this.cx = rand(cx, 0.1, Math.random);
-            this.cy = rand(cy, 0.1, Math.random);
+            this.lifetime = mathRand(750, 250);
+            this.angle = mathRand(-1, 0.2);
+            this.vel = mathRand(0.5, 0.2);
+            this.cx = mathRand(cx, 0.1);
+            this.cy = mathRand(cy, 0.1);
         }
     }
     getBrickTexture(level) {
@@ -118,7 +118,7 @@ export default class ParticleManager extends EntityManager {
         event.on("tankDead", (tank) => {
             const r = tank.size * 0.25;
             for (let i = 0; i < 8; i++) {
-                emit(rand(tank.cx, r, Math.random), rand(tank.cy, r, Math.random), PART.SMOKE2);
+                emit(mathRand(tank.cx, r), mathRand(tank.cy, r), PART.SMOKE2);
             }
             emit(tank.cx, tank.cy, PART.EXPLODE);
         });

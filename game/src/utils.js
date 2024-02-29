@@ -8,15 +8,19 @@ export class Random {
     static getSeed() {
         return randomSeed;
     }
-    static next() {
+    static next(m) {
         randomSeed = (randomSeed * 214013 + 2531011) & 0xffffffff;
         const ret = (randomSeed >> 16) & 0x7fff;
-        return ret / 32767.0;
+        return ret % m;
     }
 }
 
-export function rand(m, radius, randomFun = Random.next) {
-    return 2 * radius * randomFun() - radius + m;
+export function rand(m, radius) {
+    return Random.next(2 * radius) - radius + m;
+}
+
+export function mathRand(m, radius) {
+    return Math.random() * (2 * radius) - radius + m;
 }
 
 export function clamp(a, min, max) {
@@ -54,7 +58,7 @@ export function sin(angle) {
 
 export function getProbability(probabilities) {
     const sum = probabilities.reduce((acc, val) => acc + val);
-    let current = Random.next() * sum;
+    let current = Random.next(sum);
     for (let i = 0; i < probabilities.length; i++) {
         current -= probabilities[i];
         if (current < 0) return i;

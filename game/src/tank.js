@@ -63,7 +63,7 @@ class Tank extends Entity {
             this.angle = 2;
             this.cy = 1;
             do {
-                this.cx = Random.next() * (mapWidth - 4) + 1 | 0;
+                this.cx = Random.next((mapWidth - 4)) + 1 | 0;
             } while (level.collideTankEx(this));
 
             this.weapon.setType(tankWeaponType(this.type));
@@ -142,7 +142,7 @@ class Tank extends Entity {
                 }
                 if (time > this.shootTime) {
                     this.shootTime = time + shootTime(this.difficulty);
-                    this.shoot = Random.next() < 0.5;
+                    this.shoot = Random.next(2) === 1;
                 }
             }
 
