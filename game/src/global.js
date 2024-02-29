@@ -1,5 +1,5 @@
 
-import { rand, getProbability } from "./utils";
+import { rand, getProbability, Random } from "./utils";
 
 export const TANK = {
     TANK1: 0,
@@ -120,7 +120,7 @@ export function itemRespawnTime(difficulty) {
         1, 1, 1, 1,
     ];
     console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");
-    return Math.random() * timeTable[difficulty] + 10000;
+    return Random.next(timeTable[difficulty]) + 10000;
 }
 
 const SMOKE0 = 32;
@@ -149,7 +149,7 @@ export function timeToRespawn(difficulty) {
         500, 400, 300, 200,
     ];
     console.assert(difficulty >= 0 && difficulty < 16, "Wrong difficulty value");
-    return respTable[difficulty] + Math.random() * (3000 - difficulty * 133);
+    return respTable[difficulty] + Random.next((3000 - difficulty * 133));
 }
 
 export function getScores(type) {
@@ -162,4 +162,4 @@ export function scoreToLevelup(difficulty) {
     return 25 * (difficulty + 1);
 }
 
-export const LEVEL_TIME = 80000;
+export const LEVEL_TIME = 60000;

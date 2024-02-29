@@ -1,5 +1,5 @@
 
-import { rand, clamp } from "../utils";
+import { mathRand, clamp } from "../utils";
 
 function lerp(a, b, t) {
     return a * (1 - t) + b * t;
@@ -71,7 +71,7 @@ export default class SimpleBuffer {
     perlin(startFreq, koef) {
         const time = Date.now();
         const extrem = (freq, ampl) => {
-            const dispersion = (rad) => rand(0, rad);
+            const dispersion = (rad) => mathRand(0, rad);
 
             const ret = new Array(freq * freq);
             for (let i = 0; i < freq * freq; i++) {
@@ -120,7 +120,6 @@ export default class SimpleBuffer {
         }
         while (freq < this.size);
 
-        console.log("Perlin noise = ", Date.now() - time);
         return this;
     }
     normalize(a, b) {
@@ -135,7 +134,6 @@ export default class SimpleBuffer {
         for (let i = 0; i < this.size * this.size; i++) {
             this.data[i] = (this.data[i] - min) * k + a;
         }
-        console.log("Normalize = ", Date.now() - time);
         return this;
     }
     forEach(fun) {
@@ -146,7 +144,6 @@ export default class SimpleBuffer {
                 this.data[ind] = fun(this.data[ind], i, j);
             }
         }
-        console.log("For each = ", Date.now() - time);
         return this;
     }
     forBuf(buf, fun) {
@@ -158,7 +155,6 @@ export default class SimpleBuffer {
                 this.data[ind] = fun(this.data[ind], buf.data[ind], i, j);
             }
         }
-        console.log("For buffer = ", Date.now() - time);
         return this;
     }
     clamp(a, b) {
@@ -166,7 +162,6 @@ export default class SimpleBuffer {
         for (let i = 0; i < this.size * this.size; i++) {
             this.data[i] = clamp(this.data[i], a, b);
         }
-        console.log("Clamp = ", Date.now() - time);
         return this;
     }
     gaussianFast(srcBuf, radius, dir) {
@@ -199,7 +194,6 @@ export default class SimpleBuffer {
                 this.data[ind] = sum / kol;
             }
         }
-        console.log("Gaussian fast = ", Date.now() - time);
     }
     gaussian(radius) {
         const blur = new SimpleBuffer(this.size);
@@ -216,7 +210,6 @@ export default class SimpleBuffer {
             this.data[i] = src.data[i];
         }
 
-        console.log("Copy = ", Date.now() - time);
         return this;
     }
     bresenham(x0, y0, x1, y1, val) {
@@ -271,7 +264,6 @@ export default class SimpleBuffer {
             this.data[ind] = dx * dir[0] + dy * dir[1];
         });
 
-        console.log("Differential", Date.now() - time);
         return this;
     }
     diffFree() {
@@ -283,7 +275,6 @@ export default class SimpleBuffer {
             this.data[ind] = Math.sqrt(dx * dx + dy * dy);
         });
 
-        console.log("Differential free", Date.now() - time);
         return this;
     }
     brick(countWidth, countHeight, alternat = true) {
@@ -308,7 +299,6 @@ export default class SimpleBuffer {
             }
         }
 
-        console.log("Brick generate", Date.now() - time);
         return this;
     }
     brickMask(countWidth, countHeight, alternat = true) {
@@ -329,7 +319,6 @@ export default class SimpleBuffer {
             }
         }
 
-        console.log("Brick mask generate", Date.now() - time);
         return this;
     }
     normDist(rad, dx = 0, dy = 0) {
@@ -345,7 +334,6 @@ export default class SimpleBuffer {
             }
         }
 
-        console.log("Normal distribution = ", Date.now() - time);
         return this;
     }
     normSquare(minRad, rad) {
@@ -368,7 +356,6 @@ export default class SimpleBuffer {
             }
         }
 
-        console.log("Normal distribution for square pattern = ", Date.now() - time);
         return this;
     }
 }

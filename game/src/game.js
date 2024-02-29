@@ -5,9 +5,10 @@ import { Entity } from "./entity";
 import TankManager from "./tank";
 import { BulletManager } from "./bullet";
 import ParticleManager from "./particle";
-import { TANK } from "./global";
+import { TANK, LEVEL_TIME } from "./global";
 import Event from "./event";
 import ItemManager from "./item";
+import Replay from "./replay";
 
 const keyToAngle = [{
     38: 0,  // UP
@@ -79,6 +80,7 @@ export default class Game {
         this.gameoverMenu = new Menu("Game Over", canvas.width, canvas.height);
         this.menu = null;
         this.level = null;
+        this.replay = null;
         this.drawLoading = false;
         this.gameover = false;
 
@@ -87,10 +89,18 @@ export default class Game {
         this.players = [tank1, tank2];
 
         this.event.on("levelCreated", () => {
+            // replay
+            if (this.mode === "level") {
+                this.replay = new Replay(this.currentLevel, this.tanks);
+            }
+
+            // game
+            this.startLevelTime = Date.now();
+            this.updateTime = 0;
             this.particles.reset();
-            this.tanks.reset(Date.now());
+            this.tanks.reset();
             this.bullets.reset();
-            this.items.reset(Date.now());
+            this.items.reset();
             this.pauseTime = 0;
             this.startPauseTime = 0;
             this.drawLoading = false;
@@ -106,8 +116,10 @@ export default class Game {
         this.event.on("gameOver", () => {
             this.pause();
             this.gameover = true;
+            if (this.replay) this.replay.save();
         });
         this.event.on("levelComplete", () => {
+            if (this.replay) this.replay.save();
             setTimeout(() => {
                 this.currentLevel = (this.currentLevel + 1) % 6 | 0;
                 this.level = null;
@@ -134,7 +146,9 @@ export default class Game {
         if (!this.level || !this.level.ready()) return;
 
         const timeOffset = this.startPauseTime ? Date.now() - this.startPauseTime : 0;
-        const currentTime = Date.now() - this.pauseTime - timeOffset;
+        const currentTime = Date.now() - this.pauseTime - timeOffset - this.startLevelTime;
+
+        if (currentTime > LEVEL_TIME) this.event.emit("endOfTime");
 
         // clearing
         if (this.menu) this.level.clearEntity(this.menu.entity);
@@ -144,10 +158,15 @@ export default class Game {
         this.items.clear(this.level);
 
         // updating
-        this.tanks.update(this.level, this.bullets, currentTime);
-        this.bullets.update(this.level, currentTime);
-        this.particles.update(this.level, currentTime);
-        this.items.update(this.level, this.tanks, currentTime);
+        while (currentTime >= this.updateTime) {
+            if (this.replay) this.replay.processPlayers(this.players);
+            this.tanks.update(this.level, this.bullets, this.updateTime);
+            this.bullets.update(this.level, this.updateTime);
+            this.items.update(this.level, this.tanks, this.updateTime);
+            this.updateTime++;
+        }
+
+        this.particles.update(this.level);
 
         if (this.startPauseTime) this.menu = this.pauseMenu;
         else this.menu = null;
@@ -155,7 +174,7 @@ export default class Game {
 
         // drawing
         this.particles.draw(this.level, 0);
-        this.tanks.draw(this.level, currentTime);
+        this.tanks.draw(this.level, Math.max((LEVEL_TIME - currentTime) / LEVEL_TIME, 0));
         this.bullets.draw(this.level);
         this.particles.draw(this.level, 1);
         this.items.draw(this.level);

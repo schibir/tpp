@@ -151,6 +151,43 @@ export class Level {
             this.layerGrass.context.globalCompositeOperation = oldGrass;
         };
 
+        const loadLevelFromArray = (data) => {
+            this.map = data.map((val) => {
+                switch (val) {
+                case 0: return { x: 0, y: 0, type: EMPTY };
+                case 1: return { x: 0, y: 0, type: BRICK };
+                case 2: return { x: 0, y: 0, type: BETON };
+                case 3: return { x: 0, y: 0, type: WATER };
+                case 4: return { x: 0, y: 0, type: GRASS };
+                case 5: return { x: 0, y: 0, type: BRIDGEH };
+                case 6: return { x: 0, y: 0, type: BRIDGEV };
+                default:
+                    return console.assert(false, `Unknown tile type ${val}`);
+                }
+            });
+
+            // calc adjacent grass
+            for (let j = 0; j < this.mapHeight; j++) {
+                for (let i = 0; i < this.mapWidth; i++) {
+                    this.map[j * this.mapWidth + i].x = i + 1;  // +1 for board
+                    this.map[j * this.mapWidth + i].y = j + 1;  // +1 for board
+                    for (let dy = -1; dy < 2; dy++) {
+                        for (let dx = -1; dx < 2; dx++) {
+                            const x = i + dx | 0;
+                            const y = j + dy | 0;
+                            if (x >= 0 &&
+                                x < this.mapWidth &&
+                                y >= 0 &&
+                                y < this.mapHeight &&
+                                this.map[y * this.mapWidth + x].type & GRASS) {
+                                this.map[j * this.mapWidth + i].type |= PREGRASS;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
         const loadLevel = (callback) => {
             console.log(`Loading ${levelName}.tmx level`);
             const reader = new XMLHttpRequest();
@@ -177,40 +214,7 @@ export class Level {
                     .map((val) => parseInt(val, 10));
                 console.assert(data.length === this.mapWidth * this.mapHeight, "Wrong count tiles");
 
-                this.map = data.map((val) => {
-                    switch (val) {
-                    case 0: return { x: 0, y: 0, type: EMPTY };
-                    case 1: return { x: 0, y: 0, type: BRICK };
-                    case 2: return { x: 0, y: 0, type: BETON };
-                    case 3: return { x: 0, y: 0, type: WATER };
-                    case 4: return { x: 0, y: 0, type: GRASS };
-                    case 5: return { x: 0, y: 0, type: BRIDGEH };
-                    case 6: return { x: 0, y: 0, type: BRIDGEV };
-                    default:
-                        return console.assert(false, `Unknown tile type ${val}`);
-                    }
-                });
-
-                // calc adjacent grass
-                for (let j = 0; j < this.mapHeight; j++) {
-                    for (let i = 0; i < this.mapWidth; i++) {
-                        this.map[j * this.mapWidth + i].x = i + 1;  // +1 for board
-                        this.map[j * this.mapWidth + i].y = j + 1;  // +1 for board
-                        for (let dy = -1; dy < 2; dy++) {
-                            for (let dx = -1; dx < 2; dx++) {
-                                const x = i + dx | 0;
-                                const y = j + dy | 0;
-                                if (x >= 0 &&
-                                    x < this.mapWidth &&
-                                    y >= 0 &&
-                                    y < this.mapHeight &&
-                                    this.map[y * this.mapWidth + x].type & GRASS) {
-                                    this.map[j * this.mapWidth + i].type |= PREGRASS;
-                                }
-                            }
-                        }
-                    }
-                }
+                loadLevelFromArray(data);
 
                 callback();
             };
@@ -252,6 +256,21 @@ export class Level {
     }
     ready() {
         return !!this.context;
+    }
+    getLevelData() {
+        return this.map.map((tile) => {
+            switch (tile.type & ~PREGRASS) {
+            case EMPTY: return 0;
+            case BRICK: return 1;
+            case BETON: return 2;
+            case WATER: return 3;
+            case GRASS: return 4;
+            case BRIDGEH: return 5;
+            case BRIDGEV: return 6;
+            default:
+                return console.assert(false, `Unknown tile type ${tile.type}`);
+            }
+        });
     }
     drawInterface(life, fireball, speed, star, time, diff, scores, bestScores) {
         this.context.fillStyle = "black";

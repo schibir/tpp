@@ -3,7 +3,6 @@ import { Entity, EntityManager } from "./entity";
 import Weapon from "./weapon";
 import {
     TANK, STATE, PART, ITEM, BULLET,
-    LEVEL_TIME,
     tankLife,
     botTypeProbability,
     angleProbability,
@@ -15,7 +14,7 @@ import {
     getScores,
     scoreToLevelup,
 } from "./global";
-import { sin, cos, getMapSize, clamp, floatToIndex } from "./utils";
+import { sin, cos, getMapSize, clamp, Random, floatToIndex } from "./utils";
 import LocalStorage from "./local_storage";
 
 class Tank extends Entity {
@@ -64,7 +63,7 @@ class Tank extends Entity {
             this.angle = 2;
             this.cy = 1;
             do {
-                this.cx = Math.random() * (mapWidth - 4) + 1 | 0;
+                this.cx = Random.next((mapWidth - 4)) + 1 | 0;
             } while (level.collideTankEx(this));
 
             this.weapon.setType(tankWeaponType(this.type));
@@ -89,10 +88,11 @@ class Tank extends Entity {
             if (this.type === TANK.EAGLE) {
                 level.drawEntityBegin(this, level.textures.eagle);
             } else {
+                const trackIndex = (this.animTrack / 16 | 0) % level.textures.tankTrack[this.angle][TANK.BMP].length | 0;
                 if (this.type <= TANK.TANK2 && this.velocity > 2) {
-                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][TANK.BMP][this.animTrack]);
+                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][TANK.BMP][trackIndex]);
                 } else {
-                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][this.animTrack]);
+                    level.drawEntityBegin(this, level.textures.tankTrack[this.angle][this.type][trackIndex]);
                 }
                 level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
                 if (this.zombie) {
@@ -142,7 +142,7 @@ class Tank extends Entity {
                 }
                 if (time > this.shootTime) {
                     this.shootTime = time + shootTime(this.difficulty);
-                    this.shoot = Math.random() < 0.5;
+                    this.shoot = Random.next(2) === 1;
                 }
             }
 
@@ -158,8 +158,9 @@ class Tank extends Entity {
                     this.changedDir = false;
                 }
             } else if (this.vel > 0.01) {
-                this.animTrack = ++this.animTrack % level.textures.tankTrack[this.angle][this.type].length | 0;
+                this.animTrack += delta;
             }
+            this.animTurret *= 0.99;
         }
         this.turret.cx = this.cx + cos(this.angle) * this.animTurret;
         this.turret.cy = this.cy + sin(this.angle) * this.animTurret;
@@ -167,25 +168,24 @@ class Tank extends Entity {
         this.shield.cy = this.cy;
         this.text.obj.cx = this.cx;
         this.text.obj.cy = this.cy - 1.5;
-        if (time > this.text.time) this.text.time = 0;
-        this.animTurret *= 0.9;
+        if (Date.now() > this.text.time) this.text.time = 0;
     }
-    setText(time, itemType) {
-        this.text.time = time + 3000;
+    setText(itemType) {
+        this.text.time = Date.now() + 3000;
         if (itemType > ITEM.FIREBALL) this.text.time += 3000;
         this.text.tex = itemType;
     }
     setZombie() {
         this.zombie = true;
     }
-    damage(value, time, notify) {
+    damage(value, notify) {
         if (value < 0) this.state = STATE.DEAD;
         else if (this.state !== STATE.GOD) {
             this.life -= value;
             for (let i = 0; i < value; i++) this.weapon.dec();
             if (this.life <= 0) {
                 this.state = STATE.DEAD;
-                if (notify) this.event.emit("botDead", this.type, time);
+                if (notify) this.event.emit("botDead", this.type);
             }
         } else if (value > 1) {
             this.state = STATE.NORMAL;
@@ -219,7 +219,7 @@ class Tank extends Entity {
         this.shoot = false;
 
         if (bullet) {
-            this.animTurret = -0.3;
+            this.animTurret = -0.5;
         }
         return bullet;
     }
@@ -250,14 +250,15 @@ export default class TankManager extends EntityManager {
         this.scores = 0;
         this.total_scores = 0;
         this.best_scores = LocalStorage.getBestScore(this.start_difficulty);
+        this.end_of_time = false;
         this.items = {
             [ITEM.FIREBALL]: false,
             [ITEM.SPEED]: false,
             [ITEM.STAR]: false,
         };
 
-        event.on("item", (type, tank, time) => {
-            tank.setText(time, type);
+        event.on("item", (type, tank) => {
+            tank.setText(type);
             switch (type) {
             case ITEM.LIFE:
                 if (tank.type <= TANK.TANK2) this.life++;
@@ -287,7 +288,7 @@ export default class TankManager extends EntityManager {
             default: break;
             }
         });
-        event.on("botDead", (type, time) => {
+        event.on("botDead", (type) => {
             this.scores += getScores(type);
             this.total_scores += getScores(type);
             this.best_scores = LocalStorage.setBestScore(this.start_difficulty, this.total_scores);
@@ -295,10 +296,13 @@ export default class TankManager extends EntityManager {
                 this.difficulty = Math.min(this.difficulty + 1, 15);
                 this.scores = 0;
                 this.objects.forEach((tank) => {
-                    if (tank.type <= TANK.TANK2) tank.setText(time, ITEM.FIREBALL + this.difficulty + 1);
+                    if (tank.type <= TANK.TANK2) tank.setText(ITEM.FIREBALL + this.difficulty + 1);
                 });
                 event.emit("levelup", this.difficulty);
             }
+        });
+        event.on("endOfTime", () => {
+            this.end_of_time = this.mode !== "bench";
         });
     }
     create(type, time = 0, level = null) {
@@ -306,36 +310,34 @@ export default class TankManager extends EntityManager {
         this.objects.push(tank);
         return tank;
     }
-    reset(time) {
+    reset() {
         this.objects = this.objects.filter((tank) => tank.type <= TANK.TANK2);
-        this.objects.forEach((tank) => tank.respawn(time));
+        this.objects.forEach((tank) => tank.respawn(0));
         this.create(TANK.EAGLE);
 
         this.timeRespawn = 0;
-        this.endTime = time + LEVEL_TIME;
+        this.end_of_time = false;
         this.end = false;
     }
-    draw(level, time) {
+    draw(level, progress) {
         super.draw(level);
         level.drawInterface(this.life,
             this.items[ITEM.FIREBALL],
             this.items[ITEM.SPEED],
             this.items[ITEM.STAR],
-            Math.max((this.endTime - time) / LEVEL_TIME, 0),
+            this.mode === "bench" ? 1 : progress,
             ITEM.FIREBALL + this.difficulty + 1,
             this.total_scores,
             this.best_scores);
     }
     update(level, bullets, time) {
         if (this.end) return;
-        if (time > this.timeRespawn && time < this.endTime) {
+        if (time > this.timeRespawn && !this.end_of_time) {
             this.timeRespawn = time + timeToRespawn(this.difficulty);
             this.create(TANK.RANDOM, time, level);
         }
 
-        if (this.mode === "bench") this.endTime = time + LEVEL_TIME;
-
-        if (time > this.endTime) {
+        if (this.end_of_time) {
             let countBots = 0;
             this.objects.forEach((tank) => {
                 if (tank.type > TANK.TANK2 && tank.type < TANK.RANDOM) countBots++;
@@ -365,6 +367,8 @@ export default class TankManager extends EntityManager {
                                 }
                             }
                         }
+                    } else if (this.mode !== "bench"){
+                        this.event.emit("gameOver");
                     }
                 } else if (tank.type === TANK.EAGLE) {
                     this.event.emit("gameOver");
@@ -377,7 +381,7 @@ export default class TankManager extends EntityManager {
                 bullets.add(bullet);
             }
 
-            bullets.collideTank(tank, time);
+            bullets.collideTank(tank);
 
             // smoke
             if (tank.state !== STATE.DEAD && tank.life < tank.maxlife && (Date.now() > tank.smokeTime)) {

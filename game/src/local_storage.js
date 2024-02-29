@@ -29,4 +29,14 @@ export default class LocalStorage {
         }
         return current;
     }
+
+    static saveReplay(id, replay) {
+        if (!LocalStorage.localStorageSupported()) return;
+        window.localStorage.setItem(`tpp/replay ${id}`, replay);
+    }
+
+    static loadReplay(id) {
+        if (!LocalStorage.localStorageSupported()) return "";
+        return window.localStorage.getItem(`tpp/replay ${id}`) || "";
+    }
 }
