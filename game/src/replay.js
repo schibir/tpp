@@ -110,7 +110,7 @@ class PlayerState {
         if (player.shoot) this.shootes.push(new PlayerStateElem(frame, player.shoot));
     }
     toBuffer(buffer) {
-        const saveArray = (array) => {
+        const saveArray = (array, needValue = false) => {
             buffer.addUint16(array.length);
             console.log(`Array length = ${array.length}`);
             if (array.length === 0) return;
@@ -131,16 +131,17 @@ class PlayerState {
                     last = elem.frame;
                     if (delta < ffff) {
                         buf.addBits(log, delta);
-                        return;
-                    }
-                    buf.addBits(log, ffff);
-                    if (delta == ffff) {
-                        buf.addBits(log, ffff);
                     } else {
-                        let count = delta / ffff | 0;
-                        buf.addBits(8, count);
-                        buf.addBits(log, delta % ffff | 0);
+                        buf.addBits(log, ffff);
+                        if (delta == ffff) {
+                            buf.addBits(log, ffff);
+                        } else {
+                            let count = delta / ffff | 0;
+                            buf.addBits(8, count);
+                            buf.addBits(log, delta % ffff | 0);
+                        }
                     }
+                    if (needValue) buf.addBits(2, elem.value);
                 });
             };
 
@@ -160,7 +161,7 @@ class PlayerState {
             saveToBuffer(buffer, minLog);
         };
 
-        saveArray(this.angles);
+        saveArray(this.angles, true);
         saveArray(this.moves);
         saveArray(this.shootes);
 
