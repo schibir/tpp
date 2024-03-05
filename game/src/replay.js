@@ -146,7 +146,7 @@ class PlayerState {
 
             let minSize = buffer.length * 2; // because uint16_t
             let minLog = log2;
-            for (let i = log2 - 1; i <= log2 + 1; i++) {
+            for (let i = Math.min(8, log2 - 1); i <= log2 + 2; i++) {
                 const testBuf = new RawBuffer();
                 saveToBuffer(testBuf, i);
                 testBuf.done();

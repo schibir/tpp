@@ -52,6 +52,9 @@ class Tank extends Entity {
             this.cx = mapWidth / 2 - 5;
             this.cy = mapHeight - 3;
             if (this.type === TANK.TANK2) this.cx += 8;
+            this.pendingShoot = false;
+            this.pendingAngle = 0;
+            this.pendingVel = 0;
         } else if (this.type === TANK.EAGLE) {
             this.cx = mapWidth / 2 - 1;
             this.cy = mapHeight - 3;
@@ -169,6 +172,13 @@ class Tank extends Entity {
         this.text.obj.cx = this.cx;
         this.text.obj.cy = this.cy - 1.5;
         if (Date.now() > this.text.time) this.text.time = 0;
+    }
+    applyPendings() {
+        console.assert(this.type <= TANK.TANK2);
+        this.shoot = this.pendingShoot;
+        this.angle = this.pendingAngle;
+        this.vel = this.pendingVel;
+        this.pendingShoot = false;
     }
     setText(itemType) {
         this.text.time = Date.now() + 3000;

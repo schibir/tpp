@@ -159,10 +159,15 @@ export default class Game {
 
         // updating
         while (currentTime >= this.updateTime) {
-            if (this.replay) this.replay.processPlayers(this.players);
             this.tanks.update(this.level, this.bullets, this.updateTime);
             this.bullets.update(this.level, this.updateTime);
             this.items.update(this.level, this.tanks, this.updateTime);
+            if (this.replay && ((this.updateTime & 0xf) === 0)) {
+                for (let p = 0; p < 2; p++) {
+                    if (this.players[p]) this.players[p].applyPendings();
+                }
+                this.replay.processPlayers(this.players);
+            }
             this.updateTime++;
         }
 
@@ -198,12 +203,12 @@ export default class Game {
     onkeydown(key) {
         for (let p = 0; p < 2; p++) {
             if (this.players[p] && key in keyToAngle[p]) {
-                this.players[p].angle = keyToAngle[p][key];
-                this.players[p].vel = this.players[p].velocity;
+                this.players[p].pendingAngle = keyToAngle[p][key];
+                this.players[p].pendingVel = this.players[p].velocity;
                 this.keyMask[p] |= 1 << keyToAngle[p][key];
             }
             if (this.players[p] && key === keyShoot[p]) {
-                this.players[p].shoot = !this.shootKeyPress[p];
+                this.players[p].pendingShoot = !this.shootKeyPress[p];
                 this.shootKeyPress[p] = true;
             }
         }
@@ -215,9 +220,9 @@ export default class Game {
             if (this.players[p] && key in keyToAngle[p]) {
                 this.keyMask[p] ^= 1 << keyToAngle[p][key];
                 if (this.keyMask[p] in maskToAngle) {
-                    this.players[p].angle = maskToAngle[this.keyMask[p]];
+                    this.players[p].pendingAngle = maskToAngle[this.keyMask[p]];
                 } else {
-                    this.players[p].vel = 0;
+                    this.players[p].pendingVel = 0;
                 }
             }
             if (this.players[p] && key === keyShoot[p]) {
@@ -241,7 +246,7 @@ export default class Game {
         if (!this.players[0] || !this.shootKeyPress) return;
 
         if (pressed) {
-            this.players[0].shoot = !this.shootKeyPress[0];
+            this.players[0].pendingShoot = !this.shootKeyPress[0];
             this.shootKeyPress[0] = true;
         } else {
             this.shootKeyPress[0] = false;
