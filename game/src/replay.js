@@ -170,7 +170,15 @@ class PlayerState {
 }
 
 export default class Replay {
-    constructor(level, tanks) {
+    constructor(level, tanks = null) {
+        this.players = {};
+        this.frameNumber = 0;
+        this.playersState = {
+            [TANK.TANK1]: new PlayerState(),
+            [TANK.TANK2]: new PlayerState(),
+        };
+
+        if (!tanks) return;
         this.random_seed = Random.getSeed();
         this.level = level;
 
@@ -186,22 +194,15 @@ export default class Replay {
         };
 
         // Players
-        this.players = {};
         tanks.objects.forEach((tank) => {
             if (tank.type <= TANK.TANK2) {
                 this.players[tank.type] = {
                     weaponType: tank.weapon.type,
                     life: tank.life,
-                    velocity: tank.velocity,
+                    maxVelocity: tank.velocity > 2,
                 };
             }
         });
-
-        this.frameNumber = 0;
-        this.playersState = {
-            [TANK.TANK1]: new PlayerState(),
-            [TANK.TANK2]: new PlayerState(),
-        };
     }
     processPlayers(players) {
         players.forEach((pl) => {
@@ -226,13 +227,13 @@ export default class Replay {
         if (this.players[TANK.TANK1]) {
             buffer.addBits(3, this.players[TANK.TANK1].weaponType);    // 0 - 7
             buffer.addBits(3, this.players[TANK.TANK1].life);          // 1 - 6
-            buffer.addBool(this.players[TANK.TANK1].velocity > 2);     // super speed = 2.4
+            buffer.addBool(this.players[TANK.TANK1].maxVelocity);
             this.playersState[TANK.TANK1].toBuffer(buffer);
         }
         if (this.players[TANK.TANK2]) {
             buffer.addBits(3, this.players[TANK.TANK2].weaponType);    // 0 - 7
             buffer.addBits(3, this.players[TANK.TANK2].life);          // 1 - 6
-            buffer.addBool(this.players[TANK.TANK2].velocity > 2);     // super speed = 2.4
+            buffer.addBool(this.players[TANK.TANK2].maxVelocity);
             this.playersState[TANK.TANK2].toBuffer(buffer);
         }
 
@@ -245,31 +246,62 @@ export default class Replay {
         console.log(`Replay size = ${base64.length}`);
 
         // test
-        const load = new RawBuffer();
         const loadReplay = LocalStorage.loadReplay(key);
-        load.fromBase64(loadReplay);
-        console.assert(load.getUint32() === this.random_seed);
-        console.assert(load.getBits(3) === this.level);
-        console.assert(load.getBits(4) === this.difficulty);
-        console.assert(load.getBits(4) === this.life);
-        console.assert(load.getBits(9) === this.scores);
-        console.assert(load.getUint16() === this.total_scores);
-        console.assert(load.getBool() === this.items[ITEM.FIREBALL]);
-        console.assert(load.getBool() === this.items[ITEM.SPEED]);
-        console.assert(load.getBool() === this.items[ITEM.STAR]);
+        let load = new Replay();
+        load.load(loadReplay);
+        console.assert(load.random_seed === this.random_seed);
+        console.assert(load.level === this.level);
+        console.assert(load.difficulty === this.difficulty);
+        console.assert(load.life === this.life);
+        console.assert(load.scores === this.scores);
+        console.assert(load.total_scores === this.total_scores);
+        console.assert(load.items[ITEM.FIREBALL] === this.items[ITEM.FIREBALL]);
+        console.assert(load.items[ITEM.SPEED] === this.items[ITEM.SPEED]);
+        console.assert(load.items[ITEM.STAR] === this.items[ITEM.STAR]);
+        console.assert(!!load.players[TANK.TANK1] === !!this.players[TANK.TANK1]);
+        console.assert(!!load.players[TANK.TANK2] === !!this.players[TANK.TANK2]);
+        if (load.players[TANK.TANK1]) {
+            console.assert(load.players[TANK.TANK1].weaponType === this.players[TANK.TANK1].weaponType);
+            console.assert(load.players[TANK.TANK1].life === this.players[TANK.TANK1].life);
+            console.assert(load.players[TANK.TANK1].maxVelocity === this.players[TANK.TANK1].maxVelocity);
+        }
+        if (load.players[TANK.TANK2]) {
+            console.assert(load.players[TANK.TANK2].weaponType === this.players[TANK.TANK2].weaponType);
+            console.assert(load.players[TANK.TANK2].life === this.players[TANK.TANK2].life);
+            console.assert(load.players[TANK.TANK2].maxVelocity === this.players[TANK.TANK2].maxVelocity);
+        }
+    }
+    load(base64) {
+        const load = new RawBuffer();
+        load.fromBase64(base64);
+        this.random_seed = load.getUint32();
+        this.level = load.getBits(3);
+        this.difficulty = load.getBits(4);
+        this.life = load.getBits(4);
+        this.scores = load.getBits(9);
+        this.total_scores = load.getUint16();
+        this.items = {
+            [ITEM.FIREBALL]: load.getBool(),
+            [ITEM.SPEED]: load.getBool(),
+            [ITEM.STAR]: load.getBool(),
+        };
         const pl1 = load.getBool();
-        console.assert(pl1 === !!this.players[TANK.TANK1]);
         const pl2 = load.getBool();
-        console.assert(pl2 === !!this.players[TANK.TANK2]);
         if (pl1) {
-            console.assert(load.getBits(3) === this.players[TANK.TANK1].weaponType);
-            console.assert(load.getBits(3) === this.players[TANK.TANK1].life);
-            console.assert(load.getBool() === this.players[TANK.TANK1].velocity > 2);
+            this.players[TANK.TANK1] = {
+                weaponType: load.getBits(3),
+                life: load.getBits(3),
+                maxVelocity: load.getBool(),
+            };
+            //this.playersState[TANK.TANK1].toBuffer(buffer);
         }
         if (pl2) {
-            console.assert(load.getBits(3) === this.players[TANK.TANK2].weaponType);
-            console.assert(load.getBits(3) === this.players[TANK.TANK2].life);
-            console.assert(load.getBool() === this.players[TANK.TANK2].velocity > 2);
+            this.players[TANK.TANK2] = {
+                weaponType: load.getBits(3),
+                life: load.getBits(3),
+                maxVelocity: load.getBool(),
+            };
+            //this.playersState[TANK.TANK2].toBuffer(buffer);
         }
     }
 }
