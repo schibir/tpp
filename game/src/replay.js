@@ -20,6 +20,9 @@ class RawBuffer {
     }
     done() {
         if (this.currentOffset & 7) this.saveByte();
+        const tail = this.data.length % 3 | 0;
+        if (tail > 0) this.addBits(8, 0);
+        if (tail === 1) this.addBits(8, 0);
         this.reset();
     }
     addUint16(val) {
@@ -71,11 +74,11 @@ class RawBuffer {
     }
     toBase64() {
         let res = "";
-        this.reset();
         while (!this.eof()) {
             const elem = this.getBits(6);
             res += this.base64[elem];
         }
+        this.reset();
         return res;
     }
     fromBase64(str) {
@@ -85,6 +88,9 @@ class RawBuffer {
             this.addBits(6, index);
         }
         this.done();
+
+        const base64 = this.toBase64();
+        console.assert(str === base64);
     }
 }
 
@@ -296,6 +302,9 @@ export default class Replay {
             console.assert(load.players[TANK.TANK1].weaponType === this.players[TANK.TANK1].weaponType);
             console.assert(load.players[TANK.TANK1].life === this.players[TANK.TANK1].life);
             console.assert(load.players[TANK.TANK1].maxVelocity === this.players[TANK.TANK1].maxVelocity);
+            console.assert(load.playersState[TANK.TANK1].angles.length === this.playersState[TANK.TANK1].angles.length);
+            console.assert(load.playersState[TANK.TANK1].moves.length === this.playersState[TANK.TANK1].moves.length);
+            console.assert(load.playersState[TANK.TANK1].shootes.length === this.playersState[TANK.TANK1].shootes.length);
         }
         if (load.players[TANK.TANK2]) {
             console.assert(load.players[TANK.TANK2].weaponType === this.players[TANK.TANK2].weaponType);
