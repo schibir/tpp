@@ -97,13 +97,13 @@ class PlayerStateElem {
 
 class PlayerState {
     constructor() {
-        this.angles = [new PlayerStateElem(0, 0)];
-        this.moves = [new PlayerStateElem(0, false)];
+        this.angles = [];
+        this.moves = [];
         this.shootes = [];
     }
     checkPlayer(player, frame) {
-        const angle = this.angles[this.angles.length - 1].value;
-        const move = this.moves[this.moves.length - 1].value;
+        const angle = this.angles.length === 0 ? 0 : this.angles[this.angles.length - 1].value;
+        const move = this.moves.length === 0 ? false : this.moves[this.moves.length - 1].value;
 
         if (angle !== player.angle) this.angles.push(new PlayerStateElem(frame, player.angle));
         if (move !== player.vel > 0.5) this.moves.push(new PlayerStateElem(frame, player.vel > 0.5));
@@ -134,8 +134,8 @@ class PlayerState {
                         return;
                     }
                     buf.addBits(log, ffff);
-                    if (delta == ffff) {
-                        buf.addBits(log, ffff);
+                    if (delta === ffff) {
+                        buf.addBits(8, 0xff);
                     } else {
                         let count = delta / ffff | 0;
                         buf.addBits(8, count);
@@ -178,9 +178,10 @@ class PlayerState {
                 let elem = new PlayerStateElem(0, 0);
                 let delta = buffer.getBits(log);
                 if (delta === ffff) {
-                    delta = buffer.getBits(log);
-                    if (delta !== ffff) {
-                        const count = buffer.getBits(8);
+                    delta = buffer.getBits(8);
+                    if (delta === 0xff) delta = ffff;
+                    else {
+                        const count = delta;
                         delta = count * ffff + buffer.getBits(log);
                     }
                 }
@@ -324,7 +325,7 @@ export default class Replay {
                 life: load.getBits(3),
                 maxVelocity: load.getBool(),
             };
-            //this.playersState[TANK.TANK1].toBuffer(buffer);
+            this.playersState[TANK.TANK1].fromBuffer(load);
         }
         if (pl2) {
             this.players[TANK.TANK2] = {
@@ -332,7 +333,7 @@ export default class Replay {
                 life: load.getBits(3),
                 maxVelocity: load.getBool(),
             };
-            //this.playersState[TANK.TANK2].toBuffer(buffer);
+            this.playersState[TANK.TANK2].fromBuffer(load);
         }
     }
 }
