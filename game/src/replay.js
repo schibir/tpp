@@ -166,6 +166,38 @@ class PlayerState {
 
         this.angles.forEach((elem) => buffer.addBits(2, elem.value));
     }
+    fromBuffer(buffer) {
+        const loadArray = (array) => {
+            const length = buffer.getUint16();
+            if (length === 0) return;
+
+            const log = buffer.getBits(4);
+            const ffff = (1 << log) - 1;
+            let last = 0;
+            for (let i = 0; i < length; i++) {
+                let elem = new PlayerStateElem(0, 0);
+                let delta = buffer.getBits(log);
+                if (delta === ffff) {
+                    delta = buffer.getBits(log);
+                    if (delta !== ffff) {
+                        const count = buffer.getBits(8);
+                        delta = count * ffff + buffer.getBits(log);
+                    }
+                }
+                elem.frame = last + delta;
+                last = elem.frame;
+                array.push(elem);
+            }
+        };
+
+        loadArray(this.angles);
+        loadArray(this.moves);
+        loadArray(this.shootes);
+
+        this.angles.forEach((elem) => {
+            elem.value = buffer.getBits(2)
+        });
+    }
 }
 
 export default class Replay {
