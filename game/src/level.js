@@ -257,21 +257,6 @@ export class Level {
     ready() {
         return !!this.context;
     }
-    getLevelData() {
-        return this.map.map((tile) => {
-            switch (tile.type & ~PREGRASS) {
-            case EMPTY: return 0;
-            case BRICK: return 1;
-            case BETON: return 2;
-            case WATER: return 3;
-            case GRASS: return 4;
-            case BRIDGEH: return 5;
-            case BRIDGEV: return 6;
-            default:
-                return console.assert(false, `Unknown tile type ${tile.type}`);
-            }
-        });
-    }
     drawInterface(life, fireball, speed, star, time, diff, scores, bestScores) {
         this.context.fillStyle = "black";
         this.context.fillRect(
