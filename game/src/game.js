@@ -39,21 +39,40 @@ const angleToKey = {
 };
 
 class Menu {
-    constructor(text, width, height) {
+    constructor(text, width, height, copyReplay, nextLevel, replayCopied = false) {
         const { mapWidth, mapHeight } = getMapSize();
         const size = getTileSize(width, height);
-        this.entity = new Entity((mapWidth - 1) / 2, (mapHeight - 1) / 2, 12);
+        this.entity = new Entity((mapWidth - 1) / 2, (mapHeight - 1) / 2, 14);
         this.layer = new Layer(this.entity.size * size, this.entity.size * size);
 
         const ctx = this.layer.context;
-        ctx.globalAlpha = 0.5;
+        ctx.globalAlpha = 0.75;
         ctx.fillStyle = "rgb(193, 156, 34)";
         ctx.fillRect(0, 4 * size, this.layer.canvas.width, this.layer.canvas.height - 8 * size);
         ctx.globalAlpha = 1;
         ctx.fillStyle = "rgb(198, 205, 242)";
         ctx.textAlign = "center";
-        ctx.font = `${size * 2 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
-        ctx.fillText(text, this.layer.canvas.width / 2, this.layer.canvas.height / 2 + size / 2);
+        ctx.font = `${size * 1.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
+        const h = copyReplay || replayCopied || nextLevel ? -size / 2 : size / 2;
+        ctx.fillText(text, this.layer.canvas.width / 2, this.layer.canvas.height / 2 + h);
+        this.replayCopiedMenu = null;
+
+        if (copyReplay || replayCopied) {
+            ctx.font = `${size * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
+            if (copyReplay) {
+                ctx.fillStyle = "rgb(60, 90, 255)";
+                ctx.fillText("Press 'R' to copy replay to the clipboard", this.layer.canvas.width / 2, this.layer.canvas.height / 2 + size);
+                this.replayCopiedMenu = new Menu(text, width, height, false, nextLevel, true);
+            } else {
+                ctx.fillStyle = "rgb(60, 200, 90)";
+                ctx.fillText("Replay has been copied to the clipboard", this.layer.canvas.width / 2, this.layer.canvas.height / 2 + size);
+            }
+        }
+        if (nextLevel) {
+            ctx.fillStyle = "rgb(60, 90, 255)";
+            ctx.font = `${size * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
+            ctx.fillText("Press 'SPACE' to go to the next level", this.layer.canvas.width / 2, this.layer.canvas.height / 2 + size * 2);
+        }
     }
 }
 
@@ -75,14 +94,16 @@ export default class Game {
         this.bullets = new BulletManager(this.event, this.mode);
         this.items = new ItemManager(currentDifficulty, this.event, this.mode);
 
-        this.pauseMenu = new Menu("Pause", canvas.width, canvas.height);
-        this.loadMenu = new Menu("Loading", canvas.width, canvas.height);
-        this.gameoverMenu = new Menu("Game Over", canvas.width, canvas.height);
+        this.pauseMenu = new Menu("Pause", canvas.width, canvas.height, true, false);
+        this.loadMenu = new Menu("Loading", canvas.width, canvas.height, false, false);
+        this.completeMenu = new Menu("Level Complete", canvas.width, canvas.height, true, true);
+        this.gameoverMenu = new Menu("Game Over", canvas.width, canvas.height, true, false);
         this.menu = null;
         this.level = null;
         this.replay = null;
         this.drawLoading = false;
         this.gameover = false;
+        this.levelComplete = false;
 
         const tank1 = this.tanks.create(TANK.TANK1);
         const tank2 = params.twoplayers === "true" ? this.tanks.create(TANK.TANK2) : null;
@@ -104,6 +125,8 @@ export default class Game {
             this.pauseTime = 0;
             this.startPauseTime = 0;
             this.drawLoading = false;
+            this.levelComplete = false;
+            this.menu = null;
 
             // player settings
             this.keyMask = [0, 0];
@@ -116,14 +139,13 @@ export default class Game {
         this.event.on("gameOver", () => {
             this.pause();
             this.gameover = true;
+            this.changeMenu(this.gameoverMenu);
             if (this.replay) this.replay.save();
         });
         this.event.on("levelComplete", () => {
             if (this.replay) this.replay.save();
-            setTimeout(() => {
-                this.currentLevel = (this.currentLevel + 1) % 6 | 0;
-                this.level = null;
-            }, 500);
+            this.levelComplete = true;
+            this.changeMenu(this.completeMenu);
         });
     }
     newLevel() {
@@ -173,10 +195,6 @@ export default class Game {
 
         this.particles.update(this.level);
 
-        if (this.startPauseTime) this.menu = this.pauseMenu;
-        else this.menu = null;
-        if (this.gameover) this.menu = this.gameoverMenu;
-
         // drawing
         this.particles.draw(this.level, 0);
         this.tanks.draw(this.level, Math.max((LEVEL_TIME - currentTime) / LEVEL_TIME, 0));
@@ -189,12 +207,20 @@ export default class Game {
             this.level.drawEntityBegin(this.menu.entity, this.menu.layer.canvas);
         }
     }
+    changeMenu(menu) {
+        if (this.menu) this.level.clearEntity(this.menu.entity);
+        this.menu = menu;
+    }
     pause() {
-        if (this.gameover) return;
+        if (this.gameover || this.levelComplete) return;
         if (this.startPauseTime) {
             this.pauseTime += Date.now() - this.startPauseTime;
             this.startPauseTime = 0;
-        } else this.startPauseTime = Date.now();
+            this.changeMenu(null);
+        } else {
+            this.startPauseTime = Date.now();
+            this.changeMenu(this.pauseMenu);
+        }
     }
     forcepause() {
         if (this.startPauseTime) return;
@@ -214,6 +240,14 @@ export default class Game {
         }
 
         if (key === "P".charCodeAt(0)) this.pause();
+        if (this.levelComplete && key === " ".charCodeAt(0)) {
+            this.currentLevel = (this.currentLevel + 1) % 6 | 0;
+            this.level.clearEntity(this.menu.entity);
+            this.level = null;
+        }
+        if (key === "R".charCodeAt(0) && this.menu && this.menu.replayCopiedMenu) {
+            this.changeMenu(this.menu.replayCopiedMenu);
+        }
     }
     onkeyup(key) {
         for (let p = 0; p < 2; p++) {
