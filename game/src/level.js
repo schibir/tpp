@@ -279,7 +279,7 @@ export class Level {
         this.context.font = `${this.tileSize * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
         const bestStr = bestScores && (bestScores !== scores) ? ` (${bestScores})` : "";
         this.context.fillText(`Scores: ${scores}${bestStr}`,
-            (x - 9) * this.tileSize,
+            (x - 7) * this.tileSize,
             (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
 
         // render indicator

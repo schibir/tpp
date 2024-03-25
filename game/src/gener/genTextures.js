@@ -147,7 +147,7 @@ export default class GenTextures {
                 .perlin(20, 0.9)
                 .normalize(0, 1)
                 .forBuf(normDist, (a, b) => a * b)
-                .clamp(0.2, 0.5)
+                .clamp(0.25, 0.45)
                 .normalize(0, 1)
                 .getColor(randColor([255, 255, 255]), grassMask);
         }
