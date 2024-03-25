@@ -794,7 +794,7 @@ export default class GenTextures {
 
         // particles
         function createSpark(fireball) {
-            const COUNT_FRAMES = fireball ? 10 : 16;
+            const COUNT_FRAMES = fireball ? 10 : 32;
             const COUNT_PART = fireball ? 5 : 16;
             const SIZE = tileSize * (fireball ? 2 : 4);
 

@@ -15,7 +15,7 @@ class Particle extends Entity {
         if (type === PART.FIRE) this.size = 2;
         else if (type === PART.EXPLODE) {
             this.size = 4;
-            this.lifetime = 400;
+            this.lifetime = 480;
             this.decal = new Entity(cx, cy, 3);
         } else if (type & (PART.BRICK | PART.BETON)) {
             this.cx += Math.cos(this.angle) * 0.5 * Math.random();
@@ -116,8 +116,8 @@ export default class ParticleManager extends EntityManager {
 
         event.on("particle", emit);
         event.on("tankDead", (tank) => {
-            const r = tank.size * 0.25;
-            for (let i = 0; i < 8; i++) {
+            const r = tank.size * 0.4;
+            for (let i = 0; i < 16; i++) {
                 emit(mathRand(tank.cx, r), mathRand(tank.cy, r), PART.SMOKE2);
             }
             emit(tank.cx, tank.cy, PART.EXPLODE);
