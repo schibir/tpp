@@ -257,6 +257,7 @@ export default class Replay {
         buffer.addBits(4, this.life);          // 0 - inf, but 15 impossible
         buffer.addBits(9, this.scores);        // max scores for levelup = 400
         buffer.addUint16(this.total_scores);
+        buffer.addUint16(this.frameNumber);
         buffer.addBool(this.items[ITEM.FIREBALL]);
         buffer.addBool(this.items[ITEM.SPEED]);
         buffer.addBool(this.items[ITEM.STAR]);
@@ -293,6 +294,7 @@ export default class Replay {
         console.assert(load.life === this.life);
         console.assert(load.scores === this.scores);
         console.assert(load.total_scores === this.total_scores);
+        console.assert(load.frameNumber === this.frameNumber);
         console.assert(load.items[ITEM.FIREBALL] === this.items[ITEM.FIREBALL]);
         console.assert(load.items[ITEM.SPEED] === this.items[ITEM.SPEED]);
         console.assert(load.items[ITEM.STAR] === this.items[ITEM.STAR]);
@@ -321,6 +323,7 @@ export default class Replay {
         this.life = load.getBits(4);
         this.scores = load.getBits(9);
         this.total_scores = load.getUint16();
+        this.frameNumber = load.getUint16();
         this.items = {
             [ITEM.FIREBALL]: load.getBool(),
             [ITEM.SPEED]: load.getBool(),

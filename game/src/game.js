@@ -140,7 +140,6 @@ export default class Game {
             this.pause();
             this.gameover = true;
             this.changeMenu(this.gameoverMenu);
-            if (this.replay) this.replay.save();
         });
         this.event.on("levelComplete", () => {
             if (this.replay) this.replay.save();
@@ -247,6 +246,7 @@ export default class Game {
         }
         if (key === "R".charCodeAt(0) && this.menu && this.menu.replayCopiedMenu) {
             this.changeMenu(this.menu.replayCopiedMenu);
+            if (this.replay) this.replay.save();
         }
     }
     onkeyup(key) {
