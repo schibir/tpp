@@ -281,8 +281,14 @@ export default class Replay {
         const base64 = buffer.toBase64();
         const key = "replay1";
         LocalStorage.saveReplay(key, base64);
-        console.log(`Replay = ${base64}`);
+        const replayRef = `${window.location.origin}${window.location.pathname}?mode=replay&${base64}`;
+        console.log(`Replay = ${replayRef}`);
         console.log(`Replay size = ${base64.length}`);
+
+        const type = "text/plain";
+        const blob = new Blob([replayRef], { type });
+        const data = [new ClipboardItem({ [type]: blob })];
+        navigator.clipboard.write(data);
 
         // test
         const loadReplay = LocalStorage.loadReplay(key);
