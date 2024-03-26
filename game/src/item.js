@@ -55,4 +55,11 @@ export default class ItemManager extends EntityManager {
         this.objects.forEach((item) => item.update(tanks));
         this.splice();
     }
+    addItem(type, cx, cy) {
+        let item = new Item(this.event);
+        item.type = type;
+        item.cx = cx;
+        item.cy = cy;
+        this.objects.push(item);
+    }
 }

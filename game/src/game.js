@@ -127,6 +127,10 @@ export default class Game {
                 if (this.playback.players[type].maxVelocity) this.players[type].velocity = tankVelocity(TANK.BMP);
                 this.players[type].weapon.setType(this.playback.players[type].weaponType);
             }
+
+            this.playback.leftItems.forEach((item) => {
+                this.items.addItem(item.type, item.cx, item.cy);
+            });
         }
 
         this.event.on("levelCreated", () => {
