@@ -37,7 +37,7 @@ class Tank extends Entity {
         this.turret = new Entity(0, 0);
         this.shield = new Entity(0, 0, 3);
         this.text = {
-            obj: new Entity(0, 0),
+            obj: new Entity(0, 0, 3),
             tex: 0,
             time: 0,
         };
@@ -105,15 +105,16 @@ class Tank extends Entity {
                 } else {
                     level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
                 }
-                if (this.text.time) {
-                    level.drawEntityBegin(this.text.obj, level.textures.itemText[this.text.tex]);
-                }
             }
 
             if (this.state === STATE.GOD) {
                 const ind = floatToIndex(Math.random(), level.textures.shield.length);
                 level.drawEntity(this.shield, level.textures.shield[ind]);
-            } else {
+            }
+            if (this.text.time) {
+                level.drawEntityBegin(this.text.obj, level.textures.itemText[this.text.tex]);
+            }
+            if (this.state !== STATE.GOD) {
                 level.drawEntityEnd(this);
             }
         }

@@ -84,7 +84,7 @@ function main() {
             context.fillRect(0, canvas.height - tileSize, 5 * tileSize, tileSize);
             context.font = `${tileSize * 0.35 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
             context.fillStyle = "white";
-            context.fillText(`FPS = ${frameCount} | Press 'P' to pause`, 0, canvas.height - 10);
+            context.fillText(`FPS = ${frameCount} | Press 'P' to pause`, 0, canvas.height - tileSize * 0.5);
 
             lastTime = now + 1000;
             frameCount = 0;

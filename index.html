@@ -21,6 +21,24 @@
         <h1>T++</h1>
         <div class="menu-container">
             <span>
+                <input id="private" type="radio" name="difficulty">
+                <label for="private">Private</label>
+            </span>
+            <span>
+                <input id="sergeant" type="radio" name="difficulty" checked="checked">
+                <label for="sergeant">Sergeant</label>
+            </span>
+            <span>
+                <input id="lieutenant" type="radio" name="difficulty">
+                <label for="lieutenant">Lieutenant</label>
+            </span>
+            <span>
+                <input id="colonel" type="radio" name="difficulty">
+                <label for="colonel">Colonel</label>
+            </span>
+        </div>
+        <div class="menu-container">
+            <span>
                 <input id="one-player" type="radio" name="count-players" checked="checked">
                 <label for="one-player">One player</label>
             </span>
@@ -39,8 +57,14 @@
     document.getElementById("one-player").onclick = function() { twoplayers = "false"; };
     document.getElementById("two-players").onclick = function() { twoplayers = "true"; };
 
+    var difficulty = 3;
+    document.getElementById("private").onclick = function() { difficulty = 0; };
+    document.getElementById("sergeant").onclick = function() { difficulty = 3; };
+    document.getElementById("lieutenant").onclick = function() { difficulty = 7; };
+    document.getElementById("colonel").onclick = function() { difficulty = 10; };
+
     document.getElementById("play-btn").onclick = function() {
-        window.location.href += "game?mode=level&difficulty=0&twoplayers=" + twoplayers;
+        window.location.href += "game?mode=level&difficulty=" + difficulty + "&twoplayers=" + twoplayers;
     };
     document.getElementById("play-bench").onclick = function() {
         window.location.href += "game?mode=bench&difficulty=15&twoplayers=true";

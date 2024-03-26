@@ -258,29 +258,30 @@ export class Level {
         return !!this.context;
     }
     drawInterface(life, fireball, speed, star, time, diff, scores, bestScores) {
+        const x = this.mapWidth / 2 - 5;
+
         this.context.fillStyle = "black";
         this.context.fillRect(
-            2 * this.tileSize,
+            (x - 8) * this.tileSize,
             (this.mapHeight + 2) * this.tileSize,
             this.canvas.width - 2 * this.tileSize,
-            this.tileSize);
+            this.tileSize * 2);
 
-        const x = this.mapWidth / 2 - 5;
-        this.drawTile(this.textures.itemText[diff], 0, 0, x - 2, this.mapHeight + 1.5, 2);
-        if (fireball) this.drawTile(this.textures.fireSmall[0], 0, 0, x, this.mapHeight + 2.1, 1);
-        if (speed) this.drawTile(this.textures.speedImg, 0, 0, x + 0.5, this.mapHeight + 1.5, 2);
-        if (star) this.drawTile(this.textures.starImg, 0, 0, x + 1.75, this.mapHeight + 1.5, 2);
-        this.drawTile(this.textures.lifeImg, 0, 0, x + 4.1, this.mapHeight + 1.5, 2);
+        this.drawTile(this.textures.itemText[diff], 0, 0, x - 3, this.mapHeight + 1.25, 3);
+        if (fireball) this.drawTile(this.textures.fireSmall[0], 0, 0, x, this.mapHeight + 2.5, 1);
+        if (speed) this.drawTile(this.textures.speedImg, 0, 0, x + 0.5, this.mapHeight + 2, 2);
+        if (star) this.drawTile(this.textures.starImg, 0, 0, x + 1.75, this.mapHeight + 2, 2);
+        this.drawTile(this.textures.lifeImg, 0, 0, x + 4.1, this.mapHeight + 2, 2);
         this.context.font = `${this.tileSize * 0.75 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
         this.context.fillStyle = "white";
         this.context.fillText(`x ${life}`,
             (x + 6) * this.tileSize,
-            (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
+            (this.mapHeight + 3.5) * this.tileSize - this.tileSize * 0.25);
         this.context.font = `${this.tileSize * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
         const bestStr = bestScores && (bestScores !== scores) ? ` (${bestScores})` : "";
         this.context.fillText(`Scores: ${scores}${bestStr}`,
-            (x - 7) * this.tileSize,
-            (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
+            (x - 8) * this.tileSize,
+            (this.mapHeight + 3.5) * this.tileSize - this.tileSize * 0.25);
 
         // render indicator
         if (time > 0) {
