@@ -1,11 +1,11 @@
 
-import { getMapSize, getTileSize } from "./utils";
+import { getMapSize, getTileSize, Random } from "./utils";
 import { Level, Layer } from "./level";
 import { Entity } from "./entity";
 import TankManager from "./tank";
 import { BulletManager } from "./bullet";
 import ParticleManager from "./particle";
-import { TANK, LEVEL_TIME } from "./global";
+import { TANK, LEVEL_TIME, tankVelocity } from "./global";
 import Event from "./event";
 import ItemManager from "./item";
 import Replay from "./replay";
@@ -78,9 +78,15 @@ class Menu {
 
 export default class Game {
     constructor(canvas, params) {
+        const isPlayback = params.mode === "replay";
+        if (isPlayback) {
+            this.playback = new Replay();
+            this.playback.load(params.base64);
+        }
+
         // common game settings
-        const currentDifficulty = parseInt(params.difficulty, 10);
-        this.currentLevel = 0;
+        const currentDifficulty = isPlayback ? this.playback.difficulty : parseInt(params.difficulty, 10);
+        this.currentLevel = isPlayback ? this.playback.level : 0;
         this.canvas = canvas;
         this.mode = params.mode;
 
@@ -94,10 +100,10 @@ export default class Game {
         this.bullets = new BulletManager(this.event, this.mode);
         this.items = new ItemManager(currentDifficulty, this.event, this.mode);
 
-        this.pauseMenu = new Menu("Pause", canvas.width, canvas.height, true, false);
+        this.pauseMenu = new Menu("Pause", canvas.width, canvas.height, !isPlayback, false);
         this.loadMenu = new Menu("Loading", canvas.width, canvas.height, false, false);
-        this.completeMenu = new Menu("Level Complete", canvas.width, canvas.height, true, true);
-        this.gameoverMenu = new Menu("Game Over", canvas.width, canvas.height, true, false);
+        this.completeMenu = new Menu("Level Complete", canvas.width, canvas.height, !isPlayback, !isPlayback);
+        this.gameoverMenu = new Menu("Game Over", canvas.width, canvas.height, !isPlayback, false);
         this.menu = null;
         this.level = null;
         this.replay = null;
@@ -105,14 +111,30 @@ export default class Game {
         this.gameover = false;
         this.levelComplete = false;
 
+        const isTwoPlayers = isPlayback ? this.playback.players.length > 1 : params.twoplayers === "true";
         const tank1 = this.tanks.create(TANK.TANK1);
-        const tank2 = params.twoplayers === "true" ? this.tanks.create(TANK.TANK2) : null;
+        const tank2 = isTwoPlayers ? this.tanks.create(TANK.TANK2) : null;
         this.players = [tank1, tank2];
+
+        if (isPlayback) {
+            this.tanks.life = this.playback.life;
+            this.tanks.scores = this.playback.scores;
+            this.tanks.total_scores = this.playback.total_scores;
+            this.tanks.items = this.playback.items;
+
+            for (let type in this.playback.players) {
+                this.players[type].life = this.playback.players[type].life;
+                if (this.playback.players[type].maxVelocity) this.players[type].velocity = tankVelocity(TANK.BMP);
+                this.players[type].weapon.setType(this.playback.players[type].weaponType);
+            }
+        }
 
         this.event.on("levelCreated", () => {
             // replay
             if (this.mode === "level") {
                 this.replay = new Replay(this.currentLevel, this.tanks);
+            } else if (this.mode === "replay") {
+                Random.setSeed(this.playback.random_seed);
             }
 
             // game
@@ -148,8 +170,9 @@ export default class Game {
         });
     }
     newLevel() {
-        let levelName = `levels/${this.mode}`;
-        if (this.mode === "level") levelName += `${this.currentLevel}`;
+        const name = this.mode === "replay" ? "level" : this.mode;
+        let levelName = `levels/${name}`;
+        if (name === "level") levelName += `${this.currentLevel}`;
 
         this.level = new Level(levelName, this.canvas, this.event);
     }
@@ -183,11 +206,11 @@ export default class Game {
             this.tanks.update(this.level, this.bullets, this.updateTime);
             this.bullets.update(this.level, this.updateTime);
             this.items.update(this.tanks, this.updateTime);
-            if (this.replay && ((this.updateTime & 0xf) === 0)) {
+            if (((this.updateTime & 0xf) === 0)) {
                 for (let p = 0; p < 2; p++) {
                     if (this.players[p]) this.players[p].applyPendings();
                 }
-                this.replay.processPlayers(this.players);
+                if (this.replay) this.replay.processPlayers(this.players);
             }
             this.updateTime++;
         }
