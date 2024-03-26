@@ -43,11 +43,10 @@ export default class ItemManager extends EntityManager {
         });
     }
     reset() {
-        super.reset();
         this.respawnTime = itemRespawnTime(this.difficulty);
         this.end_of_time = false;
     }
-    update(level, tanks, time) {
+    update(tanks, time) {
         if (time > this.respawnTime && !this.end_of_time) {
             this.objects.push(new Item(this.event));
             this.respawnTime = time + itemRespawnTime(this.difficulty);

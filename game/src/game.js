@@ -182,7 +182,7 @@ export default class Game {
         while (currentTime >= this.updateTime) {
             this.tanks.update(this.level, this.bullets, this.updateTime);
             this.bullets.update(this.level, this.updateTime);
-            this.items.update(this.level, this.tanks, this.updateTime);
+            this.items.update(this.tanks, this.updateTime);
             if (this.replay && ((this.updateTime & 0xf) === 0)) {
                 for (let p = 0; p < 2; p++) {
                     if (this.players[p]) this.players[p].applyPendings();
@@ -240,8 +240,9 @@ export default class Game {
 
         if (key === "P".charCodeAt(0)) this.pause();
         if (this.levelComplete && key === " ".charCodeAt(0)) {
+            this.changeMenu(null);
+            this.update();
             this.currentLevel = (this.currentLevel + 1) % 6 | 0;
-            this.level.clearEntity(this.menu.entity);
             this.level = null;
         }
         if (key === "R".charCodeAt(0) && this.menu && this.menu.replayCopiedMenu) {
