@@ -377,7 +377,7 @@ export default class GenTextures {
         this.tankBodies = new Array(4);
         this.tankTurret = new Array(4);
         this.tankTurretEx = new Array(4);
-        this.tankTurretZ = new Array(4);
+        this.tankTurretFF = new Array(4);
         this.tankTrack = new Array(4);
 
         this.tankBodies[0] = {
@@ -403,7 +403,7 @@ export default class GenTextures {
             [TANK.TANK1]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK2]),
             [TANK.TANK2]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK1]),
         };
-        this.tankTurretZ[0] = createTurret(0.7, 0.1, 0.7, zombieColor);
+        this.tankTurretFF[0] = createTurret(0.7, 0.1, 0.7, zombieColor);
 
         const countAnimTrack = 8;
         const trackSimple = new Array(countAnimTrack);
@@ -431,7 +431,7 @@ export default class GenTextures {
             this.tankBodies[i] = {};
             this.tankTurret[i] = {};
             this.tankTurretEx[i] = {};
-            this.tankTurretZ[i] = {};
+            this.tankTurretFF[i] = {};
             this.tankTrack[i] = {};
 
             for (let type = TANK.TANK1; type < TANK.RANDOM; type++) {
@@ -444,7 +444,7 @@ export default class GenTextures {
             }
             this.tankTurretEx[i][TANK.TANK1] = rotateImage(this.tankTurretEx[0][TANK.TANK1], i);
             this.tankTurretEx[i][TANK.TANK2] = rotateImage(this.tankTurretEx[0][TANK.TANK2], i);
-            this.tankTurretZ[i] = rotateImage(this.tankTurretZ[0], i);
+            this.tankTurretFF[i] = rotateImage(this.tankTurretFF[0], i);
         }
 
         // bullet
@@ -601,13 +601,15 @@ export default class GenTextures {
         // zombie
         const zombie = new SimpleBuffer(tileSize * 2);
         for (let i = 0; i < zombie.size / 8 | 0; i++) {
-            const x1 = zombie.size / 4 | 0;
-            const x2 = zombie.size - x1;
-            const y1 = x1;
-            const y2 = zombie.size - y1 - zombie.size / 8 | 0;
-            zombie.bresenham(x1, y1 + i, x2, y1 + i, 1);
-            zombie.bresenham(x1, y2 + i, x2, y2 + i, 1);
-            zombie.bresenham(x1, y2 + i, x2, y1 + i, 1);
+            const s = zombie.size / 4 | 0;
+            const e = zombie.size - s;
+            const w = zombie.size * 9 / 40 | 0;
+            for (let j = 0; j < 2; j++) {
+                const d = j * (e - s - w);
+                zombie.bresenham(s + i + d, s, s + i + d, e, 1);
+                zombie.bresenham(s + d, s + i, s + w + d, s + i, 1);
+                zombie.bresenham(s + d, s + w + i, s + w + d, s + w + i, 1);
+            }
         }
         zombie
             .gaussian(2)

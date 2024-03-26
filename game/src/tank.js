@@ -99,7 +99,7 @@ class Tank extends Entity {
                 }
                 level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
                 if (this.zombie) {
-                    level.drawEntityBegin(this.turret, level.textures.tankTurretZ[this.angle]);
+                    level.drawEntityBegin(this.turret, level.textures.tankTurretFF[this.angle]);
                 } else if (this.type <= TANK.TANK2 && this.weapon.type & BULLET.POWER) {
                     level.drawEntityBegin(this.turret, level.textures.tankTurretEx[this.angle][this.type]);
                 } else {
