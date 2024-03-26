@@ -40,6 +40,7 @@ function parseURL() {
         mode: "level",
         difficulty: "0",
         twoplayers: "false",
+        base64: "",
     };
     const url = window.location.search.substr(1); // skip ? symbol
     const params = url.split("&");

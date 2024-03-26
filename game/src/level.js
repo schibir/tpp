@@ -386,6 +386,9 @@ export class Level {
                     this.drawTile(this.layer0.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
                     this.event.emit("particle", tile.x - 0.5, tile.y - 0.5, partType);
+                    if (tileType === BRICK) {
+                        this.event.emit("particle", tile.x - 0.5, tile.y - 0.5, partType);
+                    }
                 }
             }
         };

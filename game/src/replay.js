@@ -281,7 +281,7 @@ export default class Replay {
         const base64 = buffer.toBase64();
         const key = "replay1";
         LocalStorage.saveReplay(key, base64);
-        const replayRef = `${window.location.origin}${window.location.pathname}?mode=replay&${base64}`;
+        const replayRef = `${window.location.origin}${window.location.pathname}?mode=replay&base64=${base64}`;
         console.log(`Replay = ${replayRef}`);
         console.log(`Replay size = ${base64.length}`);
 
