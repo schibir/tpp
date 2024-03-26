@@ -208,8 +208,9 @@ class PlayerState {
 }
 
 export default class Replay {
-    constructor(level, tanks = null) {
+    constructor(level, items = null, tanks = null) {
         this.players = {};
+        this.leftItems = [];
         this.frameNumber = 0;
         this.playersState = {
             [TANK.TANK1]: new PlayerState(),
@@ -240,6 +241,15 @@ export default class Replay {
                     maxVelocity: tank.velocity > 2,
                 };
             }
+        });
+
+        // Items
+        items.objects.forEach((item) => {
+            this.leftItems.push({
+                type: item.type,
+                cx: item.cx,
+                cy: item.cy,
+            });
         });
     }
     processPlayers(players) {
@@ -275,6 +285,12 @@ export default class Replay {
             buffer.addBool(this.players[TANK.TANK2].maxVelocity);
             this.playersState[TANK.TANK2].toBuffer(buffer);
         }
+        buffer.addBits(5, this.leftItems.length);   // max 32 left items
+        this.leftItems.forEach((item) => {
+            buffer.addBits(3, item.type);
+            buffer.addBits(6, item.cx);
+            buffer.addBits(5, item.cy);
+        });
 
         buffer.done();
 
@@ -319,6 +335,12 @@ export default class Replay {
             console.assert(load.players[TANK.TANK2].life === this.players[TANK.TANK2].life);
             console.assert(load.players[TANK.TANK2].maxVelocity === this.players[TANK.TANK2].maxVelocity);
         }
+        console.assert(load.leftItems.length === this.leftItems.length);
+        for (let i = 0; i < load.leftItems.length; i++) {
+            console.assert(load.leftItems[i].type === this.leftItems[i].type);
+            console.assert(load.leftItems[i].cx === this.leftItems[i].cx);
+            console.assert(load.leftItems[i].cy === this.leftItems[i].cy);
+        }
     }
     load(base64) {
         const load = new RawBuffer();
@@ -353,5 +375,13 @@ export default class Replay {
             };
             this.playersState[TANK.TANK2].fromBuffer(load);
         }
+        const leftItems = load.getBits(5);
+        for (let i = 0; i< leftItems; i++) {
+            this.leftItems.push({
+                type : load.getBits(3),
+                cx : load.getBits(6),
+                cy : load.getBits(5),
+            });
+        };
     }
 }

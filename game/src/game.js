@@ -132,7 +132,7 @@ export default class Game {
         this.event.on("levelCreated", () => {
             // replay
             if (this.mode === "level") {
-                this.replay = new Replay(this.currentLevel, this.tanks);
+                this.replay = new Replay(this.currentLevel, this.items, this.tanks);
             } else if (this.mode === "replay") {
                 Random.setSeed(this.playback.random_seed);
             }
