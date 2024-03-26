@@ -196,6 +196,7 @@ export default class SimpleBuffer {
         }
     }
     gaussian(radius) {
+        if (radius < 1) return this;
         const blur = new SimpleBuffer(this.size);
         blur.gaussianFast(this, radius, [1, 0]);
         this.gaussianFast(blur, radius, [0, 1]);
