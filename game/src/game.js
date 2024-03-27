@@ -211,6 +211,10 @@ export default class Game {
             this.bullets.update(this.level, this.updateTime);
             this.items.update(this.tanks, this.updateTime);
             if (((this.updateTime & 0xf) === 0)) {
+                if (this.playback) {
+                    const applied = this.playback.applyPlayers(this.players);
+                    if (!applied) this.pause();
+                }
                 for (let p = 0; p < 2; p++) {
                     if (this.players[p]) this.players[p].applyPendings();
                 }
@@ -253,6 +257,8 @@ export default class Game {
         this.pause();
     }
     onkeydown(key) {
+        if (key === "P".charCodeAt(0)) this.pause();
+        if (this.mode === "replay") return;
         for (let p = 0; p < 2; p++) {
             if (this.players[p] && key in keyToAngle[p]) {
                 this.players[p].pendingAngle = keyToAngle[p][key];
@@ -265,7 +271,6 @@ export default class Game {
             }
         }
 
-        if (key === "P".charCodeAt(0)) this.pause();
         if (this.levelComplete && key === " ".charCodeAt(0)) {
             this.changeMenu(null);
             this.update();
@@ -278,6 +283,7 @@ export default class Game {
         }
     }
     onkeyup(key) {
+        if (this.mode === "replay") return;
         for (let p = 0; p < 2; p++) {
             if (this.players[p] && key in keyToAngle[p]) {
                 this.keyMask[p] ^= 1 << keyToAngle[p][key];
@@ -293,6 +299,7 @@ export default class Game {
         }
     }
     gpAxes(x, y) {
+        if (this.mode === "replay") return;
         if (!this.players[0] || !this.axes) return;
 
         const key = [y < -0.5, x > 0.5, y > 0.5, x < -0.5];
@@ -305,6 +312,7 @@ export default class Game {
         }
     }
     gpButton(pressed) {
+        if (this.mode === "replay") return;
         if (!this.players[0] || !this.shootKeyPress) return;
 
         if (pressed) {

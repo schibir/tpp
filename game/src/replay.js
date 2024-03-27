@@ -106,6 +106,9 @@ class PlayerState {
         this.angles = [];
         this.moves = [];
         this.shootes = [];
+        this.anglesIndex = 0;
+        this.movesIndex = 0;
+        this.shootesIndex = 0;
     }
     checkPlayer(player, frame) {
         const angle = this.angles.length === 0 ? 0 : this.angles[this.angles.length - 1].value;
@@ -114,6 +117,32 @@ class PlayerState {
         if (angle !== player.angle) this.angles.push(new PlayerStateElem(frame, player.angle));
         if (move !== player.vel > 0.5) this.moves.push(new PlayerStateElem(frame, player.vel > 0.5));
         if (player.shoot) this.shootes.push(new PlayerStateElem(frame, player.shoot));
+    }
+    applyPlayer(player, frame) {
+        if (this.anglesIndex < this.angles.length) {
+            const angle = this.angles[this.anglesIndex];
+            console.assert(angle.frame >= frame);
+            if (angle.frame === frame) {
+                player.pendingAngle = angle.value;
+                this.anglesIndex++;
+            }
+        }
+        if (this.movesIndex < this.moves.length) {
+            const move = this.moves[this.movesIndex];
+            console.assert(move.frame >= frame);
+            if (move.frame === frame) {
+                player.pendingVel = (this.movesIndex % 2 | 0) ? 0 : player.velocity;
+                this.movesIndex++;
+            }
+        }
+        if (this.shootesIndex < this.shootes.length) {
+            const shoot = this.shootes[this.shootesIndex];
+            console.assert(shoot.frame >= frame);
+            if (shoot.frame === frame) {
+                player.pendingShoot = true;
+                this.shootesIndex++;
+            }
+        }
     }
     toBuffer(buffer) {
         const saveArray = (array) => {
@@ -212,6 +241,7 @@ export default class Replay {
         this.players = {};
         this.leftItems = [];
         this.frameNumber = 0;
+        this.playbackFrame = 0;
         this.playersState = {
             [TANK.TANK1]: new PlayerState(),
             [TANK.TANK2]: new PlayerState(),
@@ -258,6 +288,14 @@ export default class Replay {
             this.playersState[pl.type].checkPlayer(pl, this.frameNumber);
         });
         this.frameNumber++;
+    }
+    applyPlayers(players) {
+        players.forEach((pl) => {
+            if (!pl) return;
+            this.playersState[pl.type].applyPlayer(pl, this.playbackFrame);
+        });
+        this.playbackFrame++;
+        return this.playbackFrame < this.frameNumber;
     }
     save() {
         const buffer = new RawBuffer();
