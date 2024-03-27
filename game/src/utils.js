@@ -1,5 +1,5 @@
 
-let randomSeed = 42;//(Date.now() * Math.random()) & 0xffffffff;
+let randomSeed = (Date.now() * Math.random()) & 0xffffffff;
 
 export class Random {
     static setSeed(seed) {
