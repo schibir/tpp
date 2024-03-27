@@ -65,7 +65,7 @@ function main() {
     };
 
     const canvas = document.getElementById("canvas");
-    const { width, height } = calcSizeForCanvas(window.innerWidth - 40, window.innerHeight - 40);
+    const { width, height } = calcSizeForCanvas(document.documentElement.clientWidth - 40, document.documentElement.clientHeight - 40);
     canvas.width = width;
     canvas.height = height;
 
