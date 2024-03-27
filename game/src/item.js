@@ -1,7 +1,9 @@
 
 import { getMapSize, Random } from "./utils";
 import { Entity, EntityManager } from "./entity";
-import { STATE, TANK, tankRadius, getItem, itemRespawnTime } from "./global";
+import {
+    STATE, TANK, tankRadius, getItem, itemRespawnTime,
+} from "./global";
 
 class Item extends Entity {
     constructor(event) {
@@ -56,7 +58,7 @@ export default class ItemManager extends EntityManager {
         this.splice();
     }
     addItem(type, cx, cy) {
-        let item = new Item(this.event);
+        const item = new Item(this.event);
         item.type = type;
         item.cx = cx;
         item.cy = cy;

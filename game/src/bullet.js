@@ -1,7 +1,9 @@
 
 import { Entity, EntityManager } from "./entity";
 import { sin, cos } from "./utils";
-import { bulletDamage, bulletVelocity, tankRadius, BULLET, PART, STATE, TANK } from "./global";
+import {
+    bulletDamage, bulletVelocity, tankRadius, BULLET, PART, STATE, TANK,
+} from "./global";
 
 export class Bullet extends Entity {
     constructor(owner, type, callback) {

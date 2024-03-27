@@ -1,5 +1,7 @@
 
-import { getMapSize, getTileSize, sin, cos } from "./utils";
+import {
+    getMapSize, getTileSize, sin, cos,
+} from "./utils";
 import GenTextures from "./gener/genTextures";
 import { PART } from "./global";
 
@@ -51,14 +53,12 @@ export class Level {
             // render horizontal board
             for (let i = 0; i < mapWidth; i++) {
                 layerGround.context.drawImage(this.textures.board, i * tileSize, 0);
-                layerGround.context.drawImage(this.textures.board, i * tileSize,
-                    (mapHeight - 1) * tileSize);
+                layerGround.context.drawImage(this.textures.board, i * tileSize, (mapHeight - 1) * tileSize);
             }
             // render vertical board
             for (let i = 1; i < mapHeight - 1; i++) {
                 layerGround.context.drawImage(this.textures.board, 0, i * tileSize);
-                layerGround.context.drawImage(this.textures.board, (mapWidth - 1) * tileSize,
-                    i * tileSize);
+                layerGround.context.drawImage(this.textures.board, (mapWidth - 1) * tileSize, i * tileSize);
             }
         };
         const renderTexture = (destLayer, texture) => {
@@ -121,6 +121,7 @@ export class Level {
                     const imgHalf = tile.type & BRICK ? this.textures.halfBrick : this.textures.halfBeton;
                     const srcX = posX % img.width | 0;
                     const srcY = posY % img.height | 0;
+                    /* eslint-disable function-call-argument-newline */
                     layerBrick.context.drawImage(img,
                         srcX, srcY,
                         tileSize, tileSize,
@@ -131,6 +132,7 @@ export class Level {
                         tileSize, tileSize,
                         posX, posY,
                         tileSize, tileSize);
+                    /* eslint-enable function-call-argument-newline */
                 }
             });
         };
@@ -285,19 +287,23 @@ export class Level {
 
         // render indicator
         if (time > 0) {
+            /* eslint-disable function-call-argument-newline */
             this.context.drawImage(this.textures.indicator,
                 0 * this.tileSize, 0 * this.tileSize,
                 time * this.tileSize, 1 * this.tileSize,
                 (x + 10) * this.tileSize, (this.mapHeight + 2) * this.tileSize,
                 time * 13 * this.tileSize, 1 * this.tileSize);
+            /* eslint-enable function-call-argument-newline */
         }
     }
     drawTile(texture, srcx, srcy, dstx, dsty, size, destContext = this.context) {
+        /* eslint-disable function-call-argument-newline */
         destContext.drawImage(texture,
             srcx * this.tileSize, srcy * this.tileSize,
             size * this.tileSize, size * this.tileSize,
             dstx * this.tileSize, dsty * this.tileSize,
             size * this.tileSize, size * this.tileSize);
+        /* eslint-enable function-call-argument-newline */
     }
     clearEntity(entity) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board

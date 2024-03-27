@@ -3,6 +3,7 @@ import { Random } from "./utils";
 import { ITEM, TANK } from "./global";
 import LocalStorage from "./local_storage";
 
+/* eslint max-classes-per-file: ["error", 4] */
 class RawBuffer {
     constructor() {
         this.currentOffset = 0;
@@ -162,7 +163,7 @@ class PlayerState {
                 const ffff = (1 << log) - 1;
                 let last = 0;
                 array.forEach((elem) => {
-                    let delta = elem.frame - last;
+                    const delta = elem.frame - last;
                     last = elem.frame;
                     if (delta < ffff) {
                         buf.addBits(log, delta);
@@ -172,7 +173,7 @@ class PlayerState {
                     if (delta === ffff) {
                         buf.addBits(8, 0xff);
                     } else {
-                        let count = delta / ffff | 0;
+                        const count = delta / ffff | 0;
                         buf.addBits(8, count);
                         buf.addBits(log, delta % ffff | 0);
                     }
@@ -210,7 +211,7 @@ class PlayerState {
             const ffff = (1 << log) - 1;
             let last = 0;
             for (let i = 0; i < length; i++) {
-                let elem = new PlayerStateElem(0, 0);
+                const elem = new PlayerStateElem(0, 0);
                 let delta = buffer.getBits(log);
                 if (delta === ffff) {
                     delta = buffer.getBits(8);
@@ -231,7 +232,7 @@ class PlayerState {
         loadArray(this.shootes);
 
         this.angles.forEach((elem) => {
-            elem.value = buffer.getBits(2)
+            elem.value = buffer.getBits(2);
         });
     }
 }
@@ -346,7 +347,7 @@ export default class Replay {
 
         // test
         const loadReplay = LocalStorage.loadReplay(key);
-        let load = new Replay();
+        const load = new Replay();
         load.load(loadReplay);
         console.assert(load.random_seed === this.random_seed);
         console.assert(load.level === this.level);
@@ -414,12 +415,12 @@ export default class Replay {
             this.playersState[TANK.TANK2].fromBuffer(load);
         }
         const leftItems = load.getBits(5);
-        for (let i = 0; i< leftItems; i++) {
+        for (let i = 0; i < leftItems; i++) {
             this.leftItems.push({
-                type : load.getBits(3),
-                cx : load.getBits(6),
-                cy : load.getBits(5),
+                type: load.getBits(3),
+                cx: load.getBits(6),
+                cy: load.getBits(5),
             });
-        };
+        }
     }
 }

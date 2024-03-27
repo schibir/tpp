@@ -122,7 +122,7 @@ export default class Game {
             this.tanks.total_scores = this.playback.total_scores;
             this.tanks.items = this.playback.items;
 
-            for (let type in this.playback.players) {
+            for (const type in this.playback.players) {
                 this.players[type].life = this.playback.players[type].life;
                 if (this.playback.players[type].maxVelocity) this.players[type].velocity = tankVelocity(TANK.BMP);
                 this.players[type].weapon.setType(this.playback.players[type].weaponType);

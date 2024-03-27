@@ -14,7 +14,9 @@ import {
     getScores,
     scoreToLevelup,
 } from "./global";
-import { sin, cos, getMapSize, clamp, Random, floatToIndex } from "./utils";
+import {
+    sin, cos, getMapSize, clamp, Random, floatToIndex,
+} from "./utils";
 import LocalStorage from "./local_storage";
 
 class Tank extends Entity {
