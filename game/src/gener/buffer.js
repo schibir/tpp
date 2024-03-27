@@ -69,7 +69,6 @@ export default class SimpleBuffer {
         return canvas;
     }
     perlin(startFreq, koef) {
-        const time = Date.now();
         const extrem = (freq, ampl) => {
             const dispersion = (rad) => mathRand(0, rad);
 
@@ -123,7 +122,6 @@ export default class SimpleBuffer {
         return this;
     }
     normalize(a, b) {
-        const time = Date.now();
         let min = this.data[0];
         let max = this.data[0];
         for (let i = 1; i < this.size * this.size; i++) {
@@ -137,7 +135,6 @@ export default class SimpleBuffer {
         return this;
     }
     forEach(fun) {
-        const time = Date.now();
         for (let j = 0; j < this.size; j++) {
             for (let i = 0; i < this.size; i++) {
                 const ind = j * this.size + i | 0;
@@ -147,7 +144,6 @@ export default class SimpleBuffer {
         return this;
     }
     forBuf(buf, fun) {
-        const time = Date.now();
         console.assert(this.size === buf.size, "Sizes of buffers must be equal");
         for (let j = 0; j < this.size; j++) {
             for (let i = 0; i < this.size; i++) {
@@ -158,14 +154,12 @@ export default class SimpleBuffer {
         return this;
     }
     clamp(a, b) {
-        const time = Date.now();
         for (let i = 0; i < this.size * this.size; i++) {
             this.data[i] = clamp(this.data[i], a, b);
         }
         return this;
     }
     gaussianFast(srcBuf, radius, dir) {
-        const time = Date.now();
         console.assert(this.size === srcBuf.size, "Sizes of buffers must be equal");
         console.assert(this !== srcBuf, "Source buffer must does not be same with this");
 
@@ -196,13 +190,13 @@ export default class SimpleBuffer {
         }
     }
     gaussian(radius) {
+        if (radius < 1) return this;
         const blur = new SimpleBuffer(this.size);
         blur.gaussianFast(this, radius, [1, 0]);
         this.gaussianFast(blur, radius, [0, 1]);
         return this;
     }
     copy(src) {
-        const time = Date.now();
         console.assert(this.size === src.size, "Sizes of buffers must be equal");
         console.assert(this !== src, "Source buffer must does not be same with this");
 
@@ -256,8 +250,6 @@ export default class SimpleBuffer {
         }
     }
     diff(dir) {
-        const time = Date.now();
-
         const buf = new SimpleBuffer(this.size);
         buf.copy(this);
         buf.differential((ind, dx, dy) => {
@@ -267,8 +259,6 @@ export default class SimpleBuffer {
         return this;
     }
     diffFree() {
-        const time = Date.now();
-
         const buf = new SimpleBuffer(this.size);
         buf.copy(this);
         buf.differential((ind, dx, dy) => {
@@ -278,8 +268,6 @@ export default class SimpleBuffer {
         return this;
     }
     brick(countWidth, countHeight, alternat = true) {
-        const time = Date.now();
-
         const brickWidth = this.size / countWidth;
         const brickHeight = this.size / countHeight;
 
@@ -302,8 +290,6 @@ export default class SimpleBuffer {
         return this;
     }
     brickMask(countWidth, countHeight, alternat = true) {
-        const time = Date.now();
-
         const brickWidth = this.size / countWidth;
         const brickHeight = this.size / countHeight;
 
@@ -322,8 +308,6 @@ export default class SimpleBuffer {
         return this;
     }
     normDist(rad, dx = 0, dy = 0) {
-        const time = Date.now();
-
         for (let j = 0; j < this.size; j++) {
             for (let i = 0; i < this.size; i++) {
                 const x = ((i - this.size * 0.5) / (this.size * 0.5) + dx) / rad;
@@ -337,8 +321,6 @@ export default class SimpleBuffer {
         return this;
     }
     normSquare(minRad, rad) {
-        const time = Date.now();
-
         for (let j = 0; j < this.size; j++) {
             for (let i = 0; i < this.size; i++) {
                 const x = (i - this.size * 0.5) / (this.size * 0.5);
@@ -355,7 +337,6 @@ export default class SimpleBuffer {
                 this.data[j * this.size + i] = koef;
             }
         }
-
         return this;
     }
 }

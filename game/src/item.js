@@ -1,7 +1,9 @@
 
 import { getMapSize, Random } from "./utils";
 import { Entity, EntityManager } from "./entity";
-import { STATE, TANK, tankRadius, getItem, itemRespawnTime } from "./global";
+import {
+    STATE, TANK, tankRadius, getItem, itemRespawnTime,
+} from "./global";
 
 class Item extends Entity {
     constructor(event) {
@@ -43,11 +45,10 @@ export default class ItemManager extends EntityManager {
         });
     }
     reset() {
-        super.reset();
         this.respawnTime = itemRespawnTime(this.difficulty);
         this.end_of_time = false;
     }
-    update(level, tanks, time) {
+    update(tanks, time) {
         if (time > this.respawnTime && !this.end_of_time) {
             this.objects.push(new Item(this.event));
             this.respawnTime = time + itemRespawnTime(this.difficulty);
@@ -55,5 +56,12 @@ export default class ItemManager extends EntityManager {
 
         this.objects.forEach((item) => item.update(tanks));
         this.splice();
+    }
+    addItem(type, cx, cy) {
+        const item = new Item(this.event);
+        item.type = type;
+        item.cx = cx;
+        item.cy = cy;
+        this.objects.push(item);
     }
 }

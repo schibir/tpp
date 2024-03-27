@@ -29,7 +29,7 @@ export function clamp(a, min, max) {
 
 export function randColor(color, radius = 10) {
     const ret = new Array(3);
-    for (let i = 0; i < 3; i++) ret[i] = clamp(rand(color[i], radius), 0, 255);
+    for (let i = 0; i < 3; i++) ret[i] = clamp(mathRand(color[i], radius), 0, 255);
     return ret;
 }
 

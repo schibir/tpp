@@ -14,7 +14,9 @@ import {
     getScores,
     scoreToLevelup,
 } from "./global";
-import { sin, cos, getMapSize, clamp, Random, floatToIndex } from "./utils";
+import {
+    sin, cos, getMapSize, clamp, Random, floatToIndex,
+} from "./utils";
 import LocalStorage from "./local_storage";
 
 class Tank extends Entity {
@@ -37,7 +39,7 @@ class Tank extends Entity {
         this.turret = new Entity(0, 0);
         this.shield = new Entity(0, 0, 3);
         this.text = {
-            obj: new Entity(0, 0),
+            obj: new Entity(0, 0, 3),
             tex: 0,
             time: 0,
         };
@@ -52,6 +54,9 @@ class Tank extends Entity {
             this.cx = mapWidth / 2 - 5;
             this.cy = mapHeight - 3;
             if (this.type === TANK.TANK2) this.cx += 8;
+            this.pendingShoot = false;
+            this.pendingAngle = 0;
+            this.pendingVel = 0;
         } else if (this.type === TANK.EAGLE) {
             this.cx = mapWidth / 2 - 1;
             this.cy = mapHeight - 3;
@@ -96,21 +101,22 @@ class Tank extends Entity {
                 }
                 level.drawEntityBegin(this, level.textures.tankBodies[this.angle][this.type]);
                 if (this.zombie) {
-                    level.drawEntityBegin(this.turret, level.textures.tankTurretZ[this.angle]);
+                    level.drawEntityBegin(this.turret, level.textures.tankTurretFF[this.angle]);
                 } else if (this.type <= TANK.TANK2 && this.weapon.type & BULLET.POWER) {
                     level.drawEntityBegin(this.turret, level.textures.tankTurretEx[this.angle][this.type]);
                 } else {
                     level.drawEntityBegin(this.turret, level.textures.tankTurret[this.angle][this.type]);
-                }
-                if (this.text.time) {
-                    level.drawEntityBegin(this.text.obj, level.textures.itemText[this.text.tex]);
                 }
             }
 
             if (this.state === STATE.GOD) {
                 const ind = floatToIndex(Math.random(), level.textures.shield.length);
                 level.drawEntity(this.shield, level.textures.shield[ind]);
-            } else {
+            }
+            if (this.text.time) {
+                level.drawEntityBegin(this.text.obj, level.textures.itemText[this.text.tex]);
+            }
+            if (this.state !== STATE.GOD) {
                 level.drawEntityEnd(this);
             }
         }
@@ -169,6 +175,13 @@ class Tank extends Entity {
         this.text.obj.cx = this.cx;
         this.text.obj.cy = this.cy - 1.5;
         if (Date.now() > this.text.time) this.text.time = 0;
+    }
+    applyPendings() {
+        console.assert(this.type <= TANK.TANK2);
+        this.shoot = this.pendingShoot;
+        this.angle = this.pendingAngle;
+        this.vel = this.pendingVel;
+        this.pendingShoot = false;
     }
     setText(itemType) {
         this.text.time = Date.now() + 3000;
@@ -249,7 +262,9 @@ export default class TankManager extends EntityManager {
         this.life = 2;
         this.scores = 0;
         this.total_scores = 0;
-        this.best_scores = LocalStorage.getBestScore(this.start_difficulty);
+        if (this.mode === "level") {
+            this.best_scores = LocalStorage.getBestScore(this.start_difficulty);
+        }
         this.end_of_time = false;
         this.items = {
             [ITEM.FIREBALL]: false,
@@ -291,7 +306,9 @@ export default class TankManager extends EntityManager {
         event.on("botDead", (type) => {
             this.scores += getScores(type);
             this.total_scores += getScores(type);
-            this.best_scores = LocalStorage.setBestScore(this.start_difficulty, this.total_scores);
+            if (this.mode === "level") {
+                this.best_scores = LocalStorage.setBestScore(this.start_difficulty, this.total_scores);
+            }
             if (this.scores > scoreToLevelup(this.difficulty)) {
                 this.difficulty = Math.min(this.difficulty + 1, 15);
                 this.scores = 0;
@@ -367,7 +384,7 @@ export default class TankManager extends EntityManager {
                                 }
                             }
                         }
-                    } else if (this.mode !== "bench"){
+                    } else if (this.mode !== "bench") {
                         this.event.emit("gameOver");
                     }
                 } else if (tank.type === TANK.EAGLE) {

@@ -29,6 +29,17 @@
             { "ignoreEOLComments": true }
         ],
         "max-len": "off",
-        "linebreak-style": "off"
+        "linebreak-style": "off",
+        "lines-between-class-members": "off",
+        "max-classes-per-file": [
+            "error",
+            { "ignoreExpressions": true, "max": 2 }
+        ],
+        "no-multiple-empty-lines": [
+            "error",
+            { "max": 1, "maxEOF": 0 }
+        ],
+        "operator-linebreak": ["error", "after"],
+        "no-param-reassign": ["error", { "props": false }]
     }
 }
