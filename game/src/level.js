@@ -1,5 +1,7 @@
 
-import { getMapSize, getTileSize, sin, cos } from "./utils";
+import {
+    getMapSize, getTileSize, sin, cos,
+} from "./utils";
 import GenTextures from "./gener/genTextures";
 import { PART } from "./global";
 
@@ -51,14 +53,12 @@ export class Level {
             // render horizontal board
             for (let i = 0; i < mapWidth; i++) {
                 layerGround.context.drawImage(this.textures.board, i * tileSize, 0);
-                layerGround.context.drawImage(this.textures.board, i * tileSize,
-                    (mapHeight - 1) * tileSize);
+                layerGround.context.drawImage(this.textures.board, i * tileSize, (mapHeight - 1) * tileSize);
             }
             // render vertical board
             for (let i = 1; i < mapHeight - 1; i++) {
                 layerGround.context.drawImage(this.textures.board, 0, i * tileSize);
-                layerGround.context.drawImage(this.textures.board, (mapWidth - 1) * tileSize,
-                    i * tileSize);
+                layerGround.context.drawImage(this.textures.board, (mapWidth - 1) * tileSize, i * tileSize);
             }
         };
         const renderTexture = (destLayer, texture) => {
@@ -121,6 +121,7 @@ export class Level {
                     const imgHalf = tile.type & BRICK ? this.textures.halfBrick : this.textures.halfBeton;
                     const srcX = posX % img.width | 0;
                     const srcY = posY % img.height | 0;
+                    /* eslint-disable function-call-argument-newline */
                     layerBrick.context.drawImage(img,
                         srcX, srcY,
                         tileSize, tileSize,
@@ -131,6 +132,7 @@ export class Level {
                         tileSize, tileSize,
                         posX, posY,
                         tileSize, tileSize);
+                    /* eslint-enable function-call-argument-newline */
                 }
             });
         };
@@ -149,6 +151,43 @@ export class Level {
             renderTexture(this.layerGrass, this.textures.grass);
 
             this.layerGrass.context.globalCompositeOperation = oldGrass;
+        };
+
+        const loadLevelFromArray = (data) => {
+            this.map = data.map((val) => {
+                switch (val) {
+                case 0: return { x: 0, y: 0, type: EMPTY };
+                case 1: return { x: 0, y: 0, type: BRICK };
+                case 2: return { x: 0, y: 0, type: BETON };
+                case 3: return { x: 0, y: 0, type: WATER };
+                case 4: return { x: 0, y: 0, type: GRASS };
+                case 5: return { x: 0, y: 0, type: BRIDGEH };
+                case 6: return { x: 0, y: 0, type: BRIDGEV };
+                default:
+                    return console.assert(false, `Unknown tile type ${val}`);
+                }
+            });
+
+            // calc adjacent grass
+            for (let j = 0; j < this.mapHeight; j++) {
+                for (let i = 0; i < this.mapWidth; i++) {
+                    this.map[j * this.mapWidth + i].x = i + 1;  // +1 for board
+                    this.map[j * this.mapWidth + i].y = j + 1;  // +1 for board
+                    for (let dy = -1; dy < 2; dy++) {
+                        for (let dx = -1; dx < 2; dx++) {
+                            const x = i + dx | 0;
+                            const y = j + dy | 0;
+                            if (x >= 0 &&
+                                x < this.mapWidth &&
+                                y >= 0 &&
+                                y < this.mapHeight &&
+                                this.map[y * this.mapWidth + x].type & GRASS) {
+                                this.map[j * this.mapWidth + i].type |= PREGRASS;
+                            }
+                        }
+                    }
+                }
+            }
         };
 
         const loadLevel = (callback) => {
@@ -177,40 +216,7 @@ export class Level {
                     .map((val) => parseInt(val, 10));
                 console.assert(data.length === this.mapWidth * this.mapHeight, "Wrong count tiles");
 
-                this.map = data.map((val) => {
-                    switch (val) {
-                    case 0: return { x: 0, y: 0, type: EMPTY };
-                    case 1: return { x: 0, y: 0, type: BRICK };
-                    case 2: return { x: 0, y: 0, type: BETON };
-                    case 3: return { x: 0, y: 0, type: WATER };
-                    case 4: return { x: 0, y: 0, type: GRASS };
-                    case 5: return { x: 0, y: 0, type: BRIDGEH };
-                    case 6: return { x: 0, y: 0, type: BRIDGEV };
-                    default:
-                        return console.assert(false, `Unknown tile type ${val}`);
-                    }
-                });
-
-                // calc adjacent grass
-                for (let j = 0; j < this.mapHeight; j++) {
-                    for (let i = 0; i < this.mapWidth; i++) {
-                        this.map[j * this.mapWidth + i].x = i + 1;  // +1 for board
-                        this.map[j * this.mapWidth + i].y = j + 1;  // +1 for board
-                        for (let dy = -1; dy < 2; dy++) {
-                            for (let dx = -1; dx < 2; dx++) {
-                                const x = i + dx | 0;
-                                const y = j + dy | 0;
-                                if (x >= 0 &&
-                                    x < this.mapWidth &&
-                                    y >= 0 &&
-                                    y < this.mapHeight &&
-                                    this.map[y * this.mapWidth + x].type & GRASS) {
-                                    this.map[j * this.mapWidth + i].type |= PREGRASS;
-                                }
-                            }
-                        }
-                    }
-                }
+                loadLevelFromArray(data);
 
                 callback();
             };
@@ -254,45 +260,50 @@ export class Level {
         return !!this.context;
     }
     drawInterface(life, fireball, speed, star, time, diff, scores, bestScores) {
+        const x = this.mapWidth / 2 - 5;
+
         this.context.fillStyle = "black";
         this.context.fillRect(
-            2 * this.tileSize,
+            (x - 8) * this.tileSize,
             (this.mapHeight + 2) * this.tileSize,
             this.canvas.width - 2 * this.tileSize,
-            this.tileSize);
+            this.tileSize * 2);
 
-        const x = this.mapWidth / 2 - 5;
-        this.drawTile(this.textures.itemText[diff], 0, 0, x - 2, this.mapHeight + 1.5, 2);
-        if (fireball) this.drawTile(this.textures.fireSmall[0], 0, 0, x, this.mapHeight + 2.1, 1);
-        if (speed) this.drawTile(this.textures.speedImg, 0, 0, x + 0.5, this.mapHeight + 1.5, 2);
-        if (star) this.drawTile(this.textures.starImg, 0, 0, x + 1.75, this.mapHeight + 1.5, 2);
-        this.drawTile(this.textures.lifeImg, 0, 0, x + 4.1, this.mapHeight + 1.5, 2);
+        this.drawTile(this.textures.itemText[diff], 0, 0, x - 3, this.mapHeight + 1.25, 3);
+        if (fireball) this.drawTile(this.textures.fireSmall[0], 0, 0, x, this.mapHeight + 2.5, 1);
+        if (speed) this.drawTile(this.textures.speedImg, 0, 0, x + 0.5, this.mapHeight + 2, 2);
+        if (star) this.drawTile(this.textures.starImg, 0, 0, x + 1.75, this.mapHeight + 2, 2);
+        this.drawTile(this.textures.lifeImg, 0, 0, x + 4.1, this.mapHeight + 2, 2);
         this.context.font = `${this.tileSize * 0.75 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
         this.context.fillStyle = "white";
         this.context.fillText(`x ${life}`,
             (x + 6) * this.tileSize,
-            (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
+            (this.mapHeight + 3.5) * this.tileSize - this.tileSize * 0.25);
         this.context.font = `${this.tileSize * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
         const bestStr = bestScores && (bestScores !== scores) ? ` (${bestScores})` : "";
         this.context.fillText(`Scores: ${scores}${bestStr}`,
-            (x - 9) * this.tileSize,
-            (this.mapHeight + 3) * this.tileSize - this.tileSize * 0.25);
+            (x - 8) * this.tileSize,
+            (this.mapHeight + 3.5) * this.tileSize - this.tileSize * 0.25);
 
         // render indicator
         if (time > 0) {
+            /* eslint-disable function-call-argument-newline */
             this.context.drawImage(this.textures.indicator,
                 0 * this.tileSize, 0 * this.tileSize,
                 time * this.tileSize, 1 * this.tileSize,
                 (x + 10) * this.tileSize, (this.mapHeight + 2) * this.tileSize,
                 time * 13 * this.tileSize, 1 * this.tileSize);
+            /* eslint-enable function-call-argument-newline */
         }
     }
     drawTile(texture, srcx, srcy, dstx, dsty, size, destContext = this.context) {
+        /* eslint-disable function-call-argument-newline */
         destContext.drawImage(texture,
             srcx * this.tileSize, srcy * this.tileSize,
             size * this.tileSize, size * this.tileSize,
             dstx * this.tileSize, dsty * this.tileSize,
             size * this.tileSize, size * this.tileSize);
+        /* eslint-enable function-call-argument-newline */
     }
     clearEntity(entity) {
         const x = entity.cx + 1 - entity.size * 0.5;    // for board
@@ -382,6 +393,9 @@ export class Level {
                     this.drawTile(this.layer0.canvas, tile.x, tile.y, tile.x, tile.y, 1, this.layer.context);
                     this.drawTile(this.layer.canvas, tile.x, tile.y, tile.x, tile.y, 1);
                     this.event.emit("particle", tile.x - 0.5, tile.y - 0.5, partType);
+                    if (tileType === BRICK) {
+                        this.event.emit("particle", tile.x - 0.5, tile.y - 0.5, partType);
+                    }
                 }
             }
         };

@@ -1,6 +1,6 @@
 
 import SimpleBuffer from "./buffer";
-import { randColor, clamp, rand } from "../utils";
+import { randColor, clamp, mathRand } from "../utils";
 import { TANK, ITEM, PART } from "../global";
 
 export default class GenTextures {
@@ -147,7 +147,7 @@ export default class GenTextures {
                 .perlin(20, 0.9)
                 .normalize(0, 1)
                 .forBuf(normDist, (a, b) => a * b)
-                .clamp(0.2, 0.5)
+                .clamp(0.25, 0.45)
                 .normalize(0, 1)
                 .getColor(randColor([255, 255, 255]), grassMask);
         }
@@ -377,7 +377,7 @@ export default class GenTextures {
         this.tankBodies = new Array(4);
         this.tankTurret = new Array(4);
         this.tankTurretEx = new Array(4);
-        this.tankTurretZ = new Array(4);
+        this.tankTurretFF = new Array(4);
         this.tankTrack = new Array(4);
 
         this.tankBodies[0] = {
@@ -403,7 +403,7 @@ export default class GenTextures {
             [TANK.TANK1]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK2]),
             [TANK.TANK2]:   createTurret(0.7, 0.1, 1, colors[TANK.TANK1]),
         };
-        this.tankTurretZ[0] = createTurret(0.7, 0.1, 0.7, zombieColor);
+        this.tankTurretFF[0] = createTurret(0.7, 0.1, 0.7, zombieColor);
 
         const countAnimTrack = 8;
         const trackSimple = new Array(countAnimTrack);
@@ -431,7 +431,7 @@ export default class GenTextures {
             this.tankBodies[i] = {};
             this.tankTurret[i] = {};
             this.tankTurretEx[i] = {};
-            this.tankTurretZ[i] = {};
+            this.tankTurretFF[i] = {};
             this.tankTrack[i] = {};
 
             for (let type = TANK.TANK1; type < TANK.RANDOM; type++) {
@@ -444,7 +444,7 @@ export default class GenTextures {
             }
             this.tankTurretEx[i][TANK.TANK1] = rotateImage(this.tankTurretEx[0][TANK.TANK1], i);
             this.tankTurretEx[i][TANK.TANK2] = rotateImage(this.tankTurretEx[0][TANK.TANK2], i);
-            this.tankTurretZ[i] = rotateImage(this.tankTurretZ[0], i);
+            this.tankTurretFF[i] = rotateImage(this.tankTurretFF[0], i);
         }
 
         // bullet
@@ -601,13 +601,15 @@ export default class GenTextures {
         // zombie
         const zombie = new SimpleBuffer(tileSize * 2);
         for (let i = 0; i < zombie.size / 8 | 0; i++) {
-            const x1 = zombie.size / 4 | 0;
-            const x2 = zombie.size - x1;
-            const y1 = x1;
-            const y2 = zombie.size - y1 - zombie.size / 8 | 0;
-            zombie.bresenham(x1, y1 + i, x2, y1 + i, 1);
-            zombie.bresenham(x1, y2 + i, x2, y2 + i, 1);
-            zombie.bresenham(x1, y2 + i, x2, y1 + i, 1);
+            const s = zombie.size / 4 | 0;
+            const e = zombie.size - s;
+            const w = zombie.size * 9 / 40 | 0;
+            for (let j = 0; j < 2; j++) {
+                const d = j * (e - s - w);
+                zombie.bresenham(s + i + d, s, s + i + d, e, 1);
+                zombie.bresenham(s + d, s + i, s + w + d, s + i, 1);
+                zombie.bresenham(s + d, s + w + i, s + w + d, s + w + i, 1);
+            }
         }
         zombie
             .gaussian(2)
@@ -769,8 +771,8 @@ export default class GenTextures {
             decal.normDist(1);
 
             for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 30) {
-                const x = halfSize + Math.cos(angle) * rand(halfSize * 0.75, halfSize * 0.25) | 0;
-                const y = halfSize + Math.sin(angle) * rand(halfSize * 0.75, halfSize * 0.25) | 0;
+                const x = halfSize + Math.cos(angle) * mathRand(halfSize * 0.75, halfSize * 0.25) | 0;
+                const y = halfSize + Math.sin(angle) * mathRand(halfSize * 0.75, halfSize * 0.25) | 0;
                 decal.bresenham(halfSize, halfSize, x, y, 1);
             }
 
@@ -794,7 +796,7 @@ export default class GenTextures {
 
         // particles
         function createSpark(fireball) {
-            const COUNT_FRAMES = fireball ? 10 : 16;
+            const COUNT_FRAMES = fireball ? 10 : 32;
             const COUNT_PART = fireball ? 5 : 16;
             const SIZE = tileSize * (fireball ? 2 : 4);
 
@@ -803,10 +805,10 @@ export default class GenTextures {
             const vel = new Array(COUNT_PART);
 
             for (let i = 0; i < COUNT_PART; i++) {
-                const sx = rand(0, 1 / COUNT_FRAMES);
-                const sy = rand(0, 1 / COUNT_FRAMES);
-                const px = fireball ? 0 : rand(0, 0.25);
-                const py = fireball ? 0 : rand(0, 0.25);
+                const sx = mathRand(0, 1 / COUNT_FRAMES);
+                const sy = mathRand(0, 1 / COUNT_FRAMES);
+                const px = fireball ? 0 : mathRand(0, 0.25);
+                const py = fireball ? 0 : mathRand(0, 0.25);
                 pos[i] = [px, py];
                 vel[i] = [sx, sy];
             }
@@ -898,7 +900,7 @@ export default class GenTextures {
                     .diff([1, 0.5])
                     .normalize(0.6, 1.4);
 
-                const random = rand(0.8, 0.2);
+                const random = mathRand(0.8, 0.2);
 
                 const spark = new SimpleBuffer(tileSize * 0.5 | 0);
                 spark
@@ -992,40 +994,41 @@ export default class GenTextures {
 
         // text
         const itemText = {
-            [ITEM.LIFE]: "Жизняга",
-            [ITEM.KNUKLE]: "Кулак",
-            [ITEM.ZOMBIE]: "Зомби",
-            [ITEM.STAR]: "Звезда",
-            [ITEM.SPEED]: "Скорость",
-            [ITEM.FIREBALL]: "Фаерболл",
-            [ITEM.FIREBALL + 1]: "Рядовой",
-            [ITEM.FIREBALL + 2]: "Ефрейтор",
-            [ITEM.FIREBALL + 3]: "Младший#сержант",
-            [ITEM.FIREBALL + 4]: "Сержант",
-            [ITEM.FIREBALL + 5]: "Старший#сержант",
-            [ITEM.FIREBALL + 6]: "Старшина",
-            [ITEM.FIREBALL + 7]: "Младший#лейтенант",
-            [ITEM.FIREBALL + 8]: "Лейтенант",
-            [ITEM.FIREBALL + 9]: "Капитан",
-            [ITEM.FIREBALL + 10]: "Майор",
-            [ITEM.FIREBALL + 11]: "Полковник",
-            [ITEM.FIREBALL + 12]: "Генерал-#майор",
-            [ITEM.FIREBALL + 13]: "Генерал-#лейтенант",
-            [ITEM.FIREBALL + 14]: "Генерал-#полковник",
-            [ITEM.FIREBALL + 15]: "Генерал#армии",
-            [ITEM.FIREBALL + 16]: "Маршал",
+            [ITEM.LIFE]: "Life",
+            [ITEM.KNUKLE]: "Knukle",
+            [ITEM.ZOMBIE]: "Friendly#fire",
+            [ITEM.STAR]: "Star",
+            [ITEM.SPEED]: "Speed",
+            [ITEM.FIREBALL]: "Fireball",
+            [ITEM.FIREBALL + 1]: "Private",
+            [ITEM.FIREBALL + 2]: "Corporal",
+            [ITEM.FIREBALL + 3]: "Junior#sergeant",
+            [ITEM.FIREBALL + 4]: "Sergeant",
+            [ITEM.FIREBALL + 5]: "Senior#sergeant",
+            [ITEM.FIREBALL + 6]: "Sergeant#major",
+            [ITEM.FIREBALL + 7]: "Junior#lieutenant",
+            [ITEM.FIREBALL + 8]: "Lieutenant",
+            [ITEM.FIREBALL + 9]: "Captain",
+            [ITEM.FIREBALL + 10]: "Major",
+            [ITEM.FIREBALL + 11]: "Colonel",
+            [ITEM.FIREBALL + 12]: "Major#general",
+            [ITEM.FIREBALL + 13]: "Lieutenant#general",
+            [ITEM.FIREBALL + 14]: "Colonel#general",
+            [ITEM.FIREBALL + 15]: "Army#general",
+            [ITEM.FIREBALL + 16]: "Marshal",
         };
         this.itemText = {};
         for (let i = ITEM.LIFE; i <= ITEM.FIREBALL + 16; i++) {
-            const mask = new SimpleBuffer(tileSize * 2);
+            const mask = new SimpleBuffer(tileSize * 3);
             const buf = mask.getColor([0, 0, 0], mask);
             const ctx = buf.getContext("2d");
-            ctx.font = `${tileSize * 0.35 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
+            ctx.font = `${tileSize * 0.5 | 0}px Verdana, Geneva, Arial, Helvetica, sans-serif`;
             ctx.fillStyle = i <= ITEM.FIREBALL ? "rgb(200, 255, 200)" : "rgb(255, 200, 200)";
             ctx.textAlign = "center";
             const texts = itemText[i].split("#");
-            ctx.fillText(texts[0], tileSize, tileSize);
-            if (texts.length === 2) ctx.fillText(texts[1], tileSize, tileSize * 1.5);
+            const y = texts.length > 1 ? 1.5 : 2;
+            ctx.fillText(texts[0], tileSize * 1.5, tileSize * y);
+            if (texts.length === 2) ctx.fillText(texts[1], tileSize * 1.5, tileSize * 2);
             this.itemText[i] = buf;
         }
     }

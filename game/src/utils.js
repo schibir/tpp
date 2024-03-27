@@ -1,6 +1,26 @@
 
+let randomSeed = (Date.now() * Math.random()) & 0xffffffff;
+
+export class Random {
+    static setSeed(seed) {
+        randomSeed = seed;
+    }
+    static getSeed() {
+        return randomSeed;
+    }
+    static next(m) {
+        randomSeed = (randomSeed * 214013 + 2531011) & 0xffffffff;
+        const ret = (randomSeed >> 16) & 0x7fff;
+        return ret % m;
+    }
+}
+
 export function rand(m, radius) {
-    return 2 * radius * Math.random() - radius + m;
+    return Random.next(2 * radius) - radius + m;
+}
+
+export function mathRand(m, radius) {
+    return Math.random() * (2 * radius) - radius + m;
 }
 
 export function clamp(a, min, max) {
@@ -9,7 +29,7 @@ export function clamp(a, min, max) {
 
 export function randColor(color, radius = 10) {
     const ret = new Array(3);
-    for (let i = 0; i < 3; i++) ret[i] = clamp(rand(color[i], radius), 0, 255);
+    for (let i = 0; i < 3; i++) ret[i] = clamp(mathRand(color[i], radius), 0, 255);
     return ret;
 }
 
@@ -38,7 +58,7 @@ export function sin(angle) {
 
 export function getProbability(probabilities) {
     const sum = probabilities.reduce((acc, val) => acc + val);
-    let current = Math.random() * sum;
+    let current = Random.next(sum);
     for (let i = 0; i < probabilities.length; i++) {
         current -= probabilities[i];
         if (current < 0) return i;

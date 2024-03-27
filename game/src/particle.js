@@ -1,11 +1,11 @@
 
 import { Entity, EntityManager } from "./entity";
 import { PART } from "./global";
-import { rand, floatToIndex } from "./utils";
+import { mathRand, floatToIndex } from "./utils";
 
 class Particle extends Entity {
     constructor(cx, cy, type) {
-        super(cx, cy, 0.5, Math.random() * 2 * Math.PI, rand(1, 0.5));
+        super(cx, cy, 0.5, Math.random() * 2 * Math.PI, mathRand(1, 0.5));
         this.type = type;
         this.creationTime = 0;
         this.random = Math.random();
@@ -15,22 +15,22 @@ class Particle extends Entity {
         if (type === PART.FIRE) this.size = 2;
         else if (type === PART.EXPLODE) {
             this.size = 4;
-            this.lifetime = 400;
+            this.lifetime = 480;
             this.decal = new Entity(cx, cy, 3);
         } else if (type & (PART.BRICK | PART.BETON)) {
             this.cx += Math.cos(this.angle) * 0.5 * Math.random();
             this.cy += Math.sin(this.angle) * 0.5 * Math.random();
-            this.lifetime += rand(100, 100);
+            this.lifetime += mathRand(100, 100);
             this.maxvel = this.vel;
             this.startAngle = Math.random();
-            this.omega = rand(0, 1 / 30);
+            this.omega = mathRand(0, 1 / 30);
         } else if (type & PART.SMOKE) {
             this.size = 1;
-            this.lifetime = rand(750, 250);
-            this.angle = rand(-1, 0.2);
-            this.vel = rand(0.5, 0.2);
-            this.cx = rand(cx, 0.1);
-            this.cy = rand(cy, 0.1);
+            this.lifetime = mathRand(750, 250);
+            this.angle = mathRand(-1, 0.2);
+            this.vel = mathRand(0.5, 0.2);
+            this.cx = mathRand(cx, 0.1);
+            this.cy = mathRand(cy, 0.1);
         }
     }
     getBrickTexture(level) {
@@ -86,7 +86,6 @@ class Particle extends Entity {
     update(level) {
         const time = Date.now();
         if (!this.creationTime) this.creationTime = time;
-        const delta = this.getDelta(time);
         this.deltatime = time - this.creationTime;
         if (this.deltatime >= this.lifetime) {
             this.alive = false;
@@ -96,6 +95,7 @@ class Particle extends Entity {
         }
 
         if (this.type & (PART.SPARK | PART.BRICK | PART.BETON | PART.SMOKE)) {
+            const delta = this.getDelta(time);
             this.moveEx(delta);
         }
     }
@@ -116,9 +116,9 @@ export default class ParticleManager extends EntityManager {
 
         event.on("particle", emit);
         event.on("tankDead", (tank) => {
-            const r = tank.size * 0.25;
-            for (let i = 0; i < 8; i++) {
-                emit(rand(tank.cx, r), rand(tank.cy, r), PART.SMOKE2);
+            const r = tank.size * 0.4;
+            for (let i = 0; i < 16; i++) {
+                emit(mathRand(tank.cx, r), mathRand(tank.cy, r), PART.SMOKE2);
             }
             emit(tank.cx, tank.cy, PART.EXPLODE);
         });

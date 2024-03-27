@@ -1,7 +1,9 @@
 
 import { Entity, EntityManager } from "./entity";
 import { sin, cos } from "./utils";
-import { bulletDamage, bulletVelocity, tankRadius, BULLET, PART, STATE, TANK } from "./global";
+import {
+    bulletDamage, bulletVelocity, tankRadius, BULLET, PART, STATE, TANK,
+} from "./global";
 
 export class Bullet extends Entity {
     constructor(owner, type, callback) {
@@ -50,7 +52,7 @@ export class BulletManager extends EntityManager {
         bullet.setParticleCallback(this.particleCallback);
         this.objects.push(bullet);
     }
-    collideTank(tank, time) {
+    collideTank(tank) {
         if (tank.state <= STATE.RESPAWN) return;
         this.objects.forEach((bullet) => {
             if (!bullet.alive || bullet.owner === tank) return;
@@ -59,7 +61,7 @@ export class BulletManager extends EntityManager {
 
                 const table = [0, 0, 1, 1, 1, 1, 1, 1, 2];
                 if (table[bullet.owner.type] !== table[tank.type] || bullet.owner.zombie || this.mode === "bench") {
-                    tank.damage(bulletDamage(bullet.type), time, bullet.owner.type <= TANK.TANK2);
+                    tank.damage(bulletDamage(bullet.type), bullet.owner.type <= TANK.TANK2);
                 }
             }
         });
