@@ -111,7 +111,7 @@ export default class Game {
         this.gameover = false;
         this.levelComplete = false;
 
-        const isTwoPlayers = isPlayback ? this.playback.players.length > 1 : params.twoplayers === "true";
+        const isTwoPlayers = isPlayback ? Object.keys(this.playback.players).length > 1 : params.twoplayers === "true";
         const tank1 = this.tanks.create(TANK.TANK1);
         const tank2 = isTwoPlayers ? this.tanks.create(TANK.TANK2) : null;
         this.players = [tank1, tank2];
